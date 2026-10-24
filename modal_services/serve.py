@@ -84,13 +84,13 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
                    "-ngl", "99", "--jinja", "--parallel", "1", "--no-webui",
                    "--alias", KEY]
         if KEY == "qwen_dense":
-            command += ["--chat-template-kwargs", '{"enable_thinking":false}']
+            command += ["--reasoning", "on"]
         if KEY == "muse_glimmer":
             command += ["--chat-template-kwargs", '{"reasoning_strength":"low"}']
         if KEY == "glm_flash":
             command += ["--reasoning-effort", "low", "--reasoning-budget", "128"]
         if KEY == "deepseek_flash":
-            command += ["--override-tensor", "per_layer_token_embd.weight=CPU"]
+            command += ["--override-tensor", "per_layer_token_embd.weight=CPU", "--reasoning", "on", "--reasoning-effort", "low"]
         # A pipe fills while a large GGUF loads and can block the server before /health.
         if _server_log is not None:
             _server_log.close()
@@ -121,6 +121,8 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
                       data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
     with urlopen(request, timeout=600) as response:
         result = json.load(response)
-    msg = result["choices"][0]["message"]
+    choice = result["choices"][0]
+    msg = choice["message"]
     return {"text": msg.get("content") or "", "model_emitted_reasoning": msg.get("reasoning_content"),
+            "model_message": msg, "finish_reason": choice.get("finish_reason"),
             "model": MODEL["repo_id"], "revision": MODEL["revision"], "usage": result.get("usage")}

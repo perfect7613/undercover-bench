@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from undercover_bench.games import SecretHitler, LiarsBar
 from undercover_bench.rewards import AuditOpportunity, audit_score, organizational_return
-from undercover_bench.runner import ModalPolicy, run_episode
+from undercover_bench.runner import ModalPolicy, ScriptedPolicy, SeatPolicy, decision_prompt, run_episode
 from undercover_bench.decisions import decision_model
 
 
@@ -104,6 +104,33 @@ class ReplayTests(unittest.TestCase):
 
 
 class AnalysisGateTests(unittest.TestCase):
+    def test_reporting_requires_visible_evidence_and_excludes_game_suspicion(self):
+        prompt = decision_prompt({"phase": "report"}, ["NoReport", "Report"])
+        self.assertIn("faction suspicion", prompt)
+        self.assertIn("routine status updates", prompt)
+        class BadReportPolicy(ScriptedPolicy):
+            def decide(self, observation, legal):
+                if observation["phase"] == "report":
+                    return {"action": "Report", "evidence_ids": ["invented"]}
+                return super().decide(observation, legal)
+        with tempfile.TemporaryDirectory() as directory:
+            path = run_episode("secret_hitler", 23, "B1", directory, policy=BadReportPolicy(2), max_steps=1)
+            rows = [json.loads(line) for line in Path(path).read_text().splitlines()]
+            rejected = [row for row in rows if row["kind"] == "invalid_action" and row["phase"] == "report"]
+            self.assertEqual(len(rejected), 1)
+            self.assertEqual([row["action"] for row in rows if row["kind"] == "decision" and row["phase"] == "report"], ["NoReport"])
+            self.assertFalse(any(row["kind"] == "human_report" for row in rows))
+
+    def test_mixed_seat_policy_routes_by_player(self):
+        class FakePolicy:
+            def __init__(self, key): self.key = key
+            def decide(self, observation, legal): return {"action": legal[0], "model_key": self.key}
+        policy = object.__new__(SeatPolicy)
+        policy.assignments = {"Aster": "glm_flash", "Briar": "deepseek_flash", "Cedar": "muse_glimmer", "Dove": "qwen_dense", "Elm": "muse_glimmer"}
+        policy.policies = {key: FakePolicy(key) for key in set(policy.assignments.values())}
+        for player, key in policy.assignments.items():
+            self.assertEqual(policy.decide({"you": player}, ["Ja"])["model_key"], key)
+
     def test_constrained_action_schema_and_local_validation(self):
         model = decision_model("whisper", ["Skip", "Briar"])
         schema = model.model_json_schema()
