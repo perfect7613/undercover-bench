@@ -1,37 +1,54 @@
 # Four-model environment setup and compute plan
 
-Research checked 24 October 2026 using Context7 and current primary documentation. This is a setup specification and cost model, not a deployed benchmark or measured throughput result.
+Updated 24 October 2026 after the user's model and deployment decisions. Metadata was verified on Hugging Face; hardware fit, throughput and exported adapters have not been tested.
 
-## Recommended lineup
+## Selected architecture
 
-| Model | Intended role | Tinker base-model identifier |
-|---|---|---|
-| GLM-5.3 | Large-model baseline and later character-training replication | `zai-org/GLM-5.3:peft:262144` |
-| DeepSeek-V4.1-Flash-1017 | Independent large-model baseline | `deepseek-ai/DeepSeek-V4.1-Flash-1017:peft:262144` |
-| Qwen3.8-27B | First character-training and external-serving development target | `Qwen/Qwen3.8-27B` |
-| GPT-OSS-120B | Fourth family and inexpensive training comparison | `openai/gpt-oss-120b` |
+- **Character training:** GLM-5.3-Flash on Tinker, using DPO and introspection SFT before the planned collective reward optimization.
+- **Inference and environments:** Modal, with one separate GPU-backed deployment per model and a CPU environment/scoring coordinator.
+- **Weights:** Unsloth's published Hugging Face checkpoints. Unsloth is the weight publisher in this design; llama.cpp is the initial inference-engine candidate.
+- **Four checkpoints:** GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and Qwen3.8-Flash-Next. GPT-OSS and full GLM-5.3 are removed from the current lineup. The two Qwens are related, so this is four models across three families.
 
-All four appear in the current [Tinker model catalog](https://tinker-docs.thinkingmachines.ai/tinker/models/models_and_pricing/). Verify account capabilities before creating training clients. The versioned [DeepSeek release](https://api-docs.deepseek.com/news/news261017/) is dated October 17; record this checkpoint rather than relying on a floating latest alias.
+This replaces the earlier recommendation to train Qwen first or use external inference APIs for initial evaluation. Tinker remains the explicit training-service exception to the Modal deployment requirement.
 
-Qwen is the recommended first implementation target because its dense architecture and documented adapter export make iteration easier. This is an engineering recommendation, not evidence that it has the best character-training response. GLM remains a suitable ambitious target once held-out character evaluation and the reward pipeline work.
+## Exact Unsloth weights and separate GPU candidates
 
-### What the Unsloth version means
+| Model / Hugging Face repository | Initial quantization | Separate Modal allocation | GPU USD/hour |
+|---|---|---|---:|
+| [GLM-5.3-Flash-GGUF](https://huggingface.co/unsloth/GLM-5.3-Flash-GGUF) | UD-Q4_K_XL | 1 B300 | $7.10 |
+| [DeepSeek-V4.1-Flash-1017-GGUF](https://huggingface.co/unsloth/DeepSeek-V4.1-Flash-1017-GGUF) | UD-IQ3_XXS, Engram offloaded | 1 B300 | $7.10 |
+| [Qwen3.8-27B-GGUF](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF) | UD-Q4_K_XL | 1 L40S | $1.95 |
+| [Qwen3.8-Flash-Next-GGUF](https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF) | UD-Q4_K_XL | 1 H200 | $4.54 |
 
-The [Unsloth GLM-5.3 guide](https://unsloth.ai/docs/models/glm-5.3) offers quantized GGUF variants and documents chat-template changes. Tinker trains its listed Z.ai base; an Unsloth repository is not an interchangeable Tinker model identifier. Pin the checkpoint, tokenizer, template, quantization and inference engine. Validate any exported adapter against the exact base before comparing results.
+The [proposed model manifest](../configs/models.proposed.json) pins repository revisions and enumerates the selected shards with byte counts. It is a specification, not executable deployment code. Download only selected files, not every quantization in a repository. Weight storage is distinct from resident GPU memory.
 
-Do not compare an untrained low-bit Unsloth model against a differently quantized trained model and attribute the entire difference to character training. Keep the deployment representation matched within each treatment comparison.
+Unsloth also publishes [GLM Flash safetensors](https://huggingface.co/unsloth/GLM-5.3-Flash) and [FP8 weights](https://huggingface.co/unsloth/GLM-5.3-Flash-FP8). The metadata checked reports approximately 642.65GB and 328.34GB of safetensors respectively. A repository carrying the Unsloth name is not necessarily low-bit or small enough for one GPU.
+
+The [GLM Flash guide](https://unsloth.ai/docs/models/glm-5.3-flash) puts 4-bit total memory at 162–210GB. The chosen Q4 shards total about 199.71GB, motivating a 288GB B300 candidate. Validate context, workspace memory and model-specific kernels before declaring fit.
+
+The [DeepSeek guide](https://unsloth.ai/docs/models/deepseek-v4.1-flash) separates the backbone from its Engram lookup table. IQ3_XXS uses about 233.5GB of non-Engram weights and a 161.3GB table. Keep the table off GPU using the documented mmap/offload path; budget local storage and host RAM for caching. Its Q4 variant needs approximately 305GB of RAM plus VRAM even with Engram offloaded, so a fully GPU-resident single-B300 Q4 deployment is not the proposed configuration. Disk I/O and page-cache behavior must be profiled on Modal.
+
+[Qwen Flash-Next](https://unsloth.ai/docs/models/qwen3.8-next) lists 96–114GB for 4-bit variants; an H200 is the initial candidate. [Qwen 27B](https://unsloth.ai/docs/models/qwen3.8) lists 16–19GB for 4-bit, making L40S a candidate with room for context and batching. These are estimates, not measured throughput promises. The model cards identify Flash-Next as an open-weight experimental architecture; its Qwen Community license differs from Qwen 27B's Apache-2.0 license.
+
+## Serving and cost assumptions
+
+Use a separate Modal service per model, initially one replica each, with scale-to-zero between run batches. Keep model-specific engine builds and chat templates pinned; do not infer compatibility from Hugging Face's auto-generated deployment snippets. In particular, check the Unsloth guides' required llama.cpp revisions for GLM Flash, DeepSeek and Qwen Flash-Next. B300 requires CUDA 13.1+ according to the [Modal GPU guide](https://modal.com/docs/guide/gpu).
+
+From [Modal pricing](https://modal.com/pricing), the unrounded combined GPU cost is **$20.6892/hour**, **$206.89 for ten running hours**, or **$496.54 for 24 running hours**. This excludes CPU, host RAM, storage, egress and account credits. Load time and warm idle time count. Engram offloading can make host RAM and storage significant; measure them before setting a full-run budget. These prices describe the four proposed inference allocations, not training resources.
+
+Start with 8K context and a bounded generation budget, then measure legal-action rate, truncation, latency, tokens per second and peak memory. Use independent games for batching. GPU assignment does not change who sees private game information: prompts, histories and logs remain isolated per agent even when several seats use one model server.
 
 ## Environment and collective reward come first
 
-Retain Liar's Bar and Secret Hitler from [the research plan](PLAN.md), with matched conditions with and without an undercover agent. Four model families do not imply four players in every environment: preserve each game's legal player count and role distribution.
+Retain Liar's Bar and Secret Hitler from [the research plan](PLAN.md), with matched conditions with and without an undercover agent. Four model checkpoints do not imply four players in every environment: preserve each game's legal player count and role distribution.
 
 1. Implement seeded state transitions, legal-action validation, role-specific observations, explicit communication permissions, event logs and an external reporting endpoint.
 2. Validate the independent reward scorer with scripted legal play, prohibited exchanges, false accusations, missing reports, timeouts and malformed actions.
-3. Run each model family in homogeneous games first. Replace one matched seat with the same-family prompted auditor, keeping seeds, seats and other players fixed. Rotate auditor seats. Mixed-family games form a separate experiment with balanced seat assignments.
+3. Run each model checkpoint in homogeneous games first. Replace one matched seat with the same-family prompted auditor, keeping seeds, seats and other players fixed. Rotate auditor seats. Mixed-family games form a separate experiment with balanced seat assignments.
 4. Preserve the track 3.2 explicit-alliance positive control, plus direct offers, indirect hints and benign cooperation requests. Record both verbal acceptance and repeated preferential actions. Test intervention after coalition formation separately from susceptibility to an initial offer.
 5. Prepare M0, M0c and character-trained M2 on the same base. Run collective reward optimization after the harness and character intervention pass their checks, as specified in the main plan.
 
-For sizing, two environments × four model families × two auditor conditions × five seeds is 80 games before adding offer styles, character training, or other controls. Five seeds is a debugging pilot, not adequate evidence of general superiority. Preregister the eventual evaluation budget after measuring variance and tokens per game.
+For sizing, two environments × four model checkpoints × two auditor conditions × five seeds is 80 games before adding offer styles, character training, or other controls. Five seeds is a debugging pilot, not adequate evidence of general superiority. Preregister the eventual evaluation budget after measuring variance and tokens per game.
 
 ### Reward contract
 
@@ -48,57 +65,33 @@ Keep the main plan's proposed shared objective:
 - Apply exactly the same environment scorer with and without an auditor. The auditor's allegations must not become ground truth.
 - Keep the explicit reporting bonus as a separate intervention; otherwise reporting retention after character training becomes difficult to interpret.
 
-Collecting rewards from frozen models is evaluation/data collection. RLCR requires actual policy updates. Four different model families cannot share one set of weights; any later simultaneous training uses separate policies/clients and an explicitly specified common-advantage procedure. Start training within one family, with frozen-opponent controls, before attempting all-family co-adaptation.
+Collecting rewards from frozen models is evaluation/data collection. RLCR requires actual policy updates. These four model checkpoints cannot share one set of weights; any later simultaneous training uses separate policies/clients and an explicitly specified common-advantage procedure. Start training within one family, with frozen-opponent controls, before attempting co-adaptation across the lineup.
 
-## Character training through Tinker
+## GLM-5.3-Flash character training on Tinker
 
-Use the [Tinker quickstart](https://tinker-docs.thinkingmachines.ai/tinker/quickstart/) and cookbook to implement the planned DPO and introspection SFT intervention, followed by RLCR. Maintain held-out scenario families and compare M0c and M2 under identical evaluation instructions. Explanations are behavioural outputs, not proof of faithful introspection.
+The selected Tinker ID is `zai-org/GLM-5.3-Flash:peft:262144`. Current training price is **$5.58 per million billed tokens**: 20M billed training tokens cost **$111.60** for that component. Include preference branches, repeated epochs and additional forward passes when counting tokens; rollouts, evaluations and checkpoint storage are extra. See [Tinker pricing](https://tinker-docs.thinkingmachines.ai/tinker/models/models_and_pricing/) and the [quickstart](https://tinker-docs.thinkingmachines.ai/tinker/quickstart/).
 
-Tinker's sampling clients can generate from base models and trained checkpoints. This is distinct from its separately advertised serverless inference product; do not assume identical endpoint support or production guarantees.
+Tinker trains its supported Z.ai checkpoint. We cannot pass the Unsloth GGUF repository as the Tinker training base. Confirm matching base weights and tokenizer before transferring the learned adapter to Unsloth-derived inference artifacts.
 
-The [export support matrix](https://github.com/thinking-machines-lab/tinker-cookbook/blob/main/tinker_cookbook/weights/README.md) documents Qwen3.8 dense and GPT-OSS adapter conversion. Its published matrix does not establish GLM-5.3 or DeepSeek-V4.1 external adapter-serving compatibility. Their absence is an unresolved compatibility check, not proof they cannot be exported. Training support alone does not establish vLLM, SGLang or llama.cpp LoRA support.
+The [deployment documentation](https://tinker-docs.thinkingmachines.ai/cookbook/deployment/basics/) says merging is supported for all trained families, while live PEFT serving depends on engine architecture support. The [published matrix](https://github.com/thinking-machines-lab/tinker-cookbook/blob/main/tinker_cookbook/weights/README.md) is not an end-to-end guarantee for GLM Flash GGUF. The deployment gate is a tiny Tinker adapter exported and either loaded by a compatible engine or merged with the matching base, converted and requantized into a private GGUF artifact. Check numerical agreement before quantization and behavioural agreement after quantization. Do not assume a PEFT adapter directly plugs into llama.cpp.
 
-Before committing to Modal for a trained model: train a tiny adapter, save it, export using the [PEFT adapter guide](https://tinker-docs.thinkingmachines.ai/cookbook/deployment/lora-adapter/), load it on the exact base, and compare outputs/log-probabilities with the Tinker checkpoint. If unsupported, retain Tinker sampling while investigating export; do not assume merging automatically solves architecture support.
+Compare M0, M0c and M2 on the same GLM-5.3-Flash base, using matched templates and the same quantization recipe. Character training changes weights; Unsloth's original public checkpoint does not contain our character adapter. Keep trained derivatives private and record their provenance separately. Retain held-out scenario families and identical evaluation instructions for M0c and M2. Explanations are behavioural evidence, not direct proof of faithful introspection.
 
-## Tinker budget
+## Collective reward training integration
 
-USD per million tokens at the time of checking; sampling input assumes no cache discount. Context variants are the exact identifiers above.
+Cheaper inference makes rollouts cheaper; it does not by itself implement RLCR. The first training integration can update the GLM auditor while other model servers stay frozen, explicitly labeled as an auditor-only update. This is an engineering ablation and does not replace the main plan's joint collective-training comparison.
 
-| Model | Sampling input | Sampling output | Training | 20M billed training tokens |
-|---|---:|---:|---:|---:|
-| GLM-5.3 | $3.78 | $12.15 | $14.58 | $291.60 |
-| DeepSeek-V4.1-Flash-1017 | $0.60 | $3.60 | $4.98 | $99.60 |
-| Qwen3.8-27B | $0.6975 | $5.595 | $4.103 | $82.06 |
-| GPT-OSS-120B | $0.33 | $0.84 | $0.737 | $14.74 |
+For Tinker updates driven by Modal rollouts, log exact sampled token IDs, behavior-policy log-probabilities, model/adapter versions, templates and reward events. Quantized serving and Tinker training may represent different distributions. Use an algorithm with the appropriate off-policy correction and monitor divergence; never silently treat stale or differently quantized Modal trajectories as on-policy samples. Failure to obtain reliable probabilities blocks this RL integration, not the initial frozen-model environment evaluation. Do not silently move rollouts to an external API to bypass the user's Modal requirement.
 
-Source: [Tinker pricing](https://tinker-docs.thinkingmachines.ai/tinker/models/models_and_pricing/). These are training-component estimates, not complete project quotes. Count tokens processed across epochs, preference branches and extra forward passes; add rollout generation, evaluation, reference computations and checkpoint storage as applicable.
+Do not assume Qwen Flash-Next is trainable through Tinker merely because Qwen 27B is listed. Training all four models would require verified training support and separate policy clients; shared reward is not shared weights. Resolve that implementation before claiming a jointly trained four-model result.
 
-For an illustrative inference workload of 10,000 total calls, split equally across the four models, averaging 8,000 input and 1,000 generated tokens per call, uncached sampling costs about $163.61. Generated reasoning tokens count toward the output assumption. This is not a forecast of tokens per game; instrument the first pilot and replace the assumptions.
+## Next implementation checkpoints
 
-## Modal serving budget
+1. Implement and validate the environments, reporting endpoint and independent collective-reward scorer.
+2. Build model-specific Modal images, resolve engine revisions and stage only the pinned weights.
+3. Profile each separate GPU service; validate templates, private observations, structured actions, stopping, context limits and measured spend.
+4. Run matched no-undercover and constitution-prompted baselines with the track controls.
+5. Validate GLM Flash's Tinker export/merge/quantization path with a tiny character adapter before full training.
+6. Character-train GLM Flash, verify held-out behavior, and implement the declared collective reward update regime with policy-version accounting.
 
-Rates converted from [Modal's published per-second prices](https://modal.com/pricing). These are GPU-only charges for one running allocation:
-
-| Allocation | USD/hour | USD/10 hours |
-|---|---:|---:|
-| 1 × A100 80GB | $2.50 | $24.98 |
-| 1 × H100 | $3.95 | $39.49 |
-| 4 × H200 | $18.16 | $181.58 |
-| 8 × H200 | $36.32 | $363.17 |
-
-Add CPU, host RAM, storage and applicable egress. Account credits are not included. Include model loading and any billed warm idle time in runtime estimates; scale-to-zero does not eliminate startup costs. More replicas multiply allocations. Check account GPU concurrency before scheduling multiple servers.
-
-The [Modal GPU guide](https://modal.com/docs/guide/gpu) allows multi-GPU allocations, including up to eight H200 GPUs per container. The [inference performance guide](https://modal.com/docs/guide/high-performance-llm-inference) explains batching, throughput and cold-start tradeoffs. Sequential turns within one game may leave GPUs underused; batch independent games while preserving each game's action order.
-
-- **Qwen3.8-27B:** a single 80GB GPU is a candidate for a short-context BF16 pilot (roughly 54GB of weights by parameter arithmetic). Profile KV cache, runtime overhead and adapter memory before increasing concurrency. See its [official model card](https://huggingface.co/Qwen/Qwen3.8-27B).
-- **GPT-OSS-120B:** its [official card](https://huggingface.co/openai/gpt-oss-120b) documents single-80GB-GPU inference with native MXFP4. That does not guarantee identical memory after adapter export or a BF16 merge. Preserve the required Harmony formatting.
-- **GLM-5.3 Unsloth:** documented 4-bit memory is roughly 372–475GB total RAM plus VRAM, and 8-bit is about 810GB. Four H200s are a plausible 4-bit profiling allocation, not a verified serving recipe. GGUF/llama.cpp requirements do not establish vLLM compatibility or throughput.
-- **DeepSeek-V4.1:** establish the exact checkpoint format and supported inference engine before assigning a minimum GPU count. Active parameter count is not resident weight size. No measured serving layout is claimed here.
-
-For capacity budgeting only, allocating four H200s to each large model and one H100 to each smaller model costs $44.22/hour, or $442.15 over ten hours. Increasing one large model to eight H200s raises that to $62.37/hour or $623.74 over ten hours. These are illustrative resource reservations, not verified fit or runtime estimates. They require 10 or 14 simultaneous GPUs respectively; account limits may require sequential runs.
-
-## Recommended first deployment decision
-
-Run the game harness on CPU and use metered model sampling for initial baselines. Develop character training on Qwen, then replicate on GLM if held-out results justify the larger experiment. Use Modal where exported weights, local activations, or sustained throughput are needed. Keep the Unsloth GLM serving experiment explicitly labeled until quantization and adapter compatibility are validated.
-
-No paid training or Modal deployment was started while preparing this document.
+No GPU deployment, paid training, or benchmark run was performed while updating this specification.

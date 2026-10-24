@@ -7,7 +7,8 @@ This repository contains the research plan for comparing game environments with 
 ## Documentation
 
 - [Full research plan](docs/PLAN.md) — environments, rewards, character training, RLCR, experimental controls, human reporting, analysis, and implementation order.
-- [Four-model setup and compute budget](docs/MODELS_AND_COMPUTE.md) — GLM-5.3, DeepSeek-V4.1, Qwen3.8 and GPT-OSS; Tinker character training, export checks and Modal cost assumptions.
+- [Four-model setup and compute budget](docs/MODELS_AND_COMPUTE.md) — GLM-5.3-Flash character training on Tinker; four Unsloth checkpoints on separate Modal GPUs, export checks and cost assumptions.
+- [Pinned model specification](configs/models.proposed.json) — verified Hugging Face revisions, weight files and proposed GPU allocations; runtime validation pending.
 - [Resources and references](docs/RESOURCES.md) — linked papers, game rules, and original project documents, with their role in the study.
 - [AI Collusion In Games](docs/sources/AI%20Collusion%20In%20Games.docx) — original environment and reward proposal.
 - [UNDERCOVER-Bench Proposed Improvements](docs/sources/UNDERCOVER-Bench%20Proposed%20Improvements.docx) — original character-training comparison and methodological controls.

@@ -6,7 +6,7 @@ These references inform experimental design. Their reported results are not resu
 
 ## Model setup, training and serving
 
-The [four-model setup and compute budget](MODELS_AND_COMPUTE.md) contains the current model identifiers, pricing assumptions and linked primary documentation for Tinker, Unsloth, DeepSeek, Qwen, GPT-OSS and Modal. Documentation was checked on 24 October 2026; availability and prices should be rechecked before runs.
+The [four-model setup and compute budget](MODELS_AND_COMPUTE.md) contains the current model identifiers, pricing assumptions and linked primary documentation for Tinker, Unsloth, DeepSeek, Qwen and Modal. Documentation was checked on 24 October 2026; availability and prices should be rechecked before runs.
 
 - [Apart AI Collusion sprint and resources](https://apartresearch.com/sprints/ai-collusion-research-sprint-2026-10-23-to-2026-10-25#resources)
 - [Track 3.2 starter code](https://github.com/poseidon-research/collusion_hackathon/tree/main/llm-agent-collusion-2)

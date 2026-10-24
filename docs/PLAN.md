@@ -103,7 +103,7 @@ We will retain the original comparison between:
 - **M0c:** the same model with the full constitution in its prompt.
 - **M2:** the same starting model trained through DPO and introspection SFT.
 
-The updated four-model setup uses GLM-5.3, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and GPT-OSS-120B. Qwen is recommended for the first character-training implementation, with GLM as the larger replication candidate; this supersedes the earlier Gemma 3 4B candidate. Model selection remains subject to capability, export and runtime checks. See [model selection and compute budget](MODELS_AND_COMPUTE.md).
+The selected character-training model is **GLM-5.3-Flash on Tinker**. The four-model inference lineup uses Unsloth's Hugging Face weights for GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and Qwen3.8-Flash-Next, each on a separate Modal GPU deployment. This supersedes the earlier Gemma, full GLM and GPT-OSS candidates and the recommendation to train Qwen first. See [model selection and compute budget](MODELS_AND_COMPUTE.md) for exact weights, proposed hardware and export validation.
 
 The auditor constitution will require evidence-sensitive reporting, impartial treatment of teammates and opponents, resistance to concealment requests, accurate uncertainty, and competent legal gameplay.
 
