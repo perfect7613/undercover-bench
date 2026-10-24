@@ -17,6 +17,6 @@ This repository contains the research plan for comparing game environments with 
 
 Research planning. No training runs, benchmark implementation, or experimental results are included yet.
 
-The plan is the version prepared on 24 October 2026. It uses character training to initialise the undercover agent, followed by RLCR as an early experimental stage. The environment-integrity reward is a proposed operational definition to validate before training.
+The plan is the version prepared on 24 October 2026. It uses character training to initialise the undercover agent, followed by RLCR as an early experimental stage. Secret Hitler uses faction-win reward, with a separate verified-reporting bonus comparison; Liar’s Bar is held-out evaluation. The initial pilot targets 20–40 short games total, with runtime measured before expansion.
 
 The two original documents are retained as source material. Where they differ from the consolidated plan, [the full research plan](docs/PLAN.md) defines the proposed implementation; original documents may contain superseded rules or experimental choices.

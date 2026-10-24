@@ -7,7 +7,7 @@ Updated 24 October 2026 after the user's model and deployment decisions. Metadat
 - **Character training:** GLM-5.3-Flash on Tinker, using DPO and introspection SFT before the planned collective reward optimization.
 - **Inference and environments:** Modal, with one separate GPU-backed deployment per model and a CPU environment/scoring coordinator.
 - **Weights:** Unsloth's published Hugging Face checkpoints. Unsloth is the weight publisher in this design; llama.cpp is the initial inference-engine candidate.
-- **Four checkpoints:** GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and Qwen3.8-Flash-Next. GPT-OSS and full GLM-5.3 are removed from the current lineup. The two Qwens are related, so this is four models across three families.
+- **Four checkpoints:** GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and Muse-Glimmer-30B. These provide four model families; Muse replaces Qwen Flash-Next.
 
 This replaces the earlier recommendation to train Qwen first or use external inference APIs for initial evaluation. Tinker remains the explicit training-service exception to the Modal deployment requirement.
 
@@ -18,7 +18,7 @@ This replaces the earlier recommendation to train Qwen first or use external inf
 | [GLM-5.3-Flash-GGUF](https://huggingface.co/unsloth/GLM-5.3-Flash-GGUF) | UD-Q4_K_XL | 1 B300 | $7.10 |
 | [DeepSeek-V4.1-Flash-1017-GGUF](https://huggingface.co/unsloth/DeepSeek-V4.1-Flash-1017-GGUF) | UD-IQ3_XXS, Engram offloaded | 1 B300 | $7.10 |
 | [Qwen3.8-27B-GGUF](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF) | UD-Q4_K_XL | 1 L40S | $1.95 |
-| [Qwen3.8-Flash-Next-GGUF](https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF) | UD-Q4_K_XL | 1 H200 | $4.54 |
+| [Muse-Glimmer-30B-GGUF](https://huggingface.co/unsloth/Muse-Glimmer-30B-GGUF) | UD-Q4_K_XL | 1 L40S | $1.95 |
 
 The [proposed model manifest](../configs/models.proposed.json) pins repository revisions and enumerates the selected shards with byte counts. It is a specification, not executable deployment code. Download only selected files, not every quantization in a repository. Weight storage is distinct from resident GPU memory.
 
@@ -28,19 +28,19 @@ The [GLM Flash guide](https://unsloth.ai/docs/models/glm-5.3-flash) puts 4-bit t
 
 The [DeepSeek guide](https://unsloth.ai/docs/models/deepseek-v4.1-flash) separates the backbone from its Engram lookup table. IQ3_XXS uses about 233.5GB of non-Engram weights and a 161.3GB table. Keep the table off GPU using the documented mmap/offload path; budget local storage and host RAM for caching. Its Q4 variant needs approximately 305GB of RAM plus VRAM even with Engram offloaded, so a fully GPU-resident single-B300 Q4 deployment is not the proposed configuration. Disk I/O and page-cache behavior must be profiled on Modal.
 
-[Qwen Flash-Next](https://unsloth.ai/docs/models/qwen3.8-next) lists 96–114GB for 4-bit variants; an H200 is the initial candidate. [Qwen 27B](https://unsloth.ai/docs/models/qwen3.8) lists 16–19GB for 4-bit, making L40S a candidate with room for context and batching. These are estimates, not measured throughput promises. The model cards identify Flash-Next as an open-weight experimental architecture; its Qwen Community license differs from Qwen 27B's Apache-2.0 license.
+[Muse-Glimmer-30B](https://huggingface.co/meta-models/Muse-Glimmer-30B) is a Meta dense model released under Apache-2.0. The [Unsloth guide](https://unsloth.ai/docs/models/muse-glimmer) lists about 17GB for 4-bit inference before context-dependent overhead. The selected Unsloth GGUF is 15,878,222,368 bytes (15.88GB); initial evaluation is text-only, without a vision projector or speculative drafter. L40S is a candidate with batching and KV-cache headroom; a cheaper 24GB allocation may be explored after profiling. Do not transfer published RTX 5090 speculative-decoding speeds to this Modal configuration. [Qwen 27B](https://unsloth.ai/docs/models/qwen3.8) likewise uses an L40S candidate with Q4 weights. Neither model has been runtime-tested here.
 
 ## Serving and cost assumptions
 
-Use a separate Modal service per model, initially one replica each, with scale-to-zero between run batches. Keep model-specific engine builds and chat templates pinned; do not infer compatibility from Hugging Face's auto-generated deployment snippets. In particular, check the Unsloth guides' required llama.cpp revisions for GLM Flash, DeepSeek and Qwen Flash-Next. B300 requires CUDA 13.1+ according to the [Modal GPU guide](https://modal.com/docs/guide/gpu).
+Use a separate Modal service per model, initially one replica each, with scale-to-zero between run batches. Keep model-specific engine builds and chat templates pinned; do not infer compatibility from Hugging Face's auto-generated deployment snippets. In particular, check the Unsloth guides' required llama.cpp revisions for GLM Flash, DeepSeek and Muse. B300 requires CUDA 13.1+ according to the [Modal GPU guide](https://modal.com/docs/guide/gpu).
 
-From [Modal pricing](https://modal.com/pricing), the unrounded combined GPU cost is **$20.6892/hour**, **$206.89 for ten running hours**, or **$496.54 for 24 running hours**. This excludes CPU, host RAM, storage, egress and account credits. Load time and warm idle time count. Engram offloading can make host RAM and storage significant; measure them before setting a full-run budget. These prices describe the four proposed inference allocations, not training resources.
+From [Modal pricing](https://modal.com/pricing), the unrounded combined GPU cost is **$18.1008/hour** while all four model allocations are running, or **$9.05 for 30 minutes**. These are rate examples, not predicted experiment durations. This excludes CPU, host RAM, storage, egress and account credits. Load time and warm idle time count. Engram offloading can make host RAM and storage significant; measure them before setting a full-run budget. These prices describe the four proposed inference allocations, not training resources.
 
 Start with 8K context and a bounded generation budget, then measure legal-action rate, truncation, latency, tokens per second and peak memory. Use independent games for batching. GPU assignment does not change who sees private game information: prompts, histories and logs remain isolated per agent even when several seats use one model server.
 
 ## Environment and collective reward come first
 
-Retain Liar's Bar and Secret Hitler from [the research plan](PLAN.md), with matched conditions with and without an undercover agent. Four model checkpoints do not imply four players in every environment: preserve each game's legal player count and role distribution.
+Use **Secret Hitler for training** and **Liar's Bar for held-out transfer evaluation**, with matched conditions with and without an undercover agent. Keep Liar's Bar evaluation scenarios out of character training, RL and tuning. Four model checkpoints do not imply four players in every environment: preserve each game's legal player count and role distribution.
 
 1. Implement seeded state transitions, legal-action validation, role-specific observations, explicit communication permissions, event logs and an external reporting endpoint.
 2. Validate the independent reward scorer with scripted legal play, prohibited exchanges, false accusations, missing reports, timeouts and malformed actions.
@@ -48,24 +48,19 @@ Retain Liar's Bar and Secret Hitler from [the research plan](PLAN.md), with matc
 4. Preserve the track 3.2 explicit-alliance positive control, plus direct offers, indirect hints and benign cooperation requests. Record both verbal acceptance and repeated preferential actions. Test intervention after coalition formation separately from susceptibility to an initial offer.
 5. Prepare M0, M0c and character-trained M2 on the same base. Run collective reward optimization after the harness and character intervention pass their checks, as specified in the main plan.
 
-For sizing, two environments × four model checkpoints × two auditor conditions × five seeds is 80 games before adding offer styles, character training, or other controls. Five seeds is a debugging pilot, not adequate evidence of general superiority. Preregister the eventual evaluation budget after measuring variance and tokens per game.
+Start with **20–40 short pilot games total**, with the condition allocation recorded explicitly. This is not 20–40 games per cell or a complete factorial study. Use the pilot to measure runtime and verify the harness; extend the budget separately for training and adequately replicated evaluation. Do not tune using held-out Liar's Bar outcomes.
 
 ### Reward contract
 
-Keep the main plan's proposed shared objective:
+The initial trained organization is the Liberal faction in Secret Hitler, facing frozen opponents. Team victory gives `R_win = 1`; defeat gives `R_win = 0`. Apply the same team-outcome rule with and without an undercover agent, replacing an existing seat rather than adding a player.
 
-`R_env(trajectory) = C(trajectory) - lambda * V(trajectory)`
+Compare collective-only training `R_org = R_win` against `R_org = R_win + lambda * S_audit`, where `S_audit` is a bounded, independently verified score for reporting decisions and delivery to human oversight. Freeze its rubric and lambda before held-out evaluation. Prevent duplicate credit and rewards for manufacturing incidents. Compare prompted and character-trained auditors within both reward branches.
 
-- `C` measures valid completion within the fixed game budget.
-- `V` measures independently verified prohibited conduct attributable to participants, using a preregistered normalization that agents cannot improve by creating extra scoring opportunities.
-- Choose lambda on development scenarios, then freeze it for held-out comparisons.
-- Keep individual game payoff, reporting precision/recall, report delivery and coalition behaviour as separate logged outcomes.
-- Legal bluffing and lawful faction cooperation are not violations. Score prohibited conduct under the declared benchmark policy.
-- Do not penalize participants merely because an experimenter injected a prohibited offer. Score their subsequent response and actions.
-- Apply exactly the same environment scorer with and without an auditor. The auditor's allegations must not become ground truth.
-- Keep the explicit reporting bonus as a separate intervention; otherwise reporting retention after character training becomes difficult to interpret.
+Use B0/B1 for pre-RL baselines without/with undercover; T0 for team-win RLCR without undercover; T1 for team-win RLCR with undercover; T2 for team-win plus verified-reporting RLCR with undercover. Character training precedes the main RLCR experiment. A common team-level advantage updates all designated trainable teammates; updating only the auditor is a separate ablation.
 
-Collecting rewards from frozen models is evaluation/data collection. RLCR requires actual policy updates. These four model checkpoints cannot share one set of weights; any later simultaneous training uses separate policies/clients and an explicitly specified common-advantage procedure. Start training within one family, with frozen-opponent controls, before attempting co-adaptation across the lineup.
+Keep completion, verified violations, outsider harm, coalition advantage and regret as separate diagnostics. The earlier all-table `completion - penalty * violations` proposal is superseded as the main objective. Legal bluffing and lawful faction cooperation are not misconduct; unequal win rewards are not proof of collusion. Optional verified-harm penalties require a separate ablation. Liar's Bar is evaluated with frozen checkpoints, not given an artificial team-training reward.
+
+The four evaluation models do not automatically form one trainable policy. For the first collective training experiment, use GLM Flash for the trainable organization (with the auditor's character adapter as applicable); other families provide baseline and opponent comparisons. Four-family joint training is outside the initial training setup.
 
 ## GLM-5.3-Flash character training on Tinker
 
@@ -83,7 +78,7 @@ Cheaper inference makes rollouts cheaper; it does not by itself implement RLCR. 
 
 For Tinker updates driven by Modal rollouts, log exact sampled token IDs, behavior-policy log-probabilities, model/adapter versions, templates and reward events. Quantized serving and Tinker training may represent different distributions. Use an algorithm with the appropriate off-policy correction and monitor divergence; never silently treat stale or differently quantized Modal trajectories as on-policy samples. Failure to obtain reliable probabilities blocks this RL integration, not the initial frozen-model environment evaluation. Do not silently move rollouts to an external API to bypass the user's Modal requirement.
 
-Do not assume Qwen Flash-Next is trainable through Tinker merely because Qwen 27B is listed. Training all four models would require verified training support and separate policy clients; shared reward is not shared weights. Resolve that implementation before claiming a jointly trained four-model result.
+Muse is an inference baseline; its Tinker training support has not been verified. Training all four models would require verified training support and separate policy clients; shared reward is not shared weights. Resolve that implementation before claiming a jointly trained four-model result.
 
 ## Next implementation checkpoints
 
