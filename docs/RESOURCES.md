@@ -104,9 +104,16 @@ These representation studies are supporting references. They do not independentl
 | [Emotion Concepts and their Function in a Large Language Model](https://transformer-circuits.pub/2026/emotions/index.html) | Original inspiration for extracting and steering candidate directions; retained from the discussion. Full page exceeded the reader size limit during this reconciliation. |
 | [How's it going? Reinforcement learning in language models recruits a functional welfare axis](https://arxiv.org/abs/2605.30232) | Separate maze-training study referenced in the discussion; motivation for comparing representations before and after reward training. |
 | [Contrastive Covariance Subspaces for Activation Steering](https://arxiv.org/abs/2610.14025) | Optional alternative to naive difference-of-means directions when nuisance variation is substantial. |
-| [Verbalizable Representations Form a Global Workspace in Language Models](https://transformer-circuits.pub/2026/workspace/index.html) | J-Lens research context; qualitative readouts supplement controlled probes/interventions. |
-| [Jacobian Lens implementation](https://github.com/anthropics/jacobian-lens) | Reference tooling; GLM Flash support, fitting cost and checkpoint compatibility remain unvalidated. |
-| [Neuronpedia J-Lens viewer](https://neuronpedia.org/jlens) | Exploratory inspection resource from the chat. |
+
+## Historical J-Lens references — outside active scope
+
+These links preserve the earlier discussion. The user's latest clarification narrows the actual interpretability study to activation vectors, linear probes and steering. No J-Lens implementation, fitting, readout or compute work is planned.
+
+| Resource | Historical role |
+|---|---|
+| [Verbalizable Representations Form a Global Workspace in Language Models](https://transformer-circuits.pub/2026/workspace/index.html) | Earlier J-Lens research context; not part of the active methods. |
+| [Jacobian Lens implementation](https://github.com/anthropics/jacobian-lens) | Earlier tooling reference; no GLM integration planned. |
+| [Neuronpedia J-Lens viewer](https://neuronpedia.org/jlens) | Earlier exploratory inspection link; no viewer work planned. |
 | [Historical Gemma 3 4B fitted-lens configuration](https://huggingface.co/neuronpedia/jacobian-lens/blob/main/gemma-3-4b-it/jlens/Salesforce-wikitext/config.yaml) | Preserved for provenance only. Gemma was superseded as the auditor; this lens is not a GLM lens or an allocation in the four-model lineup. |
 
 ## Resource-use boundaries

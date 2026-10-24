@@ -82,7 +82,7 @@ For Tinker updates driven by Modal rollouts, log exact sampled token IDs, behavi
 
 Muse is an inference baseline; its Tinker training support has not been verified. Training all four models would require verified training support and separate policy clients; shared reward is not shared weights. Resolve that implementation before claiming a jointly trained four-model result.
 
-The main provisional GLM organization uses an ordinary-player policy plus a separate auditor adapter, with both updated from the common advantage. Hold ordinary-player initialization constant across character comparisons. Fully shared role-conditioned weights are an alternative configuration, not interchangeable with auditor-specific character training. Activation capture, probes, steering and J-Lens on GLM require a separate instrumented-runtime preflight and cost estimate; ordinary GGUF inference support does not establish those capabilities.
+The main provisional GLM organization uses an ordinary-player policy plus a separate auditor adapter, with both updated from the common advantage. Hold ordinary-player initialization constant across character comparisons. Fully shared role-conditioned weights are an alternative configuration, not interchangeable with auditor-specific character training. Activation capture, contrastive vectors, linear probes and steering on GLM require a separate instrumented-runtime preflight and cost estimate; ordinary GGUF inference support does not establish those capabilities. J-Lens is outside the active scope and has no planned fitting, integration or compute allocation.
 
 ## Next implementation checkpoints
 

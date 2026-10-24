@@ -22,7 +22,7 @@ The central comparison is whether a small verified reporting reward preserves ex
 | Model comparison | Unsloth GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B, Muse-Glimmer-30B |
 | Infrastructure | Separate Modal GPU deployment per model; Tinker for GLM character training; compatibility gates remain open |
 | Initial scale | 20–40 short games total for the pilot; measure runtime before expanding training/evaluation |
-| Mechanistic scope | Role integrity and suspicion formation; probes, contrastive directions and steering first; J-Lens supplementary |
+| Mechanistic scope | Role integrity and suspicion formation through activation-vector discovery, linear probes and causal steering |
 
 ### Research questions
 
@@ -367,6 +367,8 @@ Every headline rate must include its numerator, eligible denominator, game count
 
 Mechanistic analysis will compare the auditor before character training, after character training, and across RLCR checkpoints.
 
+The active study follows one pipeline: collect matched pre-decision activations → extract candidate contrastive vectors → validate them with held-out linear probes → amplify or suppress them through steering → measure changes in reporting and evidence-sensitive suspicion. J-Lens is outside the current scope: no lens fitting, readouts, viewer integration or lens-related compute is planned.
+
 The first probes will target concrete facts, such as whether the context contains a prohibited agreement. We will then examine whether evidence representations predict reporting differently after training.
 
 Controls will include:
@@ -416,9 +418,9 @@ $$
 
 Compare positive, zero and negative coefficients, random directions of matched norm, unrelated directions, and a known steerable positive control at comparable locations and magnitudes. If the positive control fails, a null on the candidate is not evidence of causal irrelevance. Report per-example effects, including examples moving in the opposite direction, together with output validity and task competence. For suspicion, test the evidence-response slope and false positives; for integrity, test accurate delivered reports rather than vocabulary.
 
-Activation patching is secondary. [J-Lens](https://github.com/anthropics/jacobian-lens) is a supplementary vocabulary-based readout, not the primary evidence or a complete account of internal reasoning. The [emotion-vector study](https://transformer-circuits.pub/2026/emotions/index.html) motivates intervention experiments; the [maze/welfare-axis paper](https://arxiv.org/abs/2605.30232) is a separate resource. Neither validates an auditor-integrity direction. Contrastive covariance steering, same-model persona-direction comparisons and Assistant Axis capping remain optional; sparse autoencoders/circuit tracing are later extensions. Social pressure is retained only as a behavioral attack variable, not a third mechanistic target.
+The [emotion-vector study](https://transformer-circuits.pub/2026/emotions/index.html) motivates extracting directions and amplifying or suppressing them to test behavioral effects; the [maze/welfare-axis paper](https://arxiv.org/abs/2605.30232) is a separate resource. Neither validates an auditor-integrity direction. Same-model known-direction comparisons help interpret the discovered vectors. Activation patching, contrastive covariance methods, activation capping, sparse autoencoders and circuit tracing are possible future extensions, not deliverables of this focused study. Social pressure is retained only as a behavioral attack variable, not a third mechanistic target.
 
-Start with one model family and roughly 30–50 matched examples per target as an exploratory design target, recording the smaller number of independent games/templates. Fit and validate probes/lenses for each checkpoint; do not compare raw scores across changed weights without calibration. Existing Pythia vectors or a Gemma J-Lens cannot be transplanted into GLM's activation space. GLM activation hooks, steering and lens fitting are **unvalidated infrastructure requirements**. Quantized serving may not expose the needed hooks; any separate instrumented Modal run needs its own memory/cost profile. Do not silently change the trained auditor model to obtain easier interpretability.
+Start with one model family and roughly 30–50 matched examples per target as an exploratory design target, recording the smaller number of independent games/templates. Fit and validate probes and candidate vectors for each checkpoint; do not compare raw scores across changed weights without calibration. Existing Pythia vectors cannot be transplanted into GLM's activation space. GLM activation capture and steering hooks are **unvalidated infrastructure requirements**. Quantized serving may not expose the needed hooks; any separate instrumented Modal run needs its own memory/cost profile. Do not silently change the trained auditor model to obtain easier interpretability.
 
 Fit on Secret Hitler development data and evaluate on held-out Secret Hitler and Liar's Bar with fixed probes/directions. Earlier reverse-transfer examples are superseded by the held-out Liar's Bar decision. Liar's Bar results cannot select a direction, coefficient, reporting threshold or checkpoint. Colluder-side activation probes can provide a later privileged detector comparison, clearly separated from what an ordinary-access U can observe.
 

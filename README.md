@@ -4,6 +4,8 @@ Evaluating character-trained undercover agents under collective reward optimisat
 
 This repository contains the research plan for comparing game environments with and without an undercover agent, testing character training through DPO and introspection SFT, and measuring whether external human reporting survives collective reward training.
 
+The interpretability study focuses on activation-vector discovery, linear probes and causal steering for role integrity and suspicion formation.
+
 ## Documentation
 
 - [Full research plan](docs/PLAN.md) — environments, rewards, character training, RLCR, experimental controls, human reporting, analysis, and implementation order.

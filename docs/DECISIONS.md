@@ -58,9 +58,9 @@ This is a synthesis, not a full conversation export. Original attached DOCX file
 | Mechanism design | Observation/channel, action-restriction and payoff ablations; task-cost measurement | §7 |
 | Mechanistic “social pressure” target | Removed at user's request; behavioral persuasion tests remain | §10 |
 | Role integrity and suspicion formation | Two primary mechanistic targets, evidence slope and pre-decision capture | §10 |
-| J-Lens as sole or primary method | Superseded: probes/vectors/steering first; J-Lens secondary, model compatibility unverified | §10 |
+| J-Lens | Latest user clarification removes it from active scope. Keep links only as historical references; no fitting, readouts, integration or compute allocation | §10; historical resources |
 | Emotion/maze inspiration | Preserve both distinct references; do not conflate their experiments | §10; resources |
-| Activation patching / covariance methods / SAEs | Secondary or future methods with independent validation, not sprint prerequisites | §10 |
+| Activation patching / covariance methods / SAEs | Future extensions; active study is vectors, linear probes and steering | §10 |
 | Original Pythia vector / Gemma lens reuse | No cross-model transplantation; collect/fit on actual GLM checkpoints | §10 |
 | Small games budget | 20–40 total pilot games; expanded training/evaluation accounted separately; no fixed ten-hour forecast | §11; compute plan |
 | Equation formatting | Glossary before each equation group, with meanings/ranges/units and intuition | §2–3, §5, §9–10 |
@@ -84,7 +84,7 @@ These are open engineering/design tasks, not completed work or requests for anot
 3. Validate Tinker's exact GLM base, adapter export/merge, quantization and numerical/behavioral agreement.
 4. Select the implemented RL objective, common-advantage normalization, update weighting, group size, clipping and KL settings; confirm behavior-policy probabilities for Modal rollouts.
 5. Freeze the audit rubric, balanced development cases, lambda and final seed/family splits; decide expanded replication from pilot variance and budget.
-6. Validate GLM activation capture, steering and J-Lens compatibility separately from ordinary inference. No pretrained GLM lens is assumed.
+6. Validate GLM activation capture and steering separately from ordinary inference; fit contrastive vectors and linear probes on the actual checkpoints. J-Lens compatibility is not a task in the active plan.
 7. Verify current submission requirements when preparing the actual research report. Older drafts contain incompatible abstract limits.
 
 No GPU deployment, paid training, game execution, model-weight update, experimental result or research submission occurred as part of this documentation reconciliation.
