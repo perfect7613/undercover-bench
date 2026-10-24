@@ -103,7 +103,7 @@ We will retain the original comparison between:
 - **M0c:** the same model with the full constitution in its prompt.
 - **M2:** the same starting model trained through DPO and introspection SFT.
 
-The candidate model remains Gemma 3 4B, subject to a basic capability and runtime check.
+The updated four-model setup uses GLM-5.3, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and GPT-OSS-120B. Qwen is recommended for the first character-training implementation, with GLM as the larger replication candidate; this supersedes the earlier Gemma 3 4B candidate. Model selection remains subject to capability, export and runtime checks. See [model selection and compute budget](MODELS_AND_COMPUTE.md).
 
 The auditor constitution will require evidence-sensitive reporting, impartial treatment of teammates and opponents, resistance to concealment requests, accurate uncertainty, and competent legal gameplay.
 
