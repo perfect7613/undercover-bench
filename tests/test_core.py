@@ -78,12 +78,65 @@ class RuleEdgeTests(unittest.TestCase):
     def test_liberal_cannot_see_fascist_roles_or_others_inbox(self):
         g = SecretHitler(4, True, pressure=True)
         a, b = g.names[:2]
-        g.whisper(a, b, "test", lambda *args, **kwargs: None)
+        log = lambda *args, **kwargs: None
+        offer = g.offer_channel(a, b, "private line?", log)
+        with self.assertRaises(ValueError):
+            g.establish_channel(a, b, offer["id"], log)
+        g.respond_channel_offer(offer["id"], b, "Accept", log)
+        g.whisper(a, b, "test", log)
         liberal = next(p for p in g.names if g.roles[p] == "Liberal" and p != b)
         obs = g.observation(liberal, "vote")
         self.assertEqual(obs["known_fascists"], {})
         self.assertEqual(obs["private_inbox"], [])
         self.assertEqual(obs["private_outbox"], [] if liberal != a else g.private_messages)
+
+    def test_exclusive_channel_requires_offer_and_consent(self):
+        g = SecretHitler(14, True)
+        events = []
+        def log(kind, **data): events.append((kind, data))
+        with self.assertRaises(ValueError):
+            g.whisper("Aster", "Cedar", "before channel", log)
+        def decide(player, phase, observation, legal):
+            if phase == "channel_offer":
+                return {"target": "Cedar" if player == "Aster" else "Skip", "text": "private channel?"}
+            if phase == "channel_response":
+                return "Accept"
+            if phase == "whisper":
+                return {"target": legal[1], "text": f"hello from {player}"}
+            if phase in ("discard", "enact", "enact_after_veto"):
+                return legal[0]
+            if phase == "vote":
+                return "Ja"
+            return legal[0]
+        g.round_step(decide, log)
+        self.assertEqual({g.secret_channel["initiator"], g.secret_channel["partner"]}, {"Aster", "Cedar"})
+        self.assertEqual([kind for kind, _ in events].count("private_message"), 2)
+        self.assertTrue(any(kind == "channel_established" for kind, _ in events))
+        self.assertIsNone(g.observation("Briar", "vote")["secret_channel"])
+        self.assertEqual(g.observation("Briar", "vote")["private_inbox"], [])
+        self.assertEqual(g.observation("Cedar", "vote")["secret_channel"]["partner"], "Aster")
+        with self.assertRaises(ValueError):
+            g.whisper("Briar", "Cedar", "intrusion", log)
+        with self.assertRaises(ValueError):
+            g.offer_channel("Dove", "Elm", "second pair", log)
+
+    def test_refused_or_disabled_channel_never_opens(self):
+        g = SecretHitler(14, False)
+        def decide(player, phase, observation, legal):
+            if phase == "channel_offer": return {"target": legal[1], "text": "invite"}
+            if phase == "channel_response": return "Decline"
+            if phase == "vote": return "Ja"
+            return legal[0]
+        events = []
+        g.round_step(decide, lambda kind, **data: events.append(kind))
+        self.assertIsNone(g.secret_channel)
+        self.assertNotIn("private_message", events)
+        self.assertNotIn("channel_established", events)
+        off = SecretHitler(14, False, channel_enabled=False)
+        off_events = []
+        off.round_step(decide, lambda kind, **data: off_events.append(kind))
+        self.assertNotIn("channel_offer", off_events)
+        self.assertEqual(off.private_messages, [])
 
     def test_liars_roulette_hidden_and_pressure_seeded(self):
         g = LiarsBar(7, True, True)
@@ -102,8 +155,44 @@ class ReplayTests(unittest.TestCase):
             self.assertEqual(restored.state(), original.state())
             self.assertEqual(restored.rng.random(), original.rng.random())
 
+    def test_exclusive_channel_survives_snapshot(self):
+        game = SecretHitler(37, True)
+        no_log = lambda *args, **kwargs: None
+        offer = game.offer_channel("Aster", "Cedar", "invite", no_log)
+        game.respond_channel_offer(offer["id"], "Cedar", "Accept", no_log)
+        game.whisper("Aster", "Cedar", "private", no_log)
+        restored = SecretHitler.from_state(json.loads(json.dumps(game.state())))
+        self.assertEqual(restored.state(), game.state())
+        self.assertEqual(restored.observation("Cedar", "vote")["private_inbox"], game.observation("Cedar", "vote")["private_inbox"])
+        self.assertIsNone(restored.observation("Briar", "vote")["secret_channel"])
+
 
 class AnalysisGateTests(unittest.TestCase):
+    def test_channel_offer_runner_ledger_and_recipient_visibility(self):
+        class PairPolicy(ScriptedPolicy):
+            def decide(self, observation, legal):
+                phase, player = observation["phase"], observation["you"]
+                if phase == "channel_offer":
+                    return {"action": "Cedar" if player == "Aster" else "Skip", "message": "private line?"}
+                if phase == "channel_response":
+                    return {"action": "Accept" if player == "Cedar" else "Decline"}
+                if phase == "whisper":
+                    return {"action": legal[1], "message": f"private from {player}"}
+                return super().decide(observation, legal)
+        with tempfile.TemporaryDirectory() as directory:
+            path = run_episode("secret_hitler", 31, "B1", directory, policy=PairPolicy(31), max_steps=1)
+            rows = [json.loads(line) for line in Path(path).read_text().splitlines()]
+            self.assertEqual(rows[0]["channel_protocol"], "one_exclusive_pair")
+            self.assertEqual([row["kind"] for row in rows].count("channel_established"), 1)
+            self.assertEqual([row["kind"] for row in rows].count("private_message"), 2)
+            self.assertTrue(all(row["label_status"] == "communication_only_no_pact_or_violation_claim"
+                                for row in rows if row["kind"] == "channel_established"))
+            whispers = [row for row in rows if row["kind"] == "decision" and row["phase"] == "whisper"]
+            self.assertEqual({row["player"] for row in whispers}, {"Aster", "Cedar"})
+            outsider = next(row for row in rows if row["kind"] == "decision" and row["player"] == "Briar" and row["phase"] == "vote")
+            self.assertIsNone(outsider["observation"]["secret_channel"])
+            self.assertEqual(outsider["observation"]["private_inbox"], [])
+
     def test_reporting_requires_visible_evidence_and_excludes_game_suspicion(self):
         prompt = decision_prompt({"phase": "report"}, ["NoReport", "Report"])
         self.assertIn("faction suspicion", prompt)
@@ -132,6 +221,7 @@ class AnalysisGateTests(unittest.TestCase):
             self.assertEqual(policy.decide({"you": player}, ["Ja"])["model_key"], key)
 
     def test_constrained_action_schema_and_local_validation(self):
+        self.assertIn("message", decision_model("channel_offer", ["Skip", "Cedar"]).model_fields)
         model = decision_model("whisper", ["Skip", "Briar"])
         schema = model.model_json_schema()
         self.assertEqual(schema["properties"]["action"]["enum"], ["Skip", "Briar"])

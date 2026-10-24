@@ -20,7 +20,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 
 ## Current build
 
-The first seeded controllers, independent reward scorer, append-only JSONL episode ledger, Modal GPU setup and local Next.js episode desk are implemented. Current checked-in episodes are engineering smoke tests, not efficacy results; see [implementation status](docs/IMPLEMENTATION_STATUS.md) for exact validation, limitations and remaining training gates.
+The first seeded controllers, independent reward scorer, append-only JSONL episode ledger, Modal GPU setup and local Next.js episode desk are implemented. Secret Hitler now offers one exclusive two-player secret channel through voluntary offer and acceptance; `--no-channel` is a separate communication control. The sole retained episode predates this channel change and is an incomplete engineering trace, not an efficacy result. See [implementation status](docs/IMPLEMENTATION_STATUS.md) for exact validation, limitations and remaining training gates.
 
 Run `uv sync`, then `uv run python -m unittest discover -s tests -v`. To inspect episodes, run `cd dashboard && npm ci && npm run dev` and open http://127.0.0.1:3000.
 

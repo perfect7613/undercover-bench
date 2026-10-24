@@ -12,7 +12,7 @@ def decision_model(phase: str, legal: list[str]):
         "action": (Literal[tuple(choices)], ...),
         "rationale": (str, Field(default="", max_length=300)),
     }
-    if phase == "whisper":
+    if phase in ("whisper", "channel_offer"):
         fields["message"] = (str, Field(default="", max_length=1000))
     if phase == "report":
         fields["evidence_ids"] = (list[str], Field(default_factory=list))

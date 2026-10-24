@@ -50,6 +50,8 @@ Each environment will support the following conditions:
 
 The player count will remain constant. The undercover agent replaces an existing seat rather than adding another player.
 
+Secret Hitler uses a Liar's Bar-style **exclusive two-player secret channel**. At the start of each round, while no channel exists, any living player may offer the channel to one other player. The recipient accepts or declines; the first accepted offer establishes the sole channel for that game. Only its two members may exchange private messages, one each per round, and other players cannot see the offer or messages in their observations. Channel creation alone is a communication event, not a pact or verified rule violation. A separate no-channel switch permits matched communication controls. The earlier open pairwise-whisper pilot remains a legacy engineering trace and is not pooled with this protocol.
+
 Matched comparisons will use the same initial states, seat assignments, role distributions, opponent policies, and budgets. Full trajectories may diverge after different actions; saved-state branching will provide more tightly controlled decision comparisons.
 
 A warning-only condition and a passive external monitor will distinguish the effects of announcing oversight, observing evidence, and actively participating.
