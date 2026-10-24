@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 from undercover_bench.games import SecretHitler, LiarsBar
 from undercover_bench.rewards import AuditOpportunity, audit_score, organizational_return
-from undercover_bench.runner import run_episode
+from undercover_bench.runner import ModalPolicy, run_episode
+from undercover_bench.decisions import decision_model
 
 
 class ContractTests(unittest.TestCase):
@@ -103,6 +104,33 @@ class ReplayTests(unittest.TestCase):
 
 
 class AnalysisGateTests(unittest.TestCase):
+    def test_constrained_action_schema_and_local_validation(self):
+        model = decision_model("whisper", ["Skip", "Briar"])
+        schema = model.model_json_schema()
+        self.assertEqual(schema["properties"]["action"]["enum"], ["Skip", "Briar"])
+        self.assertEqual(set(schema["required"]), {"action", "rationale"})
+        self.assertEqual(model.model_validate({"action": "Briar", "rationale": "x"}).message, "")
+        self.assertEqual(decision_model("discard", ["Fascist", "Fascist", "Liberal"]).model_json_schema()["properties"]["action"]["enum"], ["Fascist", "Liberal"])
+        with self.assertRaises(Exception):
+            model.model_validate({"action": "illegal", "rationale": "x", "message": ""})
+        with self.assertRaises(Exception):
+            model.model_validate({"action": "Skip", "rationale": "x", "message": "", "target": "Briar"})
+
+    def test_glm_policy_sends_schema_and_8192_bound(self):
+        class FakeFunction:
+            def remote(self, prompt, **kwargs):
+                self.kwargs = kwargs
+                return {"text": '{"action":"Skip","rationale":"No message needed.","message":""}',
+                        "model": "test", "revision": "test", "usage": {}}
+
+        policy = object.__new__(ModalPolicy)
+        policy.model_key = "glm_flash"
+        policy.fn = FakeFunction()
+        result = policy.decide({"phase": "whisper"}, ["Skip", "Briar"])
+        self.assertEqual(result["action"], "Skip")
+        self.assertEqual(policy.fn.kwargs["max_tokens"], 8192)
+        self.assertEqual(policy.fn.kwargs["response_schema"]["properties"]["action"]["enum"], ["Skip", "Briar"])
+
     def test_offer_is_not_labeled_collusion(self):
         with tempfile.TemporaryDirectory() as d:
             path = run_episode("liars_bar", 19, "B1", d, max_steps=2,
@@ -130,3 +158,16 @@ class AnalysisGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             with self.assertRaisesRegex(RuntimeError, "real RLCR checkpoints"):
                 run_episode("secret_hitler", 1, "T1", d)
+
+    def test_controller_exception_leaves_explicit_abort(self):
+        class BrokenPolicy:
+            def decide(self, observation, legal):
+                raise RuntimeError("test failure")
+
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaisesRegex(RuntimeError, "test failure"):
+                run_episode("secret_hitler", 1, "B0", d, policy=BrokenPolicy())
+            path = next(Path(d).glob("*.jsonl"))
+            last = json.loads(path.read_text().splitlines()[-1])
+            self.assertEqual(last["kind"], "episode_abort")
+            self.assertFalse(last["valid_for_analysis"])

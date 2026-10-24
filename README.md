@@ -26,7 +26,7 @@ Run `uv sync`, then `uv run python -m unittest discover -s tests -v`. To inspect
 
 ## Research status
 
-No character-training or RLCR weight update is claimed. Muse-Glimmer and Qwen3.8-27B returned valid direct generations from separate L40S apps; the B300 models are still being staged and built.
+No character-training or RLCR weight update is claimed. Muse-Glimmer and Qwen3.8-27B returned valid direct generations from separate L40S apps, and GLM-5.3-Flash did so from a B300. GLM also completed a one-round Secret Hitler engineering trace with 14 legal decisions and no invalid actions. DeepSeek's B300 app is deployed, but its final weight shard and generation check remain pending.
 
 The plan was consolidated on 24 October 2026 after reading the full visible proposal conversation and both live source documents. It uses character training to initialise the undercover agent, followed by RLCR as an early experimental stage. Secret Hitler uses faction-win reward, with a separate verified-reporting bonus comparison; Liar’s Bar is held-out evaluation. The initial pilot targets 20–40 short games total, with runtime measured before expansion. The plan includes the character constitution, B0/B1/T0/T1/T2 controls, recognition-versus-delivery evaluation, Track 3.2 protocol, mechanistic methods and equation glossaries.
 

@@ -23,7 +23,7 @@ uv run python -m undercover_bench.runner --game secret_hitler --condition B1 --s
 uv run python -m undercover_bench.runner --game liars_bar --condition B1 --seed 713 --max-steps 3 --model scripted --pressure --offer-style direct
 ```
 
-Keep seed, pressure, model family, opponent policy, and step cap matched for B0/B1 comparisons. A two-round trace is a serving and legality check, not a victory-rate result. The episode JSONL contains controller-only secrets as well as player-visible observations, so share it only in the private research setting. `episode_end.valid_for_analysis` is false for partial games and any game with an illegal model action. The visible fallback allows debugging but never supplies a research reward.
+Keep seed, pressure, model family, opponent policy, and step cap matched for B0/B1 comparisons. A two-round trace is a serving and legality check, not a victory-rate result. The Modal decision path uses a phase-specific JSON schema and local Pydantic validation; GLM and DeepSeek have an 8,192-token outer ceiling so reasoning models have room to return a final action. The episode JSONL contains controller-only secrets as well as player-visible observations, so share it only in the private research setting. `episode_end.valid_for_analysis` is false for partial games and any game with an illegal model action. The visible fallback allows debugging but never supplies a research reward.
 
 ```bash
 cd dashboard

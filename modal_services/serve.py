@@ -55,17 +55,29 @@ def stage():
 
 
 _server = None
+_server_log = None
+
+
+def _server_log_tail():
+    path = Path('/tmp/undercover-llama-server.log')
+    if not path.exists():
+        return 'no server log'
+    with path.open('rb') as stream:
+        stream.seek(max(0, path.stat().st_size - 6000))
+        return stream.read().decode(errors='replace')
 
 
 @app.function(image=image, gpu=MODEL["modal"]["gpu"], volumes={"/weights": volume},
               timeout=1800, min_containers=0, max_containers=1, scaledown_window=300,
               memory=245760 if KEY == "deepseek_flash" else 32768)
-def generate(prompt: str, max_tokens: int = 120):
-    global _server
+def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = None):
+    global _server, _server_log
     first = Path("/weights") / MODEL["selected_files"][0]["path"]
     if not first.is_file():
         raise RuntimeError(f"Weights not staged for {KEY}; run stage first")
-    if _server is None or _server.poll() is not None:
+    if _server is not None and _server.poll() is not None:
+        raise RuntimeError(f"llama-server exited with code {_server.returncode}; refusing restart loop: {_server_log_tail()}")
+    if _server is None:
         command = ["/opt/llama.cpp/build/bin/llama-server", "-m", str(first),
                    "--host", "127.0.0.1", "--port", "8080", "-c", "8192",
                    "-ngl", "99", "--jinja", "--parallel", "1", "--no-webui",
@@ -74,26 +86,34 @@ def generate(prompt: str, max_tokens: int = 120):
             command += ["--chat-template-kwargs", '{"enable_thinking":false}']
         if KEY == "muse_glimmer":
             command += ["--chat-template-kwargs", '{"reasoning_strength":"low"}']
+        if KEY == "glm_flash":
+            command += ["--reasoning-effort", "low", "--reasoning-budget", "128"]
         if KEY == "deepseek_flash":
             command += ["--override-tensor", "per_layer_token_embd.weight=CPU"]
-        _server = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        # A pipe fills while a large GGUF loads and can block the server before /health.
+        if _server_log is not None:
+            _server_log.close()
+        _server_log = open('/tmp/undercover-llama-server.log', 'ab', buffering=0)
+        _server = subprocess.Popen(command, stdout=_server_log, stderr=subprocess.STDOUT)
         ready = False
-        for _ in range(180):
+        for _ in range(540):
             if _server.poll() is not None:
-                error = _server.stderr.read().decode(errors="replace")[-2000:]
-                raise RuntimeError(f"llama-server failed: {error}")
+                raise RuntimeError(f"llama-server exited with code {_server.returncode}: {_server_log_tail()}")
             try:
-                with urlopen("http://127.0.0.1:8080/health", timeout=1) as response:
+                with urlopen("http://127.0.0.1:8080/health", timeout=2) as response:
                     if response.status == 200:
                         ready = True
                         break
             except Exception:
-                time.sleep(1)
+                time.sleep(2)
         if not ready:
             _server.kill()
-            raise TimeoutError("llama-server did not become healthy")
+            _server.wait(timeout=30)
+            raise TimeoutError(f"llama-server did not become healthy: {_server_log_tail()}")
     payload = {"model": KEY, "messages": [{"role": "user", "content": prompt}],
                "max_tokens": max_tokens, "temperature": 0.2, "cache_prompt": False}
+    if response_schema is not None:
+        payload["response_format"] = {"type": "json_schema", "schema": response_schema}
     request = Request("http://127.0.0.1:8080/v1/chat/completions",
                       data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
     with urlopen(request, timeout=600) as response:

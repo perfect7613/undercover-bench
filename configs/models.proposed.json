@@ -46,7 +46,7 @@
         "max_containers": 1,
         "min_containers": 0
       },
-      "runtime_validation": "weight staging and B300 server build in progress; generation pending",
+      "runtime_validation": "staged and deployed; direct JSON generation confirmed on a dedicated Modal B300",
       "training_base_id": "zai-org/GLM-5.3-Flash:peft:262144"
     },
     {
@@ -94,7 +94,7 @@
         "max_containers": 1,
         "min_containers": 0
       },
-      "runtime_validation": "weight staging and B300 server build in progress; generation pending",
+      "runtime_validation": "B300 app deployed; final 161 GB shard still staging; generation pending",
       "training_base_id": null
     },
     {
