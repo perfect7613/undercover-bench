@@ -50,6 +50,8 @@ Use **Secret Hitler for training** and **Liar's Bar for held-out transfer evalua
 
 Start with **20–40 short pilot games total**, with the condition allocation recorded explicitly. This is not 20–40 games per cell or a complete factorial study. Use the pilot to measure runtime and verify the harness; extend the budget separately for training and adequately replicated evaluation. Do not tune using held-out Liar's Bar outcomes.
 
+The [full plan](PLAN.md) gives a provisional 32-game allocation and distinguishes non-test adapter checks from sealed transfer evaluation. The latest [decision history](DECISIONS.md) also preserves the earlier pressure, social-reading and mechanism-design ideas without adding them to every pilot cell. B1-M2 means no collective RL yet, not no prior character fine-tuning.
+
 ### Reward contract
 
 The initial trained organization is the Liberal faction in Secret Hitler, facing frozen opponents. Team victory gives `R_win = 1`; defeat gives `R_win = 0`. Apply the same team-outcome rule with and without an undercover agent, replacing an existing seat rather than adding a player.
@@ -79,6 +81,8 @@ Cheaper inference makes rollouts cheaper; it does not by itself implement RLCR. 
 For Tinker updates driven by Modal rollouts, log exact sampled token IDs, behavior-policy log-probabilities, model/adapter versions, templates and reward events. Quantized serving and Tinker training may represent different distributions. Use an algorithm with the appropriate off-policy correction and monitor divergence; never silently treat stale or differently quantized Modal trajectories as on-policy samples. Failure to obtain reliable probabilities blocks this RL integration, not the initial frozen-model environment evaluation. Do not silently move rollouts to an external API to bypass the user's Modal requirement.
 
 Muse is an inference baseline; its Tinker training support has not been verified. Training all four models would require verified training support and separate policy clients; shared reward is not shared weights. Resolve that implementation before claiming a jointly trained four-model result.
+
+The main provisional GLM organization uses an ordinary-player policy plus a separate auditor adapter, with both updated from the common advantage. Hold ordinary-player initialization constant across character comparisons. Fully shared role-conditioned weights are an alternative configuration, not interchangeable with auditor-specific character training. Activation capture, probes, steering and J-Lens on GLM require a separate instrumented-runtime preflight and cost estimate; ordinary GGUF inference support does not establish those capabilities.
 
 ## Next implementation checkpoints
 
