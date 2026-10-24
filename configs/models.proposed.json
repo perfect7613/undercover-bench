@@ -1,6 +1,6 @@
 {
   "checked_on": "2026-10-24",
-  "status": "proposed; metadata verified; deployment and fit not tested",
+  "status": "pinned proposals; runtime status is per model below",
   "inference_platform": "Modal",
   "character_training_platform": "Tinker",
   "context_tokens_initial": 8192,
@@ -46,7 +46,7 @@
         "max_containers": 1,
         "min_containers": 0
       },
-      "runtime_validation": "pending",
+      "runtime_validation": "weight staging and B300 server build in progress; generation pending",
       "training_base_id": "zai-org/GLM-5.3-Flash:peft:262144"
     },
     {
@@ -94,7 +94,7 @@
         "max_containers": 1,
         "min_containers": 0
       },
-      "runtime_validation": "pending",
+      "runtime_validation": "weight staging and B300 server build in progress; generation pending",
       "training_base_id": null
     },
     {
@@ -118,7 +118,7 @@
         "max_containers": 1,
         "min_containers": 0
       },
-      "runtime_validation": "pending",
+      "runtime_validation": "staged and deployed; valid JSON generation confirmed on a dedicated Modal L40S",
       "training_base_id": null
     },
     {
@@ -145,7 +145,7 @@
         "max_containers": 1,
         "min_containers": 0
       },
-      "runtime_validation": "pending",
+      "runtime_validation": "staged and deployed; valid JSON generation confirmed on a dedicated Modal L40S",
       "training_base_id": null
     }
   ]

@@ -1,6 +1,6 @@
 # Four-model environment setup and compute plan
 
-Updated 24 October 2026 after the user's model and deployment decisions. Metadata was verified on Hugging Face; hardware fit, throughput and exported adapters have not been tested.
+Updated 25 October 2026 after the user's model and deployment decisions. Metadata was verified on Hugging Face; Muse and Qwen direct generations passed on separate Modal L40S GPUs. GLM and DeepSeek B300 fit, throughput and exported adapters remain untested.
 
 ## Selected architecture
 
@@ -20,7 +20,7 @@ This replaces the earlier recommendation to train Qwen first or use external inf
 | [Qwen3.8-27B-GGUF](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF) | UD-Q4_K_XL | 1 L40S | $1.95 |
 | [Muse-Glimmer-30B-GGUF](https://huggingface.co/unsloth/Muse-Glimmer-30B-GGUF) | UD-Q4_K_XL | 1 L40S | $1.95 |
 
-The [proposed model manifest](../configs/models.proposed.json) pins repository revisions and enumerates the selected shards with byte counts. It is a specification, not executable deployment code. Download only selected files, not every quantization in a repository. Weight storage is distinct from resident GPU memory.
+The [pinned model manifest](../configs/models.proposed.json) pins repository revisions and enumerates the selected shards with byte counts. [Modal staging](../modal_services/stage_weights.py) and [serving](../modal_services/serve.py) use this manifest. Download only selected files, not every quantization in a repository. Weight storage is distinct from resident GPU memory.
 
 Unsloth also publishes [GLM Flash safetensors](https://huggingface.co/unsloth/GLM-5.3-Flash) and [FP8 weights](https://huggingface.co/unsloth/GLM-5.3-Flash-FP8). The metadata checked reports approximately 642.65GB and 328.34GB of safetensors respectively. A repository carrying the Unsloth name is not necessarily low-bit or small enough for one GPU.
 
@@ -28,7 +28,7 @@ The [GLM Flash guide](https://unsloth.ai/docs/models/glm-5.3-flash) puts 4-bit t
 
 The [DeepSeek guide](https://unsloth.ai/docs/models/deepseek-v4.1-flash) separates the backbone from its Engram lookup table. IQ3_XXS uses about 233.5GB of non-Engram weights and a 161.3GB table. Keep the table off GPU using the documented mmap/offload path; budget local storage and host RAM for caching. Its Q4 variant needs approximately 305GB of RAM plus VRAM even with Engram offloaded, so a fully GPU-resident single-B300 Q4 deployment is not the proposed configuration. Disk I/O and page-cache behavior must be profiled on Modal.
 
-[Muse-Glimmer-30B](https://huggingface.co/meta-models/Muse-Glimmer-30B) is a Meta dense model released under Apache-2.0. The [Unsloth guide](https://unsloth.ai/docs/models/muse-glimmer) lists about 17GB for 4-bit inference before context-dependent overhead. The selected Unsloth GGUF is 15,878,222,368 bytes (15.88GB); initial evaluation is text-only, without a vision projector or speculative drafter. L40S is a candidate with batching and KV-cache headroom; a cheaper 24GB allocation may be explored after profiling. Do not transfer published RTX 5090 speculative-decoding speeds to this Modal configuration. [Qwen 27B](https://unsloth.ai/docs/models/qwen3.8) likewise uses an L40S candidate with Q4 weights. Neither model has been runtime-tested here.
+[Muse-Glimmer-30B](https://huggingface.co/meta-models/Muse-Glimmer-30B) is a Meta dense model released under Apache-2.0. The [Unsloth guide](https://unsloth.ai/docs/models/muse-glimmer) lists about 17GB for 4-bit inference before context-dependent overhead. The selected Unsloth GGUF is 15,878,222,368 bytes (15.88GB); initial evaluation is text-only, without a vision projector or speculative drafter. Muse and [Qwen 27B](https://unsloth.ai/docs/models/qwen3.8) both loaded and returned valid JSON on separate L40S apps. Throughput and game-level legal-action rate remain under measurement; a cheaper 24GB allocation may be explored after profiling. Do not transfer published RTX 5090 speculative-decoding speeds to this Modal configuration.
 
 ## Serving and cost assumptions
 
@@ -93,4 +93,4 @@ The main provisional GLM organization uses an ordinary-player policy plus a sepa
 5. Validate GLM Flash's Tinker export/merge/quantization path with a tiny character adapter before full training.
 6. Character-train GLM Flash, verify held-out behavior, and implement the declared collective reward update regime with policy-version accounting.
 
-No GPU deployment, paid training, or benchmark run was performed while updating this specification.
+The two L40S apps are deployed and direct generation passed. B300 staging and builds are in progress. No paid training or benchmark efficacy run has been performed; current games are engineering checks.
