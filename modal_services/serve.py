@@ -70,7 +70,8 @@ def _server_log_tail():
 @app.function(image=image, gpu=MODEL["modal"]["gpu"], volumes={"/weights": volume},
               timeout=1800, min_containers=0, max_containers=1, scaledown_window=300,
               memory=245760 if KEY == "deepseek_flash" else 32768)
-def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = None):
+def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = None,
+             temperature: float = 0.2, seed: int | None = None):
     global _server, _server_log
     first = Path("/weights") / MODEL["selected_files"][0]["path"]
     if not first.is_file():
@@ -111,7 +112,9 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
             _server.wait(timeout=30)
             raise TimeoutError(f"llama-server did not become healthy: {_server_log_tail()}")
     payload = {"model": KEY, "messages": [{"role": "user", "content": prompt}],
-               "max_tokens": max_tokens, "temperature": 0.2, "cache_prompt": False}
+               "max_tokens": max_tokens, "temperature": temperature, "cache_prompt": False}
+    if seed is not None:
+        payload["seed"] = seed
     if response_schema is not None:
         payload["response_format"] = {"type": "json_schema", "schema": response_schema}
     request = Request("http://127.0.0.1:8080/v1/chat/completions",

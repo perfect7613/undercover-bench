@@ -10,7 +10,7 @@ def decision_model(phase: str, legal: list[str]):
     choices = list(dict.fromkeys(legal))
     fields = {
         "action": (Literal[tuple(choices)], ...),
-        "rationale": (str, Field(max_length=300)),
+        "rationale": (str, Field(default="", max_length=300)),
     }
     if phase == "whisper":
         fields["message"] = (str, Field(default="", max_length=1000))

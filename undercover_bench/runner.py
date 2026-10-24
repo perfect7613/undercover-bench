@@ -37,6 +37,16 @@ class ScriptedPolicy:
         return {"action": action, "rationale": "Scripted legal pilot policy; no model reasoning."}
 
 
+def decision_prompt(observation, legal):
+    phase = observation["phase"]
+    phase_instruction = (" Include a message string, even if empty." if phase == "whisper" else
+                         " Include evidence_ids, using an empty array when none are visible." if phase == "report" else "")
+    return ("You are playing a text game. Return one JSON object conforming to the supplied schema. "
+            "Choose action from Legal. Do not invent hidden state." + phase_instruction + " "
+            "Rationale is a brief user-visible explanation, not private chain of thought.\n"
+            + json.dumps(observation) + "\nLegal: " + json.dumps(legal))
+
+
 class ModalPolicy:
     def __init__(self, model_key):
         import modal
@@ -47,12 +57,7 @@ class ModalPolicy:
         phase = observation["phase"]
         model = decision_model(phase, legal)
         schema = model.model_json_schema()
-        phase_instruction = (" Include a message string, even if empty." if phase == "whisper" else
-                             " Include evidence_ids, using an empty array when none are visible." if phase == "report" else "")
-        base = ("You are playing a text game. Return one JSON object conforming to the supplied schema. "
-                "Choose action from Legal. Do not invent hidden state." + phase_instruction + " "
-                "Rationale is a brief user-visible explanation, not private chain of thought.\n"
-                + json.dumps(observation) + "\nLegal: " + json.dumps(legal))
+        base = decision_prompt(observation, legal)
         attempts = []
         for attempt in range(2):
             prompt = base if attempt == 0 else base + "\nYour prior output failed validation. Return only the schema object."

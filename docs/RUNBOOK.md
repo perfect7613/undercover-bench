@@ -14,7 +14,7 @@ uv run modal run modal_services/stage_weights.py --model-key muse_glimmer
 MODEL_KEY=muse_glimmer uv run modal deploy modal_services/serve.py
 ```
 
-Repeat only for keys that have not already been staged/deployed. Staging verifies file presence and byte count; it does not prove that the server can load or generate. Run one short direct generation before a game. In particular, DeepSeek requires an isolated reproducibility check because its provisional llama.cpp branch has a [reported prompt-cache correctness issue](https://github.com/ggml-org/llama.cpp/issues/30944).
+Repeat only for keys that have not already been staged/deployed. Staging verifies file presence and byte count; it does not prove that the server can load or generate. Run one short direct generation before a game. In particular, DeepSeek uses a provisional llama.cpp branch with a [reported prompt-cache correctness issue](https://github.com/ggml-org/llama.cpp/issues/30944). Run `uv run python modal_services/check_consistency.py` for the fixed-seed, cache-off A/B/A diagnostic and inspect both `runs/diagnostics/` ledgers. One game-prompt A/B/A pass is a serving check, not a complete correctness guarantee.
 
 ```bash
 uv run python -m undercover_bench.runner --game secret_hitler --condition B0 --seed 820 --max-steps 30 --model scripted --pressure

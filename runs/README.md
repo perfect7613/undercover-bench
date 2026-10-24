@@ -6,3 +6,4 @@ These checked-in episodes include scripted legal-policy runs and short Muse/Qwen
 
 Earlier smoke ledgers produced before rule fixes live under `superseded/` locally and are excluded from the dashboard. The private GitHub repository stores the current smoke ledgers for review. Avoid publishing controller-only JSONL files without a separate information review.
 An interrupted local client may leave an `episode_abort` record; such a trace is preserved for debugging and is never an analyzable outcome.
+`diagnostics/` contains DeepSeek serving checks outside the episode desk. The bare-prompt A/B/A trace repeats A text but fails local schema validation; the game-prompt A/B/A trace validates all three actions and repeats A text with caching disabled. Neither is a research outcome.

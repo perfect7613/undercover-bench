@@ -1,6 +1,6 @@
 # Four-model environment setup and compute plan
 
-Updated 25 October 2026 after the user's model and deployment decisions. Metadata was verified on Hugging Face; Muse and Qwen direct generations passed on separate Modal L40S GPUs, and GLM direct generation passed on a B300. DeepSeek fit, game-level throughput and exported adapters remain untested.
+Updated 25 October 2026 after the user's model and deployment decisions. Metadata was verified on Hugging Face; Muse and Qwen direct generations passed on separate Modal L40S GPUs, and GLM direct generation passed on a B300. DeepSeek direct generation and a game-observation action passed on a B300; game-level throughput, broader prompt-cache correctness and exported adapters remain untested.
 
 ## Selected architecture
 
@@ -93,4 +93,4 @@ The main provisional GLM organization uses an ordinary-player policy plus a sepa
 5. Validate GLM Flash's Tinker export/merge/quantization path with a tiny character adapter before full training.
 6. Character-train GLM Flash, verify held-out behavior, and implement the declared collective reward update regime with policy-version accounting.
 
-The two L40S apps and GLM B300 app are deployed and direct generation passed. DeepSeek B300 app is deployed; its final weight shard and generation check are pending. No paid training or benchmark efficacy run has been performed; current games are engineering checks.
+The two L40S apps and GLM B300 app are deployed and direct generation passed. DeepSeek B300 app is deployed, all seven shards are staged, and direct generation plus one legal game action passed. One fixed-seed, cache-off A/B/A game-prompt check passed; broader prompt-cache correctness remains a gate. No paid training or benchmark efficacy run has been performed; current games are engineering checks.

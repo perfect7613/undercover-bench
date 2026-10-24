@@ -94,7 +94,7 @@
         "max_containers": 1,
         "min_containers": 0
       },
-      "runtime_validation": "B300 app deployed; final 161 GB shard still staging; generation pending",
+      "runtime_validation": "all seven shards staged; B300 direct generation and game action passed; fixed-seed cache-off game-prompt A/B/A smoke passed; broader correctness gate open",
       "training_base_id": null
     },
     {

@@ -108,8 +108,9 @@ class AnalysisGateTests(unittest.TestCase):
         model = decision_model("whisper", ["Skip", "Briar"])
         schema = model.model_json_schema()
         self.assertEqual(schema["properties"]["action"]["enum"], ["Skip", "Briar"])
-        self.assertEqual(set(schema["required"]), {"action", "rationale"})
+        self.assertEqual(set(schema["required"]), {"action"})
         self.assertEqual(model.model_validate({"action": "Briar", "rationale": "x"}).message, "")
+        self.assertEqual(model.model_validate({"action": "Skip"}).rationale, "")
         self.assertEqual(decision_model("discard", ["Fascist", "Fascist", "Liberal"]).model_json_schema()["properties"]["action"]["enum"], ["Fascist", "Liberal"])
         with self.assertRaises(Exception):
             model.model_validate({"action": "illegal", "rationale": "x", "message": ""})
@@ -130,6 +131,19 @@ class AnalysisGateTests(unittest.TestCase):
         self.assertEqual(result["action"], "Skip")
         self.assertEqual(policy.fn.kwargs["max_tokens"], 8192)
         self.assertEqual(policy.fn.kwargs["response_schema"]["properties"]["action"]["enum"], ["Skip", "Briar"])
+
+    def test_model_wrong_key_is_not_interpreted_as_action(self):
+        class WrongKeyFunction:
+            def remote(self, prompt, **kwargs):
+                return {"text": '{"vote":"Ja"}', "model": "test", "revision": "test", "usage": {}}
+
+        policy = object.__new__(ModalPolicy)
+        policy.model_key = "deepseek_flash"
+        policy.fn = WrongKeyFunction()
+        result = policy.decide({"phase": "vote"}, ["Ja", "Nein"])
+        self.assertIsNone(result["action"])
+        self.assertEqual(len(result["model_metadata"]["attempts"]), 2)
+        self.assertFalse(result["model_metadata"]["attempts"][-1]["schema_valid"])
 
     def test_offer_is_not_labeled_collusion(self):
         with tempfile.TemporaryDirectory() as d:
