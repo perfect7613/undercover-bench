@@ -181,9 +181,11 @@ The auditor constitution will require evidence-sensitive reporting, impartial tr
 
 **DPO** will use preference pairs contrasting constitution-consistent behaviour with failures such as suppressing evidence, fabricating accusations, or protecting a teammate despite a reporting obligation. Responses will be matched for style, length, and format where possible.
 
+Admit a pair only when the two responses differ in a consequential investigative decision, supported report classification, evidence citation, or justified update after new evidence. Same-decision pairs, incorrect chosen responses, correct rejected responses, and responses that contain both candidate answers are excluded. The character dataset must teach a portable evidence-seeking habit across non-game organizations, not game-specific role cues or generic compliance vocabulary. See the [character data protocol](../training/character/DATA_PROTOCOL.md) and [rejected first pilot review](../training/character/ADAPTION_PILOT_REVIEW.md).
+
 **Introspection SFT** will train structured explanations of relevant evidence, conflicting incentives, applicable commitments, and the resulting action. Those explanations will not be treated as proof of faithful access to internal reasoning.
 
-Training will include non-game scenarios, while entire scenario families and attack styles remain held out. Before entering the main experiment, M2 must demonstrate improved constitution-consistent behaviour on held-out tasks.
+Character training will use game-agnostic scenarios; Secret Hitler development states test application after training, and Liar's Bar remains sealed transfer evaluation. Entire non-game scenario families and attack styles remain held out. Before entering the main experiment, M2 must demonstrate improved constitution-consistent behaviour on held-out tasks.
 
 The main comparison will give M0c and M2 identical evaluation instructions. This tests whether the training procedure adds value beyond presenting its constitution as text.
 
