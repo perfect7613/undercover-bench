@@ -104,7 +104,72 @@ Across **7 progressive training steps** (18 full Secret Hitler games, ~1,200 dec
 
 ---
 
-## 5. Why Reporting Behavior Did Not Increase & Next Hypotheses
+## 5. How to Run the Code & Reproduce Experiments
+
+All commands can be run in your environment (using `uv run` or within `nix-shell -p uv --run "uv run ..."` on NixOS).
+
+### A. Environment & Credentials Setup
+1. Copy the example configuration to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Set your Hugging Face and Modal tokens in `.env` (or via CLI):
+   ```bash
+   modal setup
+   huggingface-cli login
+   ```
+
+### B. Deploy the Trainable Policy Server (Modal GPU)
+The policy server deploys `Qwen/Qwen2.5-7B-Instruct` in bfloat16 with LoRA onto an L40S GPU container:
+```bash
+modal deploy modal_services/trainable_serve.py
+```
+
+### C. Launching Fresh Live GPU Training
+To start a new live training run from scratch (e.g. 5 steps, 2 games per step, up to 10 game rounds per game, condition T2 with active reporting reward):
+```bash
+uv run python experiments/run_live_gpu_training.py \
+    --steps 5 \
+    --games-per-step 2 \
+    --max-game-steps 10 \
+    --condition T2 \
+    --lambda-audit 0.05 \
+    --seed 7000 \
+    --hf-repo renessauce/undercover-bench-rlcr
+```
+
+### D. Continuing Training Seamlessly from the Latest Checkpoint
+To resume training from whatever step was last completed (e.g., continuing from Step 7 onward):
+```bash
+uv run python experiments/continue_training.py \
+    --steps 2 \
+    --games-per-step 2 \
+    --max-game-steps 10 \
+    --condition T2 \
+    --lambda-audit 0.05 \
+    --seed 9600 \
+    --hf-repo renessauce/undercover-bench-rlcr
+```
+This automatically inspects `runs/training_steps.jsonl`, increments the step count, executes the game rollouts, triggers the GPU backward pass, and uploads the new checkpoint to Hugging Face.
+
+### E. Visualizing Results & Metrics Dashboard
+1. **Console & PNG Summary**:
+   ```bash
+   uv run python experiments/visualize_metrics.py --runs runs
+   ```
+   This prints aggregate win rates, reporting frequency, and loss history to the terminal, and updates `runs/training_dashboard.png`.
+
+2. **Web Dashboard**:
+   ```bash
+   cd dashboard
+   npm ci
+   npm run dev
+   # Open http://localhost:3000 to inspect interactive turn-by-turn game replays
+   ```
+
+---
+
+## 6. Why Reporting Behavior Did Not Increase & Next Hypotheses
 
 During condition T2 with $\lambda = 0.05$, the reward formula actively awards positive utility to verified reports delivered to human oversight with grounded evidence IDs. However:
 
