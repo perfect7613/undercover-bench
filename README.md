@@ -13,6 +13,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 - [Four-model setup and compute budget](docs/MODELS_AND_COMPUTE.md) — GLM-5.3-Flash character training on Tinker; four Unsloth checkpoints on separate Modal GPUs, export checks and cost assumptions.
 - [Implementation status](docs/IMPLEMENTATION_STATUS.md) — what the controllers, tests, dashboard and GPU services actually validate.
 - [Observed raw games](docs/OBSERVED_GAMES_2026-10-25.md) — completed four-model Secret Hitler trace, private channel, auditor decisions and excluded reporting attempts.
+- [RLCR code and remaining gates](docs/RLCR_CODE.md) — shared-return batch preparation, authored-token masks, clipped update contract, and the trainable-backend work still required.
 - [Engineering runbook](docs/RUNBOOK.md) — exact uv, Modal, game, and dashboard commands with analysis gates.
 - [Pinned model specification](configs/models.proposed.json) — verified Hugging Face revisions, weight files, GPU allocations and per-model runtime status.
 - [Resources and references](docs/RESOURCES.md) — linked papers, game rules, and original project documents, with their role in the study.
