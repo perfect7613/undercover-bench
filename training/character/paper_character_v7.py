@@ -239,11 +239,11 @@ async def main():
     args = parser.parse_args()
     RUN.mkdir(parents=True, exist_ok=True)
     service = tinker.ServiceClient()
-    teacher = sampler(service, True)
+    teacher = await asyncio.to_thread(sampler, service, True)
     if args.action == "prompts":
         await prompts(teacher)
     elif args.action == "responses":
-        await responses(teacher, sampler(service))
+        await responses(teacher, await asyncio.to_thread(sampler, service))
     else:
         await review(teacher)
 
