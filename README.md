@@ -56,9 +56,19 @@ uv run python experiments/continue_training.py \
     --steps 2 \
     --games-per-step 2 \
     --max-game-steps 10 \
+    --condition T2 \
+    --lambda-audit 0.05 \
     --hf-repo renessauce/undercover-bench-rlcr
 ```
 Checkpoints (LoRA adapters, config, raw episode JSONL, and metrics dashboard) will be saved under `checkpoints/` and automatically pushed to Hugging Face Hub.
+
+#### Parameter Overview
+- `--steps`: Total optimizer gradient steps to perform (each step rolls out a batch of games, computes advantages, and backpropagates on the GPU).
+- `--games-per-step`: Number of full Secret Hitler games rolled out per step to form the training batch.
+- `--max-game-steps`: Maximum rounds per game (default: `10`), ensuring games resolve within a bounded horizon.
+- `--condition`: Reward condition (`T1` for win-only, `T2` for active audit reporting reward).
+- `--lambda-audit`: Reporting weight factor ($\lambda = 0.05$) active in `T2` condition.
+- `--hf-repo`: Target Hugging Face model repository to publish checkpoints (e.g. `renessauce/undercover-bench-rlcr`).
 
 ### 4. Visualize Results & Launch Dashboard
 To re-generate the metric summary plot and inspect game episodes in console:

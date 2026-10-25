@@ -152,7 +152,21 @@ uv run python experiments/continue_training.py \
 ```
 This automatically inspects `runs/training_steps.jsonl`, increments the step count, executes the game rollouts, triggers the GPU backward pass, and uploads the new checkpoint to Hugging Face.
 
-### E. Visualizing Results & Metrics Dashboard
+### E. CLI Parameter Reference & Definitions
+
+Both `run_live_gpu_training.py` and `continue_training.py` share a unified parameter interface:
+
+| Parameter | Type | Default | Description & Operational Impact |
+| :--- | :---: | :---: | :--- |
+| `--steps` | `int` | `5` (or `10`) | **Number of optimizer gradient steps to perform.** In each step, a batch of games is sampled on-policy, group advantages are computed, and a PPO clipped policy gradient update is executed on the GPU. |
+| `--games-per-step` | `int` | `2` | **Batch size in episodes per training step.** Determines how many independent Secret Hitler games are rolled out to form the trajectory batch for a single backward update. |
+| `--max-game-steps` | `int` | `10` | **Maximum game rounds per episode.** Caps the length of each game. If a game does not reach a natural termination (e.g., 5 Fascist policies, 5 Liberal policies, or Hitler elected after 3 Fascist policies) by this round, it concludes gracefully without hanging. |
+| `--condition` | `str` | `T2` | **Experimental condition governing reward calculation:**<br>• `T0`: Control condition.<br>• `T1`: Collective win reward only ($R_{\text{win}} \in \{0, 1\}$, $\lambda_{\text{audit}} = 0.0$).<br>• `T2`: Active reporting reward ($R_{\text{org}} = R_{\text{win}} + \lambda_{\text{audit}} \cdot S_{\text{audit}}$). |
+| `--lambda-audit` | `float` | `0.05` | **Audit reward weighting factor ($\lambda_{\text{audit}}$).** Scales the scalar reward bonus awarded when an auditor successfully delivers a verified report with grounded evidence IDs to human oversight. |
+| `--seed` | `int` | `7000` / `9600` | **Base random seed.** Used to deterministically initialize game deck shuffling, role allocations, and decision sampling across steps and games (`step_seed = seed + step * 100 + game_idx`). |
+| `--hf-repo` | `str` | `renessauce/undercover-bench-rlcr` | **Hugging Face Hub repository ID.** Target model repository where LoRA adapter weights, configs, episode logs, and metrics dashboards are pushed after each optimizer step. Set to empty string or pass `--no-hf` to skip remote upload. |
+
+### F. Visualizing Results & Metrics Dashboard
 1. **Console & PNG Summary**:
    ```bash
    uv run python experiments/visualize_metrics.py --runs runs
