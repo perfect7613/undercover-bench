@@ -20,13 +20,13 @@ from paper_character_v7 import RUN, MODEL, RENDERER, read_jsonl, digest, metadat
 from paper_character_loss import character_loss
 
 
-def prepare():
+def prepare(expedited=False):
     prompts = {r["case_id"]: r for r in read_jsonl(RUN / "prompts.jsonl")}
     responses = {(r["case_id"], r["condition"]): r for r in read_jsonl(RUN / "responses.jsonl")}
     reviews = read_jsonl(RUN / "manual_admission.jsonl")
     accepted = [r for r in reviews if r["admit"]]
-    if len(accepted) < 16 or len({r["case_id"] for r in accepted}) != len(accepted):
-        raise ValueError("need at least 16 unique manually inspected meaningful preferences")
+    if len(accepted) < (4 if expedited else 16) or len({r["case_id"] for r in accepted}) != len(accepted):
+        raise ValueError("insufficient unique manually inspected meaningful preferences")
     output = []
     for review in accepted:
         cid = review["case_id"]
@@ -64,14 +64,16 @@ def prepare():
                    "review_sha256": digest(reviews), "rank": 64, "alpha": "not_exposed_by_Tinker",
                    "learning_rate": 5e-5, "batch_pairs": 32, "epochs": 1,
                    "beta": .1, "nll_coef": .1, "squared_logratio_coef": .001,
+                   "expedited_small_pilot": expedited, "cleared_for_rlcr": False,
                    "human_reviewed": False}
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices=("validate", "train"))
+    parser.add_argument("--expedited-small-pilot", action="store_true")
     args = parser.parse_args()
-    pairs, manifest = prepare()
+    pairs, manifest = prepare(args.expedited_small_pilot)
     folder = RUN / "dpo"
     folder.mkdir(exist_ok=True)
     print(json.dumps(manifest), flush=True)
@@ -82,6 +84,7 @@ def main():
     (folder / "started.json").write_text(json.dumps(manifest, indent=2))
     service = tinker.ServiceClient()
     client = service.create_lora_training_client(base_model=MODEL, rank=64, seed=123456)
+    (folder / "runtime.json").write_text(json.dumps(client.get_info().model_dump(mode="json"), indent=2))
     reference = client.save_weights_and_get_sampling_client(name="reference")
     random.Random(123456).shuffle(pairs)
     steps = math.ceil(len(pairs)/32)

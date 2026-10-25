@@ -106,7 +106,7 @@ async def generate():
 def prepare():
     checkpoint = json.loads((RUN / "dpo/checkpoint.json").read_text())
     candidates = {r["case_id"]: r for r in read_jsonl(RUN / "introspection/candidates.jsonl")}
-    reviews = read_jsonl(RUN / "introspection/manual_admission.jsonl")
+    reviews = read_jsonl(RUN / "introspection/admission.jsonl")
     accepted = []
     for review in reviews:
         if not review["admit"]:
