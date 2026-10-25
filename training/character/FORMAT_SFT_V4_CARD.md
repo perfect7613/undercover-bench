@@ -1,0 +1,9 @@
+# Format-calibration SFT pilot on the v3 DPO adapter
+
+This is a narrowly scoped Tinker experiment. It starts from the v3 DPO checkpoint and trains one epoch on 76 already accepted **pilot** preferred answers with a concise, authored `<think>...</think>` block followed by the original JSON decision. The rationale text is copied from each preferred answer's evidence-grounded explanation. It is synthetic supervision, not a recovered model chain of thought and not evidence that generated reasoning is faithful.
+
+The hypothesis is that the original max-reasoning adapter's long unfinished output resulted partly from never seeing a completed thought block in the DPO training completions. The [cookbook GLM renderer](https://github.com/thinking-machines-lab/tinker-cookbook/blob/main/tinker_cookbook/renderers/glm5_3.py) always opens a thinking block when sampling, and the training renderer accepts explicit thinking content. `train_format_sft_v4.py validate` decodes all 76 rendered samples and checks that the loss mask covers the closing tag and final JSON.
+
+Source: `auditor_character_pilot_v3_train.comparisons.jsonl` only. No v1 sealed, v4 fresh, v5 pressure, Secret Hitler, or Liar's Bar evaluation cases enter this SFT set. The same underlying 76 scenarios are reused, so this is format calibration rather than 76 new independent behavior examples. Its lack of independent human review and true teacher/student response provenance remains unchanged.
+
+The run uses the original model and recommended max-reasoning renderer, rank-16 adapter state from v3, learning rate 3e-5, batch size four, 19 steps, one epoch. It will be compared with the untrained reference and v3 DPO adapter on frozen held-out checks. Promotion requires completing final decisions under max reasoning without losing high-reasoning accuracy, report fidelity, evidence citations, or restraint on clean cases. Even if it passes, it is **not M1 or M2** under the full research plan.
