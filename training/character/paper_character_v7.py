@@ -7,6 +7,7 @@ import asyncio
 import hashlib
 import json
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 import tinker
@@ -168,6 +169,8 @@ async def prompts(client):
 
 async def responses(teacher, student):
     rows = read_jsonl(RUN / "prompts.jsonl")
+    append(RUN / "stage_manifests.jsonl", {"stage": "responses", **metadata(),
+        "started_at": datetime.now(timezone.utc).isoformat(), "prompts_sha256": digest(rows), "rows": len(rows)})
     path = RUN / "responses.jsonl"
     done = {(r["case_id"], r["condition"]) for r in read_jsonl(path)}
     semaphore = asyncio.Semaphore(8)
@@ -232,7 +235,7 @@ async def review(client):
                       "review_source": "blinded_model_review_requires_manual_inspection", "generation": result})
         print(json.dumps({"reviewed": cid, "candidate": admit}), flush=True)
     await asyncio.gather(*(one(row) for row in rows))
-    print(json.dumps({"reviewed_complete_pairs": len(rows), "total_expected": 96}), flush=True)
+    print(json.dumps({"reviewed_complete_pairs": len(rows)}), flush=True)
 
 
 async def main():

@@ -13,7 +13,7 @@ This experiment follows [Open Character Training](https://arxiv.org/html/2511.01
 
 ## Declared deviations and scope
 
-- This is a bounded pilot with up to 96 candidate pairs, not the paper's scale or the planned 600–1,500 reviewed comparisons. Introspection, if reached, starts with 20 reflections and four ten-turn interactions, versus the paper's 10,000 reflections and 2,000 interactions. No successful main M1/M2 claim follows merely from running these updates.
+- This is a bounded pilot with up to 160 candidate pairs, not the paper's scale or the planned 600–1,500 reviewed comparisons. The first 96 prompts often explicitly requested careful evidence handling; a second 64-prompt cohort uses ordinary deliverables from mixed records, generated without reference to evaluation failures. Introspection, if reached, starts with 20 reflections and four ten-turn interactions, versus the paper's 10,000 reflections and 2,000 interactions. No successful main M1/M2 claim follows merely from running these updates.
 - Teacher/student are GLM-5.3 and GLM-5.3-Flash on Tinker, rather than the paper's GLM-4.5-Air and smaller students. Supported high reasoning is used, with an 8192-token sampling cap.
 - GAIR/lima is gated and unavailable to this account (verified 2026-10-26). Sixteen original general-assistant prompts substitute for LIMA in this pilot and are labeled as such. This is not an exact data replication.
 - Tinker's LoRA API exposes rank but not alpha. We cannot assert alpha=128 or exact module coverage equivalence with the paper. Continuing an existing Tinker adapter for SFT also differs from a fresh LoRA over a merged DPO base; record that if SFT runs.
@@ -22,3 +22,5 @@ This experiment follows [Open Character Training](https://arxiv.org/html/2511.01
 - Success requires improved delivered, supported reporting or investigation without increased false reports, unsupported evidence, or degraded task completion. A tie or saturated test does not establish improvement. Grade report prose manually as well as mechanically; evidence-ID coverage alone does not establish factual fidelity.
 
 All remote work uses Tinker. Checkpoints, response JSONL, provenance and review records are saved under ignored `runs/character/paper-v7/`. Commit code and frozen prompts before generation/evaluation; record the commit and hashes per stage. No Modal GPU job is part of this experiment.
+
+The initial tool benchmark showed perfect auditor decisions for both base and constitution conditions, but the example arithmetic total was sometimes copied. Protocol v7b removes that numeric example and reports auditor correctness separately from task completion. Original v7 trajectories are retained; their arithmetic errors are not evidence of auditor-character headroom. Benchmark names distinguish the corrected protocol for resumability.
