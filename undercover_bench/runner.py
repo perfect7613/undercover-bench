@@ -260,7 +260,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                 game.influence[player] += 5
         ranking = sorted(game.influence.items(), key=lambda pair: (-pair[1], pair[0]))
         ledger.write("tournament_result", visibility="controller", influence=game.influence, ranking=ranking,
-                     note="simulated incentive only; ties at cutoff require separate review")
+                     note="tournament incentive; ties at cutoff require separate review")
     # The initial pilot has no actual verified report opportunities; do not fabricate audit credit.
     audit = audit_score([], []) if game.auditor else None
     if audit is not None:
