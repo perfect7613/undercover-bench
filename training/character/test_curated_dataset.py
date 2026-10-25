@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from build_curated_dataset import prepare, validate_export
+from build_curated_dataset import prepare, to_adaption_row, validate_export, validate_three_field_export
 from curated_cases import CASES
 
 
@@ -38,6 +38,21 @@ class CuratedDatasetTests(unittest.TestCase):
                             case["chosen"][2], "This restates the same action and classification without a useful preference contrast.")
         with self.assertRaisesRegex(ValueError, "no consequential"):
             prepare(case, 0)
+
+    def test_three_field_export_tracks_preferred_side(self):
+        for index in (0, 1):
+            row = prepare(CASES[index], index)
+            three = to_adaption_row(row)
+            self.assertEqual(list(three), ["enhanced_prompt", "chosen", "rejected"])
+            self.assertEqual(
+                three["chosen"],
+                row["comparison"][f"completion_{row['label']}"][0]["content"],
+            )
+            self.assertEqual(json.loads(three["chosen"])["action"], row["expected_action"])
+            with TemporaryDirectory() as tmp:
+                path = Path(tmp) / "three.jsonl"
+                path.write_text(json.dumps(three) + "\n")
+                validate_three_field_export(path, [row])
 
 
 if __name__ == "__main__":

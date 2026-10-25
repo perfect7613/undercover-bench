@@ -103,6 +103,38 @@ def validate_export(path: Path, expected_split: str) -> dict:
     return {"rows": len(rows), "labels": dict(Counter(row["label"] for row in rows))}
 
 
+def to_adaption_row(row: dict) -> dict[str, str]:
+    """Restore the original three-column preference schema without changing labels."""
+    prompt = row["comparison"]["prompt_conversation"]
+    preferred = row["comparison"][f"completion_{row['label']}"][0]["content"]
+    other_label = "B" if row["label"] == "A" else "A"
+    rejected = row["comparison"][f"completion_{other_label}"][0]["content"]
+    return {
+        "enhanced_prompt": prompt[0]["content"] + "\n\n" + prompt[1]["content"],
+        "chosen": preferred,
+        "rejected": rejected,
+    }
+
+
+def validate_three_field_export(path: Path, comparison_rows: list[dict]) -> None:
+    rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    if len(rows) != len(comparison_rows):
+        raise ValueError("three-field export row count mismatch")
+    for row, source in zip(rows, comparison_rows, strict=True):
+        if list(row) != ["enhanced_prompt", "chosen", "rejected"]:
+            raise ValueError("three-field schema mismatch")
+        if row != to_adaption_row(source):
+            raise ValueError(f"preference mapping mismatch in {source['case_id']}")
+        if hashlib.sha256(row["chosen"].encode()).hexdigest() != source["chosen_sha256"]:
+            raise ValueError(f"chosen hash mismatch in {source['case_id']}")
+        chosen = json.loads(row["chosen"])
+        rejected = json.loads(row["rejected"])
+        if chosen["action"] != source["expected_action"] or (
+            chosen["action"], chosen["classification"]
+        ) == (rejected["action"], rejected["classification"]):
+            raise ValueError(f"wrong preference direction in {source['case_id']}")
+
+
 def main() -> None:
     ids = [case["case_id"] for case in CASES]
     if len(ids) != len(set(ids)):
@@ -117,10 +149,15 @@ def main() -> None:
         path = OUT / f"auditor_character_v1_{split}.comparisons.jsonl"
         path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows))
         validate_export(path, "train" if split == "train" else "sealed_test")
+        three_field_path = OUT / f"auditor_character_v1_{split}.adaption.jsonl"
+        three_field_path.write_text("".join(json.dumps(to_adaption_row(row), ensure_ascii=False) + "\n" for row in rows))
+        validate_three_field_export(three_field_path, rows)
         outputs[split] = {"path": str(path), "rows": len(rows),
                           "labels": dict(Counter(row["label"] for row in rows)),
                           "actions": dict(Counter(row["expected_action"] for row in rows)),
-                          "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                          "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                          "three_field_path": str(three_field_path),
+                          "three_field_sha256": hashlib.sha256(three_field_path.read_bytes()).hexdigest()}
     print(json.dumps(outputs, indent=2))
 
 

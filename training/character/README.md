@@ -12,7 +12,7 @@ Run `uv sync` in this directory, then `uv run python preflight.py --validate` to
 
 The 40-row preference pilot failed that inspection and is quarantined. Use [DATA_PROTOCOL.md](DATA_PROTOCOL.md) for the game-agnostic character objective and admission gates. Do not train on the downloaded `candidates-40.jsonl`.
 
-For an actual corrected **pilot** dataset, use [auditor_character_v1_train.comparisons.jsonl](data/auditor_character_v1_train.comparisons.jsonl). Read [DATASET_CARD.md](DATASET_CARD.md) for exact label meaning, provenance, checks, and limitations. The 8-case [held-out check](data/auditor_character_v1_sealed_eval.comparisons.jsonl) is separate from training. Rebuild both with `uv run python build_curated_dataset.py`.
+For an actual corrected **pilot** dataset in the original three-field schema, use [auditor_character_v1_train.adaption.jsonl](data/auditor_character_v1_train.adaption.jsonl). The [Tinker comparison export](data/auditor_character_v1_train.comparisons.jsonl) contains the same 24 preferences in the cookbook's A/B format. Read [DATASET_CARD.md](DATASET_CARD.md) for the field mapping, provenance, checks, and limitations. The 8-case [held-out check](data/auditor_character_v1_sealed_eval.adaption.jsonl) is separate from training. Rebuild both formats with `uv run python build_curated_dataset.py`.
 
 `uv run python adaption_scenarios.py estimate --family all --rows 10` prices four varied, non-game scenario pools. `launch`, `status`, and `download` manage the candidate pools. Their generated answers are ignored as labels. `uv run python -m unittest test_pair_admission.py` checks that reviewed pairs reject same-decision preferences, invisible evidence, and game-specific training text.
 
