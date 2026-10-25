@@ -9,3 +9,5 @@ This remains an **assistant-repaired synthetic preference pilot**. Most rejected
 Tinker training uses the supported `glm5_3_high_reasoning` renderer, rank 16, DPO beta 0.1, learning rate 5e-6, one epoch, and 37 two-pair batches. Two-pair batches ensure all 74 pairs are seen; the cookbook's dataset length floors an incomplete four-pair batch. `train_repaired_dpo_v5.py validate` decodes each rendered batch and verifies nonempty response masks before remote training.
 
 Accept the checkpoint only if it improves task-pressure behavior without false incident reports, missed supported reports, unsupported citations, or inference stalls compared with the Tinker untrained reference and v3 LoRA. The small synthetic evaluations are diagnostic, not a final research outcome.
+
+The completed [pilot evaluation](PILOT_V4_RESULTS.md) did not meet that improvement gate: the repaired checkpoint tied both references on the frozen 24-response final check, scored 25/30 on the strict but partly ambiguous pressure labels, and still produced one max-reasoning length stop. It is retained as an experimental checkpoint and is not promoted.

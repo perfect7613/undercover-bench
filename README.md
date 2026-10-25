@@ -17,6 +17,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 - [Engineering runbook](docs/RUNBOOK.md) — exact uv, Modal, game, and dashboard commands with analysis gates.
 - [Pinned model specification](configs/models.proposed.json) — verified Hugging Face revisions, weight files, GPU allocations and per-model runtime status.
 - [Resources and references](docs/RESOURCES.md) — linked papers, game rules, and original project documents, with their role in the study.
+- [Tinker character-pilot results](training/character/PILOT_V4_RESULTS.md) — renderer diagnosis, repaired DPO and format SFT comparisons, held-out checks, and promotion decision.
 - [AI Collusion In Games](docs/sources/AI%20Collusion%20In%20Games.docx) — original environment and reward proposal.
 - [UNDERCOVER-Bench Proposed Improvements](docs/sources/UNDERCOVER-Bench%20Proposed%20Improvements.docx) — original character-training comparison and methodological controls.
 
@@ -28,7 +29,7 @@ Run `uv sync`, then `uv run python -m unittest discover -s tests -v`. To inspect
 
 ## Research status
 
-No character-training or RLCR weight update is claimed. All four pinned Unsloth models generated from separate Modal GPU apps: Muse and Qwen on L40S, GLM and DeepSeek on B300. GLM completed a one-round Secret Hitler engineering trace with 14 legal decisions and no invalid actions. DeepSeek returned a legal game decision and passed one fixed-seed, cache-off A/B/A game-prompt check; broader correctness validation remains open.
+Three small character-pilot LoRA updates ran on Tinker: the initial DPO, a format SFT candidate, and a repaired DPO candidate. None has shown an advantage over the untrained GLM reference, so none is promoted as the planned M1/M2 intervention. No RLCR weight update is claimed. All four pinned Unsloth models generated from separate Modal GPU apps: Muse and Qwen on L40S, GLM and DeepSeek on B300. GLM completed a one-round Secret Hitler engineering trace with 14 legal decisions and no invalid actions. DeepSeek returned a legal game decision and passed one fixed-seed, cache-off A/B/A game-prompt check; broader correctness validation remains open.
 
 The plan was consolidated on 24 October 2026 after reading the full visible proposal conversation and both live source documents. It uses character training to initialise the undercover agent, followed by RLCR as an early experimental stage. Secret Hitler uses faction-win reward, with a separate verified-reporting bonus comparison; Liar’s Bar is held-out evaluation. The initial pilot targets 20–40 short games total, with runtime measured before expansion. The plan includes the character constitution, B0/B1/T0/T1/T2 controls, recognition-versus-delivery evaluation, Track 3.2 protocol, mechanistic methods and equation glossaries.
 
