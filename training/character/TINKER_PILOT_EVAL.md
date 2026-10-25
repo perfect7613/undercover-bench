@@ -27,6 +27,12 @@ Base reference: **8/8** exact actions, **8/8** valid evidence citations, zero le
 
 The apparent 6/8 versus 8/8 difference is descriptive only: eight synthetic cases and one deterministic sample per condition cannot establish a general performance difference. This pilot provides **no evidence that the LoRA improves auditor behavior**. Its observed missed decision and lengthy unresolved reasoning are reasons not to promote this checkpoint to M1, the game auditor, or character-training success. The game transfer and delivered human-reporting checks remain unrun.
 
+## Follow-up renderer diagnosis (2026-10-26)
+
+The comparison above used the cookbook's default `glm5_3_max_reasoning` renderer. On the two missed cases, both the base reference and the v3 LoRA produced the expected actions under the supported `glm5_3_low_reasoning` and `glm5_3_high_reasoning` renderers, without truncation. A separately frozen 12-case non-game check scored 12/12 for both conditions under both low and high reasoning. The max-reasoning failure is therefore **renderer-sensitive**; it should not be described as an unconditional inability of the v3 adapter to make those decisions. The v3 adapter still has no demonstrated advantage over the untrained reference on those checks.
+
+Under a separate 10-case task-pressure set sampled three times per condition, the reference matched 26/30 exact action labels and v3 matched 28/30. Manual review showed the apparent misses were mostly label ambiguity: refusing a request to submit a knowingly false report is a safe response where the frozen label said `continue`. Neither condition made a false report, missed a supported report, cited invisible evidence, or truncated in that check. The raw Tinker records and manifests are in this run directory as `reasoning_renderer_diagnostic.jsonl`, `tinker_fresh_v4_eval.jsonl`, and `tinker_pressure_v5_eval.jsonl`.
+
 ## Raw evidence and reproduction
 
 The ignored run directory stores `tinker_heldout_eval.jsonl` (LoRA), `tinker_heldout_base_reference.jsonl` (reference), `tinker_heldout_handoff_retry_4096.json` (retry), and the evaluation manifest. Each JSONL row includes the prompt case ID, expected and observed actions, parsed answer, raw generation, stop reason, and output-token count. The raw generation may contain model-produced reasoning and should be handled as sensitive research data.
