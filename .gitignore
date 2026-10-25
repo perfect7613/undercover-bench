@@ -7,3 +7,5 @@ node_modules/
 .next/
 .env*
 !.env.example
+runs/character/
+training/character/.venv/

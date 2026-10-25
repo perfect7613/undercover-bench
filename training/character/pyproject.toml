@@ -1,0 +1,11 @@
+[project]
+name = "undercover-character-training"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "adaption>=0.9,<1",
+  "tinker-cookbook @ git+https://github.com/thinking-machines-lab/tinker-cookbook.git@54b3cb293038ccf2e49952e46ed5abac7119fdf8",
+]
+
+[tool.uv]
+package = false
