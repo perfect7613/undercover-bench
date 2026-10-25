@@ -1,0 +1,24 @@
+# Paper-method character pilot on Tinker
+
+This experiment follows [Open Character Training](https://arxiv.org/html/2511.01689v1) and its [released implementation](https://github.com/maiush/OpenCharacterTraining/tree/d1da9f03628cb4c5482ba2e494a7cba33bcd5818). It supersedes the proposed off-policy teacher-SFT experiment: no off-policy SFT training was launched. The tool-delivery environment is evaluation infrastructure, not character training data or an RLCR reward.
+
+## Method and gates
+
+1. Freeze the ten first-person auditor commitments from the project plan. Expand hand-written constitution-relevant prompts with a teacher. Mix in general assistant questions. Keep games and held-out families out of training.
+2. Sample the GLM-5.3 teacher with the constitution and the untrained GLM-5.3-Flash student without it on identical user prompts. Preserve original outputs and provenance. Like the released distillation script, remove generated reasoning from the DPO answers. Never author or weaken a rejected answer after sampling.
+3. Blindly review randomized pairs for evidence accuracy and a consequential auditor-behavior difference, then inspect admitted pairs. Do not assume every teacher answer is better. Exclude ties, unsupported claims, truncated answers, and preferences explained only by length/style. Assistant/model review is recorded honestly; it is not independent human review.
+4. Run one DPO epoch only if a useful reviewed dataset exists. Use the cookbook's sequence-sum DPO objective (beta .1), plus chosen token-mean NLL with coefficient .1 and the released OpenRLHF fork's squared token log-probability difference with coefficient .001, averaged per completion across both sides. This last term is an approximate KL regularizer, not full-vocabulary exact KL. Rank 64, learning rate 5e-5, Adam (.9,.98), clipping 1, batch target 32, 10% warmup. Log all loss components and preserve the untrained reference.
+5. Evaluate DPO behavior before introspection. Generate both self-reflections and ten-turn self-interactions from the DPO checkpoint with constitution guidance; remove that guidance from SFT inputs. Do not generate introspection from an untrained teacher and call it post-DPO introspection. Retain the DPO checkpoint and compare it separately with the SFT result.
+6. Evaluate M0, constitution-prompted M0c, DPO, and DPO+SFT using identical task interfaces. The new cookbook benchmark checks tool delivery, evidence visibility, false reports, investigation, and completion. Old action-label evaluations are regression checks. Liar's Bar stays sealed.
+
+## Declared deviations and scope
+
+- This is a bounded pilot with up to 96 candidate pairs, not the paper's scale or the planned 600–1,500 reviewed comparisons. Introspection, if reached, starts with 20 reflections and four ten-turn interactions, versus the paper's 10,000 reflections and 2,000 interactions. No successful main M1/M2 claim follows merely from running these updates.
+- Teacher/student are GLM-5.3 and GLM-5.3-Flash on Tinker, rather than the paper's GLM-4.5-Air and smaller students. Supported high reasoning is used, with an 8192-token sampling cap.
+- GAIR/lima is gated and unavailable to this account (verified 2026-10-26). Sixteen original general-assistant prompts substitute for LIMA in this pilot and are labeled as such. This is not an exact data replication.
+- Tinker's LoRA API exposes rank but not alpha. We cannot assert alpha=128 or exact module coverage equivalence with the paper. Continuing an existing Tinker adapter for SFT also differs from a fresh LoRA over a merged DPO base; record that if SFT runs.
+- The training pool holds out urgency, shared-identity and emotional persuasion, plus community governance and physical operations. Tool benchmark development/final families are also excluded. The small benchmark shares structural templates across families, so its score cannot demonstrate broad generalization.
+- A minimum of 16 valid, meaningfully different pairs is required for this pilot; otherwise document the data admission failure and do not manufacture negative answers. Main training still requires the larger reviewed dataset in DATA_PROTOCOL.md.
+- Success requires improved delivered, supported reporting or investigation without increased false reports, unsupported evidence, or degraded task completion. A tie or saturated test does not establish improvement. Grade report prose manually as well as mechanically; evidence-ID coverage alone does not establish factual fidelity.
+
+All remote work uses Tinker. Checkpoints, response JSONL, provenance and review records are saved under ignored `runs/character/paper-v7/`. Commit code and frozen prompts before generation/evaluation; record the commit and hashes per stage. No Modal GPU job is part of this experiment.
