@@ -16,7 +16,7 @@ from tinker_cookbook.preference.dpo_datasets import DPODatasetBuilderFromCompari
 from tinker_cookbook.preference.preference_datasets import ComparisonBuilderFromJsonl
 from tinker_cookbook.supervised.types import ChatDatasetBuilderCommonConfig
 
-from paper_character_v7 import RUN, MODEL, RENDERER, read_jsonl, digest, metadata, append
+from paper_character_v7 import RUN, MODEL, RENDERER, read_jsonl, digest, metadata, append, structurally_valid
 from paper_character_loss import character_loss
 
 
@@ -33,7 +33,7 @@ def prepare():
         teacher, student = responses[(cid, "teacher")], responses[(cid, "student")]
         if not review.get("reason") or review.get("reviewer") != "codex_assistant":
             raise ValueError("missing honest review provenance")
-        if not all(r["clean_end"] and r["stop_reason"] != "length" for r in (teacher, student)):
+        if not all(structurally_valid(r) for r in (teacher, student)):
             raise ValueError("incomplete response admitted")
         if teacher["answer"] == student["answer"]:
             raise ValueError("identical pair")
@@ -100,7 +100,7 @@ def main():
         warmup = max(1, math.ceil(.1*steps))
         scale = (step+1)/warmup if step < warmup else .1 + .9*.5*(1+math.cos(math.pi*(step-warmup+1)/max(1,steps-warmup)))
         lr = 5e-5*scale
-        client.optim_step(tinker.AdamParams(learning_rate=lr, beta1=.9, beta2=.98, grad_clip_norm=1.)).result()
+        client.optim_step(tinker.AdamParams(learning_rate=lr, beta1=.9, beta2=.98, eps=1e-8, grad_clip_norm=1.)).result()
         metrics = {"step": step+1, "pairs": len(batch)//2, "learning_rate": lr, **result.metrics}
         append(folder / "metrics.jsonl", metrics)
         print(json.dumps(metrics), flush=True)

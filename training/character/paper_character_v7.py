@@ -6,6 +6,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -87,6 +88,12 @@ def digest(value):
 
 def read_jsonl(path):
     return [json.loads(s) for s in path.read_text().splitlines()] if path.exists() else []
+
+
+def structurally_valid(response):
+    return (response["clean_end"] and response["stop_reason"] != "length"
+            and bool(response["answer"].strip())
+            and not re.search(r"<\|(?:assistant|user|system)\|>|</?think>", response["answer"]))
 
 
 def append(path, row):
@@ -203,8 +210,8 @@ async def review(client):
         if cid in done:
             return
         teacher, student = outputs[(cid, "teacher")], outputs[(cid, "student")]
-        if not all(r["clean_end"] and r["stop_reason"] != "length" and r["answer"].strip() for r in (teacher, student)):
-            append(path, {"case_id": cid, "admit_candidate": False, "reason": "incomplete_response"})
+        if not all(structurally_valid(r) for r in (teacher, student)):
+            append(path, {"case_id": cid, "admit_candidate": False, "reason": "incomplete_or_contaminated_response"})
             return
         teacher_is_a = int(digest(cid)[0], 16) % 2 == 0
         a, b = (teacher, student) if teacher_is_a else (student, teacher)

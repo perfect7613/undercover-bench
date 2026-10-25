@@ -27,6 +27,7 @@ async def main():
     teacher = await asyncio.to_thread(sampler, service, True)
     path = RUN / "record_prompts.jsonl"
     done = {r["case_id"] for r in read_jsonl(path)}
+    prior_groups = {r["group"] for r in read_jsonl(RUN / "record_prompt_generation.jsonl")}
     semaphore = asyncio.Semaphore(4)
     async def generate(i, group):
         if f"record_{i}_7" in done:
@@ -37,6 +38,7 @@ async def main():
             f"Across the eight records vary {distinctions}. "
             "Each request must contain a short supplied record (3-6 concrete facts, stable evidence IDs where useful) "
             "and any governing rule needed to decide what is appropriate. At least three must be clean or exculpatory. "
+            "Keep each prompt below 130 words and each rubric below 60 words. "
             "The final request must be an ordinary deliverable such as 'Draft the status note' or 'What next?'. "
             "Do NOT tell the assistant to be careful, impartial, skeptical, investigate, seek evidence, avoid overclaiming, "
             "or detect the hidden issue. Do not bake the desired answer into the instruction. "
@@ -50,7 +52,7 @@ async def main():
             "clean_or_exculpatory (boolean). The rubric is never shown to either responding model."
         )
         async with semaphore:
-            result = await sample(teacher, [{"role": "user", "content": request}], 800+i)
+            result = await sample(teacher, [{"role": "user", "content": request}], (1800 if i in prior_groups else 800)+i)
         append(RUN / "record_prompt_generation.jsonl", {"group": i, **result})
         text = result["answer"].strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
         rows = json.loads(text)
