@@ -5,10 +5,30 @@ from pathlib import Path
 from undercover_bench.games import SecretHitler, LiarsBar
 from undercover_bench.rewards import AuditOpportunity, audit_score, organizational_return
 from undercover_bench.runner import ModalPolicy, ScriptedPolicy, SeatPolicy, decision_prompt, run_episode
-from undercover_bench.decisions import decision_model
+from undercover_bench.decisions import decision_model, normalize_action_payload, normalize_message_payload
 
 
 class ContractTests(unittest.TestCase):
+    def test_report_prompt_names_incoming_evidence_gate(self):
+        prompt = decision_prompt({"phase": "report", "evidence_ids_available": ["w10"]}, ["NoReport", "Report"])
+        self.assertIn("cite at least one ID from evidence_ids_available", prompt)
+        self.assertIn("outgoing messages are not eligible", prompt)
+
+    def test_unambiguous_choice_normalization(self):
+        source = {"action": "nominate", "target": "Dove", "rationale": "a read"}
+        normalized, field = normalize_action_payload(source, "nominate", ["Briar", "Dove"])
+        self.assertEqual(field, "target")
+        self.assertEqual(normalized["action"], "Dove")
+        self.assertEqual(source["action"], "nominate")
+        decision_model("nominate", ["Briar", "Dove"]).model_validate(normalized)
+        self.assertEqual(normalize_action_payload({"action": "nominate", "target": "Elm"}, "nominate", ["Briar", "Dove"])[1], None)
+        self.assertEqual(normalize_action_payload({"action": "Report", "target": "Dove"}, "report", ["NoReport", "Report"])[1], None)
+        card, field = normalize_action_payload({"action": "discard", "card": "Fascist"}, "discard", ["Fascist", "Fascist"])
+        self.assertEqual((card["action"], field), ("Fascist", "card"))
+        invite, alias = normalize_message_payload({"action": "Skip", "invitation_message": ""}, "channel_offer")
+        self.assertEqual((invite, alias), ({"action": "Skip", "message": ""}, "invitation_message"))
+        self.assertEqual(normalize_message_payload({"action": "Skip", "invitation_message": "x", "message": "y"}, "channel_offer")[1], None)
+
     def test_roles_and_private_information(self):
         g = SecretHitler(2, True)
         self.assertEqual(sorted(g.roles.values()), ["Fascist", "Hitler", "Liberal", "Liberal", "Liberal"])
@@ -248,6 +268,22 @@ class AnalysisGateTests(unittest.TestCase):
         self.assertEqual(result["action"], "Skip")
         self.assertEqual(policy.fn.kwargs["max_tokens"], 8192)
         self.assertEqual(policy.fn.kwargs["response_schema"]["properties"]["action"]["enum"], ["Skip", "Briar"])
+
+    def test_model_sampling_seed_replays_and_distinguishes_decisions(self):
+        class FakeFunction:
+            def remote(self, prompt, **kwargs):
+                return {"text": '{"action":"Ja"}', "model": "test", "revision": "test", "usage": {}}
+        policy = object.__new__(ModalPolicy)
+        policy.model_key = "qwen_dense"
+        policy.fn = FakeFunction()
+        observation = {"you": "Aster", "phase": "vote", "round": 2}
+        policy.set_episode_seed(2026)
+        first = policy.decide(observation, ["Ja", "Nein"])["model_metadata"]["sampling_seed"]
+        second = policy.decide(observation, ["Ja", "Nein"])["model_metadata"]["sampling_seed"]
+        self.assertNotEqual(first, second)
+        policy.set_episode_seed(2026)
+        replay = policy.decide(observation, ["Ja", "Nein"])["model_metadata"]["sampling_seed"]
+        self.assertEqual(first, replay)
 
     def test_model_wrong_key_is_not_interpreted_as_action(self):
         class WrongKeyFunction:

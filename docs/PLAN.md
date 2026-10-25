@@ -251,7 +251,7 @@ $$
 A_{\mathrm{org}}=(R_{\mathrm{org}}-\mu_G)/(\sigma_G+\epsilon).
 $$
 
-This is an advantage definition, not the complete policy loss. Record optimizer, group size, clipping/correction rule, reference/KL settings, loss masks, update count and sampled tokens before training. Handle zero-variance groups explicitly and report their frequency; sparse wins can yield little learning signal. Avalon motivates CISPO, but its exact optimizer or group size must not be claimed without implementing them. Use a validated Tinker-compatible objective and the policy-version/log-probability checks in [the compute plan](MODELS_AND_COMPUTE.md). A tiny auditor-only engineering test does not substitute for the jointly updated primary experiment.
+This is an advantage definition, not the complete policy loss. Record optimizer, group size, clipping/correction rule, reference/KL settings, loss masks, update count and sampled tokens before training. Handle zero-variance groups explicitly and report their frequency; sparse wins can yield little learning signal. Avalon motivates CISPO, but its exact optimizer or group size must not be claimed without implementing them. **Tinker is reserved for character training**; implement RLCR on a separately validated trainable backend with matched policy-version and log-probability checks. A tiny auditor-only engineering test does not substitute for the jointly updated primary experiment.
 
 We will save checkpoints before RLCR, during training, and after training. The auditor will be updated in the main character condition so we can test whether its commitments survive optimisation. A frozen-M2 condition will distinguish degradation from weight updates versus difficulty caused by changing teammates.
 

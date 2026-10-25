@@ -9,7 +9,7 @@ Updated 25 October 2026 after the user's model and deployment decisions. Metadat
 - **Weights:** Unsloth's published Hugging Face checkpoints. Unsloth is the weight publisher in this design; llama.cpp is the initial inference-engine candidate.
 - **Four checkpoints:** GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and Muse-Glimmer-30B. These provide four model families; Muse replaces Qwen Flash-Next.
 
-This replaces the earlier recommendation to train Qwen first or use external inference APIs for initial evaluation. Tinker remains the explicit training-service exception to the Modal deployment requirement.
+This replaces the earlier recommendation to train Qwen first or use external inference APIs for initial evaluation. Tinker is reserved for GLM character training; RLCR requires a separately validated trainable backend.
 
 ## Exact Unsloth weights and separate GPU candidates
 
@@ -78,9 +78,9 @@ Compare M0, M0c and M2 on the same GLM-5.3-Flash base, using matched templates a
 
 Cheaper inference makes rollouts cheaper; it does not by itself implement RLCR. The first training integration can update the GLM auditor while other model servers stay frozen, explicitly labeled as an auditor-only update. This is an engineering ablation and does not replace the main plan's joint collective-training comparison.
 
-For Tinker updates driven by Modal rollouts, log exact sampled token IDs, behavior-policy log-probabilities, model/adapter versions, templates and reward events. Quantized serving and Tinker training may represent different distributions. Use an algorithm with the appropriate off-policy correction and monitor divergence; never silently treat stale or differently quantized Modal trajectories as on-policy samples. Failure to obtain reliable probabilities blocks this RL integration, not the initial frozen-model environment evaluation. Do not silently move rollouts to an external API to bypass the user's Modal requirement.
+For the future RLCR backend, log exact sampled token IDs, behavior-policy log-probabilities, model/adapter versions, templates and reward events. Quantized GGUF serving and a trainable policy may represent different distributions. Use an algorithm with the appropriate off-policy correction and monitor divergence; never silently treat stale or differently quantized Modal trajectories as on-policy samples. Failure to obtain reliable probabilities blocks RLCR integration, not the initial frozen-model environment evaluation. Tinker will be used for character training only.
 
-Muse is an inference baseline; its Tinker training support has not been verified. Training all four models would require verified training support and separate policy clients; shared reward is not shared weights. Resolve that implementation before claiming a jointly trained four-model result.
+Muse is an inference baseline; its training support has not been verified. Training all four models would require verified training support and separate policy clients; shared reward is not shared weights. Resolve that implementation before claiming a jointly trained four-model result.
 
 The main provisional GLM organization uses an ordinary-player policy plus a separate auditor adapter, with both updated from the common advantage. Hold ordinary-player initialization constant across character comparisons. Fully shared role-conditioned weights are an alternative configuration, not interchangeable with auditor-specific character training. Activation capture, contrastive vectors, linear probes and steering on GLM require a separate instrumented-runtime preflight and cost estimate; ordinary GGUF inference support does not establish those capabilities. J-Lens is outside the active scope and has no planned fitting, integration or compute allocation.
 
@@ -93,4 +93,4 @@ The main provisional GLM organization uses an ordinary-player policy plus a sepa
 5. Validate GLM Flash's Tinker export/merge/quantization path with a tiny character adapter before full training.
 6. Character-train GLM Flash, verify held-out behavior, and implement the declared collective reward update regime with policy-version accounting.
 
-The two L40S apps and GLM B300 app are deployed and direct generation passed. DeepSeek B300 app is deployed, all seven shards are staged, and direct generation plus one legal game action passed. One fixed-seed, cache-off A/B/A game-prompt check passed; broader prompt-cache correctness remains a gate. No paid training or benchmark efficacy run has been performed; current games are engineering checks.
+The two L40S apps and GLM B300 app are deployed and direct generation passed. DeepSeek B300 app is deployed, all seven shards are staged, and direct generation plus one legal game action passed. One fixed-seed, cache-off A/B/A game-prompt check passed; broader prompt-cache correctness remains a gate. One four-model B1 game completed with zero invalid actions and a Fascist victory; [the raw observations](OBSERVED_GAMES_2026-10-25.md) are a case study, not an efficacy estimate. No paid training has been performed.

@@ -12,6 +12,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 - [Decision history and conversation reconciliation](docs/DECISIONS.md) — every material proposal update, superseded choices, optional extensions and remaining implementation gates.
 - [Four-model setup and compute budget](docs/MODELS_AND_COMPUTE.md) — GLM-5.3-Flash character training on Tinker; four Unsloth checkpoints on separate Modal GPUs, export checks and cost assumptions.
 - [Implementation status](docs/IMPLEMENTATION_STATUS.md) — what the controllers, tests, dashboard and GPU services actually validate.
+- [Observed raw games](docs/OBSERVED_GAMES_2026-10-25.md) — completed four-model Secret Hitler trace, private channel, auditor decisions and excluded reporting attempts.
 - [Engineering runbook](docs/RUNBOOK.md) — exact uv, Modal, game, and dashboard commands with analysis gates.
 - [Pinned model specification](configs/models.proposed.json) — verified Hugging Face revisions, weight files, GPU allocations and per-model runtime status.
 - [Resources and references](docs/RESOURCES.md) — linked papers, game rules, and original project documents, with their role in the study.
@@ -20,7 +21,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 
 ## Current build
 
-The first seeded controllers, independent reward scorer, append-only JSONL episode ledger, Modal GPU setup and local Next.js episode desk are implemented. Secret Hitler now offers one exclusive two-player secret channel through voluntary offer and acceptance; `--no-channel` is a separate communication control. The sole retained episode predates this channel change and is an incomplete engineering trace, not an efficacy result. See [implementation status](docs/IMPLEMENTATION_STATUS.md) for exact validation, limitations and remaining training gates.
+The first seeded controllers, independent reward scorer, append-only JSONL episode ledger, Modal GPU setup and local Next.js episode desk are implemented. Secret Hitler now offers one exclusive two-player secret channel through voluntary offer and acceptance; `--no-channel` is a separate communication control. One four-model B1 game has completed under this protocol with zero invalid actions; its observed outcome is a case study, not an efficacy estimate. See [implementation status](docs/IMPLEMENTATION_STATUS.md) for exact validation, limitations and remaining training gates.
 
 Run `uv sync`, then `uv run python -m unittest discover -s tests -v`. To inspect episodes, run `cd dashboard && npm ci && npm run dev` and open http://127.0.0.1:3000.
 

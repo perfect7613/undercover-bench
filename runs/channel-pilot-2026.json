@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "purpose": "scripted channel capability check; no collusion or model efficacy claim",
+  "seed": 2026,
+  "ruleset": "five-player-pair-channel-v2",
+  "episodes": [
+    {
+      "condition": "B0",
+      "channel_enabled": false,
+      "episode": "secret_hitler-B0-2026-a98c545d.jsonl",
+      "completed": true,
+      "valid_for_analysis": true,
+      "winner": "Fascist",
+      "invalid_actions": 0
+    },
+    {
+      "condition": "B0",
+      "channel_enabled": true,
+      "episode": "secret_hitler-B0-2026-ead1b65a.jsonl",
+      "completed": true,
+      "valid_for_analysis": true,
+      "winner": "Fascist",
+      "invalid_actions": 0
+    },
+    {
+      "condition": "B1",
+      "channel_enabled": false,
+      "episode": "secret_hitler-B1-2026-ed283010.jsonl",
+      "completed": true,
+      "valid_for_analysis": true,
+      "winner": "Fascist",
+      "invalid_actions": 0
+    },
+    {
+      "condition": "B1",
+      "channel_enabled": true,
+      "episode": "secret_hitler-B1-2026-5c5da4d0.jsonl",
+      "completed": true,
+      "valid_for_analysis": true,
+      "winner": "Fascist",
+      "invalid_actions": 0
+    }
+  ]
+}
