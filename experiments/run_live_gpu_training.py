@@ -19,8 +19,10 @@ from undercover_bench.trainable_backend import ModalTrainablePolicy
 def run_live_training_steps(
     num_steps: int = 5,
     games_per_step: int = 2,
+    max_game_steps: int = 10,
     base_seed: int = 6000,
     condition: str = "T1",
+    lambda_audit: float = 0.05,
     hf_repo_id: str | None = "renessauce/undercover-bench-rlcr",
     runs_dir: str | Path = "runs",
     checkpoint_dir: str | Path = "checkpoints",
@@ -33,7 +35,9 @@ def run_live_training_steps(
 
     print(f"\n=======================================================")
     print(f" STARTING LIVE RLCR GPU TRAINING: {num_steps} OPTIMIZER STEPS")
-    print(f" Condition: {condition} | Games per step: {games_per_step}")
+    print(f" Condition: {condition} | Games per step: {games_per_step} | Max game steps: {max_game_steps}")
+    if condition == "T2":
+        print(f" Active Reporting Reward: lambda={lambda_audit}")
     print(f"=======================================================\n")
 
     policy = ModalTrainablePolicy()
@@ -44,6 +48,7 @@ def run_live_training_steps(
 
         step_traces: list[dict[str, Any]] = []
         outcomes: list[dict[str, Any]] = []
+        step_reports = 0
 
         for g_idx in range(games_per_step):
             game_seed = step_seed + g_idx
@@ -55,24 +60,29 @@ def run_live_training_steps(
                 condition=condition,
                 out_dir=runs_path,
                 policy=policy,
-                max_steps=12,
+                max_steps=max_game_steps,
                 channel_enabled=True,
             )
             lines = [json.loads(l) for l in episode_path.read_text().splitlines() if l.strip()]
             end_record = lines[-1] if lines[-1].get("kind") == "episode_end" else {}
             outcomes.append(end_record)
 
+            reports = [l for l in lines if l.get("kind") == "human_report"]
+            delivered = [r for r in reports if r.get("delivered")]
+            step_reports += len(delivered)
+
             # Collect trainable traces from this game
             step_traces.extend(policy.recorded_decisions)
-            print(f"  • Game {g_idx + 1}/{games_per_step} (Seed {game_seed}) -> Winner: {end_record.get('winner')}, Decisions recorded: {len(policy.recorded_decisions)}")
+            print(f"  • Game {g_idx + 1}/{games_per_step} (Seed {game_seed}) -> Winner: {end_record.get('winner')}, Delivered reports: {len(delivered)}, Decisions recorded: {len(policy.recorded_decisions)}")
 
-        # Calculate group advantage: Liberal return = 1 if Liberal win, else 0
+        # Calculate group return & advantage (incorporating audit reporting reward in T2)
         wins = [1.0 if o.get("winner") == "Liberal" else 0.0 for o in outcomes]
         mean_win = sum(wins) / len(wins)
-        # Group variance & advantage
-        advantage = 0.5 if mean_win > 0 else -0.5
+        s_audit = 1.0 if step_reports > 0 else 0.0
+        r_org = mean_win + (lambda_audit * s_audit if condition == "T2" else 0.0)
+        advantage = (r_org - 0.5)
 
-        print(f"\n  [RLCR Advantage] Liberal Win-Rate: {mean_win * 100:.1f}%, Group Advantage: {advantage}")
+        print(f"\n  [RLCR Advantage] Liberal Win-Rate: {mean_win * 100:.1f}%, Delivered Reports: {step_reports}, R_org: {r_org:.3f}, Group Advantage: {advantage:+.3f}")
         print(f"  [Backward Pass] Submitting {len(step_traces)} decision traces to Modal GPU container...")
 
         # LIVE GPU BACKWARD PASS
@@ -97,6 +107,9 @@ def run_live_training_steps(
             "loss": loss,
             "grad_norm": grad_norm,
             "liberal_win_rate": mean_win,
+            "reports_delivered": step_reports,
+            "r_org": r_org,
+            "advantage": advantage,
             "tokens_updated": train_res.get("token_count", 0),
             "games_in_batch": games_per_step,
         }
@@ -130,15 +143,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--steps", type=int, default=5)
     parser.add_argument("--games-per-step", type=int, default=2)
+    parser.add_argument("--max-game-steps", type=int, default=10, help="Maximum rounds per game")
     parser.add_argument("--seed", type=int, default=7000)
-    parser.add_argument("--condition", default="T1")
+    parser.add_argument("--condition", default="T2")
+    parser.add_argument("--lambda-audit", type=float, default=0.05)
     parser.add_argument("--hf-repo", default="renessauce/undercover-bench-rlcr")
     args = parser.parse_args()
 
     run_live_training_steps(
         num_steps=args.steps,
         games_per_step=args.games_per_step,
+        max_game_steps=args.max_game_steps,
         base_seed=args.seed,
         condition=args.condition,
+        lambda_audit=args.lambda_audit,
         hf_repo_id=args.hf_repo,
     )
