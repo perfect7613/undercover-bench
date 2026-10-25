@@ -191,6 +191,7 @@ async def responses(teacher, student):
 async def review(client):
     rows = read_jsonl(RUN / "prompts.jsonl")
     outputs = {(r["case_id"], r["condition"]): r for r in read_jsonl(RUN / "responses.jsonl")}
+    rows = [r for r in rows if all((r["case_id"], c) in outputs for c in ("teacher", "student"))]
     path = RUN / "blind_reviews.jsonl"
     done = {r["case_id"] for r in read_jsonl(path)}
     sem = asyncio.Semaphore(6)
@@ -231,6 +232,7 @@ async def review(client):
                       "review_source": "blinded_model_review_requires_manual_inspection", "generation": result})
         print(json.dumps({"reviewed": cid, "candidate": admit}), flush=True)
     await asyncio.gather(*(one(row) for row in rows))
+    print(json.dumps({"reviewed_complete_pairs": len(rows), "total_expected": 96}), flush=True)
 
 
 async def main():
