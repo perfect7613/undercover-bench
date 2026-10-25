@@ -62,7 +62,9 @@ def prepare(case: dict, idx: int) -> dict:
     row = {
         "case_id": case["case_id"], "family": case["family"], "split": case["split"],
         "source_candidate": case["source_candidate"],
-        "origin": "assistant_edited_from_adaption_scenario" if not case["source_candidate"].startswith("editorial:") else "assistant_authored_heldout",
+        "origin": ("assistant_authored_heldout" if case["source_candidate"] == "editorial:heldout"
+                   else "assistant_authored" if case["source_candidate"].startswith("editorial:")
+                   else "assistant_edited_from_adaption_scenario"),
         "human_reviewed": False,
         "expected_action": case["expected_action"],
         "visible_evidence_ids": list(evidence),
