@@ -1,0 +1,7 @@
+{"step": 2, "policy_version": "step_2", "parent_version": "step_1", "loss": 0.0421, "grad_norm": 0.185, "games_in_batch": 3, "liberal_win_rate": 0.3333333333333333, "tokens_updated": 480}
+{"step": 3, "policy_version": "step_3", "parent_version": "step_2", "loss": 0.0421, "grad_norm": 0.185, "games_in_batch": 2, "liberal_win_rate": 0.5, "tokens_updated": 380}
+{"step": 2, "policy_version": "step_2", "loss": -0.4990050867199898, "grad_norm": 0.6885112524032593, "liberal_win_rate": 0.5, "tokens_updated": 480, "games_in_batch": 1}
+{"step": 4, "policy_version": "step_3", "loss": 0.4999054763998304, "grad_norm": 0.20753443241119385, "liberal_win_rate": 0.0, "reports_delivered": 0, "r_org": 0.0, "advantage": -0.5, "tokens_updated": 8400, "games_in_batch": 1}
+{"step": 5, "policy_version": "step_4", "loss": 0.499472691529039, "grad_norm": 0.1978338062763214, "liberal_win_rate": 0.0, "reports_delivered": 0, "r_org": 0.0, "advantage": -0.5, "tokens_updated": 8280, "games_in_batch": 1}
+{"step": 6, "policy_version": "step_5", "loss": 0.49997465787110507, "grad_norm": 0.20152993500232697, "liberal_win_rate": 0.0, "reports_delivered": 0, "r_org": 0.0, "advantage": -0.5, "tokens_updated": 16200, "games_in_batch": 2}
+{"step": 6, "policy_version": "step_5", "loss": 0.49997465787110507, "grad_norm": 0.20152993500232697, "liberal_win_rate": 0.0, "reports_delivered": 0, "r_org": 0.0, "advantage": -0.5, "tokens_updated": 16200, "games_in_batch": 2}
