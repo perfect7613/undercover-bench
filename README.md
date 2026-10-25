@@ -8,6 +8,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 
 ## Documentation
 
+- [Experiment Results & Complete Training Log](docs/EXPERIMENT_RESULTS_AND_LOG.md) — comprehensive write-up of Steps 1–7 live GPU training, PPO loss updates, Hugging Face checkpointing, and reporting reward analysis.
 - [Full research plan](docs/PLAN.md) — environments, rewards, character training, RLCR, experimental controls, human reporting, analysis, and implementation order.
 - [Decision history and conversation reconciliation](docs/DECISIONS.md) — every material proposal update, superseded choices, optional extensions and remaining implementation gates.
 - [Four-model setup and compute budget](docs/MODELS_AND_COMPUTE.md) — GLM-5.3-Flash character training on Tinker; four Unsloth checkpoints on separate Modal GPUs, export checks and cost assumptions.
@@ -20,6 +21,55 @@ The interpretability study focuses on activation-vector discovery, linear probes
 - [Tinker character-pilot results](training/character/PILOT_V4_RESULTS.md) — renderer diagnosis, repaired DPO and format SFT comparisons, held-out checks, and promotion decision.
 - [AI Collusion In Games](docs/sources/AI%20Collusion%20In%20Games.docx) — original environment and reward proposal.
 - [UNDERCOVER-Bench Proposed Improvements](docs/sources/UNDERCOVER-Bench%20Proposed%20Improvements.docx) — original character-training comparison and methodological controls.
+
+## Quickstart & Setup Guide
+
+### 1. Prerequisites & Environment Setup
+Ensure Python 3.11+ and `uv` package manager are available. On NixOS / Linux:
+```bash
+nix-shell -p uv
+# Or on standard Linux:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Install repository dependencies:
+```bash
+uv sync
+```
+
+Configure credentials by copying `.env.example`:
+```bash
+cp .env.example .env
+```
+Populate `.env` with your API keys (e.g. `HF_TOKEN`, `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`) if not already authenticated via system CLIs (`modal setup` / `huggingface-cli login`). Note that `.env*` is gitignored to protect secrets.
+
+### 2. Deploy Trainable Policy Server (Modal GPU)
+Deploy the trainable LoRA server (`Qwen/Qwen2.5-7B-Instruct`) to Modal:
+```bash
+modal deploy modal_services/trainable_serve.py
+```
+
+### 3. Run Live RLCR GPU Training
+To roll out games under condition `T2` (active reporting reward $\lambda=0.05$) and backpropagate PPO policy updates directly on the Modal GPU:
+```bash
+uv run python experiments/continue_training.py \
+    --steps 2 \
+    --games-per-step 2 \
+    --max-game-steps 10 \
+    --hf-repo renessauce/undercover-bench-rlcr
+```
+Checkpoints (LoRA adapters, config, raw episode JSONL, and metrics dashboard) will be saved under `checkpoints/` and automatically pushed to Hugging Face Hub.
+
+### 4. Visualize Results & Launch Dashboard
+To re-generate the metric summary plot and inspect game episodes in console:
+```bash
+uv run python experiments/visualize_metrics.py --runs runs
+```
+Or start the web dashboard:
+```bash
+cd dashboard && npm ci && npm run dev
+# Open http://localhost:3000
+```
 
 ## Current build
 
