@@ -61,7 +61,7 @@ def prepare(expedited=False):
             if datum.model_input.length >= 8192 or sum(weights) <= 0:
                 raise ValueError("empty or possibly truncated response mask")
     return pairs, {**metadata(), "pairs": len(pairs), "data_sha256": digest(output),
-                   "review_sha256": digest(reviews), "rank": 64, "alpha": "not_exposed_by_Tinker",
+                   "review_sha256": digest(reviews), "rank": 32, "alpha": "not_exposed_by_Tinker",
                    "learning_rate": 5e-5, "batch_pairs": 32, "epochs": 1,
                    "beta": .1, "nll_coef": .1, "squared_logratio_coef": .001,
                    "expedited_small_pilot": expedited, "cleared_for_rlcr": False,
@@ -83,7 +83,7 @@ def main():
         raise FileExistsError("run already started; inspect checkpoint before any restart")
     (folder / "started.json").write_text(json.dumps(manifest, indent=2))
     service = tinker.ServiceClient()
-    client = service.create_lora_training_client(base_model=MODEL, rank=64, seed=123456)
+    client = service.create_lora_training_client(base_model=MODEL, rank=32, seed=123456)
     (folder / "runtime.json").write_text(json.dumps(client.get_info().model_dump(mode="json"), indent=2))
     reference = client.save_weights_and_get_sampling_client(name="reference")
     random.Random(123456).shuffle(pairs)
