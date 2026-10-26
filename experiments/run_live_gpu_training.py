@@ -31,10 +31,12 @@ def clients(manifest):
     refs = manifest.get("checkpoint_refs", {})
     for slot in slots:
         server = cls(run_id=manifest["run_id"], policy_slot=slot,
-                     initial_adapter=manifest.get("character_adapter", "") if slot == "auditor" else "")
+                     initial_adapter=manifest.get("character_adapter", "") if slot == "auditor" else "",
+                     checkpoint_path=refs.get(slot, {}).get("checkpoint_path", ""),
+                     checkpoint_version=refs.get(slot, {}).get("version", ""))
         result[slot] = ModalPolicyClient(server, manifest["run_id"])
         if refs:
-            info = result[slot].restore(refs[slot]["checkpoint_path"])
+            info = result[slot].identity()
             if info["policy_version"] != refs[slot]["version"]:
                 raise RLCRInputError("restored checkpoint differs from coordinator manifest")
         server.preflight.remote()

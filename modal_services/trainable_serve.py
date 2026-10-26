@@ -42,6 +42,8 @@ class TrainablePolicyServer:
     run_id: str = modal.parameter()
     policy_slot: str = modal.parameter()
     initial_adapter: str = modal.parameter(default="")
+    checkpoint_path: str = modal.parameter(default="")
+    checkpoint_version: str = modal.parameter(default="")
 
     @modal.enter()
     def setup(self):
@@ -74,8 +76,17 @@ class TrainablePolicyServer:
                 bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True))
         model = prepare_model_for_kbit_training(model)
         initial = self.root / "initial"
-        if initial.exists():
-            model = PeftModel.from_pretrained(model, str(initial), is_trainable=True)
+        selected = Path(self.checkpoint_path).resolve() if self.checkpoint_path else initial
+        if self.checkpoint_path:
+            from undercover_bench.checkpoint_hf import verify_checkpoint
+            if not selected.is_relative_to(self.root.resolve()):
+                raise ValueError("resume checkpoint belongs to a different run/model/slot")
+            if verify_checkpoint(selected)["version"] != self.checkpoint_version:
+                raise ValueError("pinned checkpoint version mismatch")
+        elif self.checkpoint_version:
+            raise ValueError("checkpoint version requires a checkpoint path")
+        if selected.exists():
+            model = PeftModel.from_pretrained(model, str(selected), is_trainable=True)
         elif self.initial_adapter:
             from undercover_bench.checkpoint_hf import verify_checkpoint
             # Character export requires an explicit reviewed base-compatibility manifest.
@@ -85,17 +96,18 @@ class TrainablePolicyServer:
                 raise ValueError("character adapter/base compatibility is not verified")
             model = PeftModel.from_pretrained(model, str(adapter), is_trainable=True)
         else:
-            model = get_peft_model(model, LoraConfig(r=32, lora_alpha=64, lora_dropout=0.,
+            model = get_peft_model(model, LoraConfig(r=32, lora_alpha=32, lora_dropout=0.,
                 target_modules="all-linear", task_type="CAUSAL_LM"))
         self.backend = TorchPolicyBackend(model, tokenizer,
             model_revision=f"{PROFILE['repo_id']}@{PROFILE['revision']}")
-        if initial.exists():
-            self.backend.restore_optimizer(initial)
+        if selected.exists():
+            self.backend.restore_optimizer(selected)
         else:
             self.backend.commit_checkpoint(initial)
             volume.commit()
-        self.pending = None
-        self.committed = None
+        self.starting_checkpoint = selected.resolve()
+        from undercover_bench.rlcr_worker import DurablePolicyWorker
+        self.worker = DurablePolicyWorker(self.backend, self.root, volume.commit)
         self.preflight_ok = False
 
     @modal.method()
@@ -112,20 +124,20 @@ class TrainablePolicyServer:
         from safetensors.torch import load_file
         from undercover_bench.checkpoint_hf import verify_checkpoint
         target = Path(path).resolve()
-        if not target.is_relative_to(self.root.resolve()):
-            raise ValueError("checkpoint belongs to a different run, model or slot")
+        if target != self.starting_checkpoint:
+            raise ValueError("select a different checkpoint with durable class parameters, not an ephemeral restore")
         verify_checkpoint(target)
         restored = set_peft_model_state_dict(self.backend.model, load_file(str(target / "adapter_model.safetensors")))
         if restored.unexpected_keys:
             raise ValueError("checkpoint adapter keys do not match the loaded model")
         self.backend.restore_optimizer(target)
         self.backend.zero_grad()
-        self.pending = self.committed = None
+        from undercover_bench.rlcr_worker import DurablePolicyWorker
+        self.worker = DurablePolicyWorker(self.backend, self.root, volume.commit)
         self.preflight_ok = False
         return self.backend.identity()
 
-    @modal.method()
-    def preflight(self):
+    def _preflight(self):
         from undercover_bench.rlcr import AuthoredDecision
         self.backend.zero_grad()
         budget = self.backend.max_new_tokens
@@ -153,34 +165,15 @@ class TrainablePolicyServer:
         return proof
 
     @modal.method()
+    def preflight(self):
+        return self._preflight()
+
+    @modal.method()
     def accumulate(self, weighted, config, transaction):
-        from undercover_bench.rlcr import AuthoredDecision, RLCRConfig
-        from undercover_bench.rlcr_torch import decision_loss
-        if not self.preflight_ok or self.pending is not None or self.committed is not None:
-            raise ValueError("preflight/restore required; cannot duplicate or overlap an optimizer transaction")
-        if not re.fullmatch(r"[a-f0-9]{32}", transaction) or not weighted:
-            raise ValueError("invalid transaction or empty decision batch")
-        self.pending = transaction
-        self.backend.zero_grad()
-        cfg = RLCRConfig.model_validate(config)
-        loss_total = 0.
-        for item in weighted:
-            d = AuthoredDecision.model_validate(item["decision"])
-            if d.policy_slot != self.policy_slot or not math.isfinite(item["weight"]) or not 0 < item["weight"] <= 1 or not math.isfinite(item["advantage"]):
-                raise ValueError("invalid weighted author credit")
-            loss = decision_loss(self.backend.authored_logprobs(d), d, item["advantage"], cfg) * item["weight"]
-            loss.backward()
-            loss_total += float(loss.detach().cpu())
-        return {"loss": loss_total, "grad_norm": self.backend.trainable_grad_norm()}
+        if not self.preflight_ok:
+            self._preflight()
+        return self.worker.accumulate(weighted, config, transaction, self.policy_slot)
 
     @modal.method()
     def commit(self, transaction):
-        if self.pending != transaction or self.committed is not None:
-            raise ValueError("no prepared transaction, or already committed; restore before retry")
-        # Mark before mutation: a save failure cannot accidentally permit a second step.
-        self.committed = transaction
-        self.backend.step()
-        destination = self.root / transaction
-        version = self.backend.commit_checkpoint(destination)
-        volume.commit()
-        return {"version": version, "checkpoint_path": str(destination)}
+        return self.worker.commit(transaction)

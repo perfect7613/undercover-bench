@@ -140,11 +140,17 @@ def train_sft():
         raise FileExistsError("SFT already started; inspect before restarting")
     (folder / "started.json").write_text(json.dumps({**metadata(), "source": checkpoint,
         "transcripts": len(rows), "data_sha256": digest(rows), "epochs": 1,
-        "adapter_strategy": "continue_Tinker_DPO_adapter_not_new_adapter_over_merged_base"}, indent=2))
+        "adapter_strategy": "continue_Tinker_DPO_adapter_not_new_adapter_over_merged_base",
+        "optimizer_state": "reset_for_SFT_via_weights_only_restore", "learning_rate": 5e-5,
+        "beta1": .9, "beta2": .98, "gradient_clip_norm": 1.}, indent=2))
     # The cookbook's minimal recipes/sl_loop.py pattern, with the paper's optimizer settings.
     # This bounded pilot contains one <=24-transcript batch and one epoch.
     service = tinker.ServiceClient()
     client = service.create_training_client_from_state(checkpoint["state_path"])
+    info = client.get_info().model_dump(mode="json")
+    if info.get("lora_rank") != 32:
+        raise ValueError("introspection must continue the rank-32 DPO adapter")
+    (folder / "runtime.json").write_text(json.dumps(info, indent=2))
     dataset, _ = builder()
     batch = dataset.get_batch(0)
     result = client.forward_backward(batch, loss_fn="cross_entropy").result()
