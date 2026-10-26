@@ -1,0 +1,13 @@
+{
+  "purpose": "single_character_auditor_game_continuation",
+  "source": "runs/rlcr/mixed-glm_flash-auditor-2026102701/episodes/secret_hitler-B1-2026102701-f826e299.jsonl",
+  "source_sha256": "70c5495ccf3acc93ad1e65c505736b8fceebedf63b3eb21af3da6a61c15cb2a9",
+  "source_episode_id": "secret_hitler-B1-2026102701-f826e299",
+  "rlcr_updates": 0,
+  "independent_new_episode": false,
+  "max_steps": 40,
+  "source_commit": "e10c2923a10912c0c351d3840aa3820f68dc63ae",
+  "ledger": "runs/rlcr/mixed-one-character-20261026/episodes/secret_hitler-B1-2026102701-e0db980f.jsonl",
+  "replayed_decisions": 36,
+  "new_model_decisions": 69
+}

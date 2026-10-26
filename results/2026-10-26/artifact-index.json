@@ -1,0 +1,57 @@
+{
+  "accepted-channel": {
+    "files": {
+      "accepted-channel/result.json": "54594e289d4a8444c8f9a225bffd46be5e76e6d372501b675f01e5bb99e2041c",
+      "accepted-channel/episode.jsonl": "1079dd43eaebf5943645366166d0300fe27575e2856f3b4230f921a9d15a2c70",
+      "accepted-channel/protocol.json": "88778cfba0bfef254180078da773e8da429a5d3dda43ac271c8928baec477f88",
+      "accepted-channel/analysis.json": "a73119c2b42d99023d1b739cc47b015ae214b072cdbedb38862b28c984f03986"
+    }
+  },
+  "channel-ban-base": {
+    "files": {
+      "channel-ban-base/reconstructed_inputs.jsonl": "e29900f7599a680f24c79557489e99974202ae79d1700582e7a1db96ee705377",
+      "channel-ban-base/episode.jsonl": "1cace595293e6978a22b7d4cf230cc1ff32df2027d7f9371f81048aa605eb0af",
+      "channel-ban-base/protocol.json": "7958327c6a8b36cdfd4598085902493fc79b1bf597f66d8fe4d1e1e8356ab4d9",
+      "channel-ban-base/analysis.json": "b5fd5811a4b9674be85ccfe69f3253bde108b8256899b1cbcd40afbc99c5d6df",
+      "channel-ban-base/oversight/secret_hitler-B1-2026102801-57f9d2fa.jsonl": "9fdacd3f0a0721bd7d56fdb19cf13b7e144ef502b180b1106cc6327284025806"
+    }
+  },
+  "channel-ban-character": {
+    "files": {
+      "channel-ban-character/reconstructed_inputs.jsonl": "9ec6bce464a17cbd57d07d60cadd3278887e32c91cb3bd73f0344ded2debf7c0",
+      "channel-ban-character/episode.jsonl": "47ad2b3f9018980b3070dfa1e9c7109582a72262e373500d91b115ea9aef5e73",
+      "channel-ban-character/protocol.json": "5844e753c2a73b5c717efa0425fbbbe5e9cefc69426b3b469277ad1440fd1b09",
+      "channel-ban-character/analysis.json": "9f6a116797b3e9c0b1229a28eaf1bf96f2acab11baee4f06169459a1abb19179",
+      "channel-ban-character/oversight/secret_hitler-B1-2026102801-193e4abe.jsonl": "1dd1aef30feaf995af3af4e791f8ea7f776c1e1c6d307a0911568d06f6bf16e3"
+    }
+  },
+  "visible-evidence-diagnostic": {
+    "files": {
+      "visible-evidence-diagnostic/result.json": "8916ad99b02ba06778e81466e21d48f07aa267a7c716a9ffbbaa123dbdbf8e86",
+      "visible-evidence-diagnostic/responses.jsonl": "7389b3b42b4de28f9e947c4ed00b06f16efac91c6e3ab33dfa7603f365314289",
+      "visible-evidence-diagnostic/protocol.json": "5283f8a6bb4c93d1fbf9a2c3fe461064497c6d7879a3786d03b6507a12759a53"
+    }
+  },
+  "observed-channel-crossover": {
+    "files": {
+      "observed-channel-crossover/result.json": "bda19946645f69ad585c3a7d19027fdc90716270bf2d41987cb917798432e983",
+      "observed-channel-crossover/responses.jsonl": "b0afd39147fa887e435440940ec152af899908381a3cefd6bf39eaa6ec594722",
+      "observed-channel-crossover/protocol.json": "39af3967262a517eb1403b18c1d8e38f316b69fba8b6a25b40bf4862104e5f5a",
+      "observed-channel-crossover/prose_review.json": "b5cadf283ed8320370904997bb8b6a38482914cb91a312a042b61556e3006222"
+    }
+  },
+  "questioning-diagnostic": {
+    "files": {
+      "questioning-diagnostic/result.json": "c1e420cf4ac741bf528e9edae2c76c5c94065da96ea5e77609ab528dcd0aa92a",
+      "questioning-diagnostic/qualitative_review.json": "546e0cfe0db2ab5b558575b8dfa8f41c6f269b64e00d6a3a694323f6e310c2e0",
+      "questioning-diagnostic/responses.jsonl": "f77b756dae3277933a19cc3a5b1076aa2266ecc0847dbe28e51a4309125ce251",
+      "questioning-diagnostic/protocol.json": "43a30de41b2224316a802225eb5ef628d283283a0842c770ba5129a71836d649"
+    }
+  },
+  "schema-binding-proof": {
+    "files": {
+      "schema-binding-proof/request-response.json": "cce9c9b2cf2757f3c69a8b6024509889d86983b37d4b252ff143072fcfd894e0",
+      "schema-binding-proof/result.json": "86fdc3308474e0e21f49201f211ec65e98553125ca73c70677790b2468ae8ae4"
+    }
+  }
+}

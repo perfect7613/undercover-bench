@@ -79,7 +79,7 @@ def _server_log_tail():
               memory=245760 if KEY == "deepseek_flash" else 32768)
 def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = None,
              temperature: float = 0.2, seed: int | None = None, use_character: bool = False,
-             capture_logprobs: bool = False):
+             capture_logprobs: bool = False, reasoning_budget_tokens: int | None = None):
     global _server, _server_log, _server_character
     if use_character and KEY != "glm_flash":
         raise ValueError("The GLM character adapter cannot be applied to a different model family")
@@ -145,10 +145,20 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
         payload["lora"] = [{"id": 0, "scale": 1.0 if use_character else 0.0}]
     if seed is not None:
         payload["seed"] = seed
+    # Bound reasoning independently of the final-output allowance. Long Qwen
+    # reasoning exhausted two 8192-token attempts in the recorded pilot.
+    # Keep the existing GLM startup budget (128) unchanged for character checks.
+    if reasoning_budget_tokens is None and KEY == "qwen_dense":
+        reasoning_budget_tokens = 512
+    if reasoning_budget_tokens is not None:
+        if not isinstance(reasoning_budget_tokens, int) or reasoning_budget_tokens < 0:
+            raise ValueError("reasoning_budget_tokens must be nonnegative")
+        payload["reasoning_budget_tokens"] = reasoning_budget_tokens
     if capture_logprobs:
         payload.update(logprobs=True, top_logprobs=5)
     if response_schema is not None:
-        payload["response_format"] = {"type": "json_schema", "schema": response_schema}
+        payload["response_format"] = {"type": "json_schema", "json_schema": {
+            "name": "undercover_decision", "strict": True, "schema": response_schema}}
     request = Request("http://127.0.0.1:8080/v1/chat/completions",
                       data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
     with urlopen(request, timeout=600) as response:
@@ -159,5 +169,9 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
             "model_message": msg, "finish_reason": choice.get("finish_reason"),
             "model": MODEL["repo_id"], "revision": MODEL["revision"], "usage": result.get("usage"),
             "character_adapter_applied": use_character,
+            "generation_parameters": {"max_tokens": max_tokens, "temperature": temperature,
+                "seed": seed, "reasoning_budget_tokens": reasoning_budget_tokens
+                    if reasoning_budget_tokens is not None else 128 if KEY == "glm_flash" else None,
+                "schema_format": "nested_json_schema_v1" if response_schema is not None else None},
             "logprobs": choice.get("logprobs"),
             "character_manifest": _server_character if use_character else None}

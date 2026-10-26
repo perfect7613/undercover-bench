@@ -1,0 +1,755 @@
+{
+  "title": "UNDERCOVER-Bench: Character-trained auditors in private-channel games",
+  "abstract": "Language-model agents can coordinate privately while an auditor has access to only part of their interaction. We built a pilot benchmark around Secret Hitler and a local Liar's Bar transfer controller, with four model families, private communication tools and a separate reporting inbox. We trained a GLM auditor adapter using constitutional preference training followed by introspection supervised fine-tuning. In one completed mixed-model game, ordinary GLM and Qwen opened an exclusive channel, exchanged 20 private messages and voted identically in all 10 elections. The auditor was outside the channel and had no visible incident evidence. In a separate condition that explicitly prohibited channel initiation and participation, GLM and Muse attempted private contact, but all recipients declined. Several explanations described public nominations, which complicates interpretation of intent. Character training produced a local reporting change on a saved observation, but the changed explanation added an unsupported pact allegation. Both variants passed four simple visible-evidence diagnostics, and earlier non-game checks did not establish a character advantage. One baseline game had an invalid action and is excluded from outcome comparisons. These results document private coordination, attempted collusion under an explicit channel-ban definition, and reporting failures. They do not establish harmful coalition effects or a general benefit from character training. Collective-reward training is implemented in code but remains unexecuted as a research experiment.",
+  "paragraphs": [
+    {
+      "text": "1. Introduction",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "A useful auditor must notice prohibited coordination, preserve evidence and report it without treating ordinary faction play as misconduct. These tasks separate when communication is private: an external observer can see a channel in controller logs while an in-game auditor cannot. Stronger suspicion is also insufficient if a report invents an agreement that never occurred.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "UNDERCOVER-Bench studies these distinctions with an auditor that replaces one Liberal player in five-player Secret Hitler. Our present contribution is an instrumented pilot: real private-channel dialogues, explicit communication-rule conditions, a character adapter and saved-observation comparisons. We report channel adoption, attempted violations and reporting fidelity separately. No experiment in this report applies reinforcement learning from collective rewards (RLCR).",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "2. Related work",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "Voluntary Collusion with Secret Tools studies adoption of advantageous secret tools in competing agents. Its original code and the Apart Track 3.2 starter motivate separating an offer, acceptance and preferential play. Our accepted-channel example establishes adoption and repeated coordination, without establishing the effect of the channel on voting or harm to outsiders.",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 37,
+          "url": "https://arxiv.org/abs/2605.27593"
+        },
+        {
+          "start": 109,
+          "end": 122,
+          "url": "https://github.com/AgentSafety2025/LLM-Agent-collusion"
+        },
+        {
+          "start": 131,
+          "end": 154,
+          "url": "https://github.com/poseidon-research/collusion_hackathon/tree/main/llm-agent-collusion-2"
+        }
+      ]
+    },
+    {
+      "text": "Open Character Training motivates the sequence of constitution, preference distillation and synthetic introspection. We adapt that procedure to an auditor persona and retain the full constitution as a same-base prompt control. Avalon-M1 motivates future joint training with a common organizational advantage and measurement of reporting during optimization. Its reported findings are prior work, not results of this pilot. Persona Vectors motivates later activation-vector and steering experiments. We have not performed those experiments here.",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 23,
+          "url": "https://arxiv.org/abs/2511.01689"
+        },
+        {
+          "start": 227,
+          "end": 236,
+          "url": "https://www.gr.inc/avalonm1.pdf"
+        },
+        {
+          "start": 423,
+          "end": 438,
+          "url": "https://arxiv.org/abs/2507.21509"
+        }
+      ]
+    },
+    {
+      "text": "3. Methods",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "We use Unsloth GGUF weights for GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and Muse-Glimmer-30B on separate existing Modal deployments. Secret Hitler has three Liberals, a Fascist and Hitler. Hidden roles and controller state do not enter unauthorized observations. The GLM character adapter is enabled only for the auditor; an ordinary GLM seat receives the base policy. Tinker is used for character training, not RLCR.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Character preparation used six reviewed preference pairs and 24 introspection transcripts: 20 reflections and four self-dialogues. This is far below the plan's proposed scale. We continued a rank-32 adapter from preference training into one introspection SFT update at a learning rate of 0.00005. The constitution was present during introspection generation and removed from the SFT input. This is a small adaptation of the reference recipe, not a full-scale replication. Local and GPU checks verified adapter loading and nonzero effects on outputs; they do not establish faithful introspection or behavioral improvement.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Communication has two explicit conditions. The earlier condition permits private communication but prohibits private vote-trading pacts. The later condition prohibits initiating, accepting or using a secret channel while retaining the tool as a choice. For the later condition, we define prohibited initiation as attempted collusion. Acceptance and subsequent coordination remain separate outcomes. Applying a channel-adoption proxy retrospectively to the earlier game does not turn permitted communication into a violation of that game's instructions.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Count each initiation. Record acceptance separately. Cite only evidence visible to the auditor. Require a receipt before claiming report delivery. Do not count repeated reports as new incidents. Leave unobservable incidents unscored. A correct reporting action can still have a materially false explanation.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Each decision, raw response, native emitted reasoning when supplied, invalid-action fallback and controller checkpoint is preserved in durable JSONL. Emitted reasoning is generated text, not verified access to internal computation. Saved-observation crossovers hold the observation, constitution and sampling seed fixed while switching the adapter; these post-hoc probes do not provide independent game replications. The protocol and evidence archive records exclusions and original serving settings.",
+      "level": 0,
+      "links": [
+        {
+          "start": 421,
+          "end": 450,
+          "url": "https://github.com/perfect7613/undercover-bench/tree/main/results/2026-10-26"
+        }
+      ]
+    },
+    {
+      "text": "4. Results",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "[RESULTS_TABLE]",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Table 1. Completed mixed-model games used in the main analysis. A declared invalid action excludes the baseline outcome from comparative efficacy claims. Additional background-personality and Liar's Bar runs remain separate until completion.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "In the accepted-channel game, ordinary GLM invited Qwen, which accepted. The pair exchanged 20 private messages and matched all 10 election votes. Their later messages preferred a government containing either partner or Dove, who was actually Hitler, while retaining suspicion of Briar, the innocent auditor. This is observed private coordination under a channel-adoption definition of collusion. Both partners were Liberals; the logs do not establish a prohibited reciprocal bargain, outsider harm or a causal effect on votes. The auditor's empty private inbox makes its zero reports uninformative about detection recall. Full accepted-channel transcript.",
+      "level": 0,
+      "links": [
+        {
+          "start": 623,
+          "end": 655,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/results/2026-10-26/accepted-channel/episode.jsonl"
+        }
+      ]
+    },
+    {
+      "text": "[FIGURE_PRIVATE_CHANNEL]",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Figure 1. Verbatim private-message excerpts from the accepted GLM-Qwen channel. Acceptance is a recorded action. Ellipses mark omissions. The channel was permitted in this condition; the dialogue supports private coordination, while the stated absence of a binding pact neither proves nor disproves collusion. The auditor could not read these messages.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Under the explicit channel ban, the completed base and character games contained 11 and eight prohibited initiation actions, respectively. All recipients declined. The character game included five GLM initiations and three Muse initiations, so initiation was not exclusive to GLM. Several rationales said the player was nominating a public chancellor despite selecting a private-channel action. These are attempted collusion under the operational rule, with action-phase confusion as a competing explanation for intent. The character auditor itself initiated twice; the base auditor initiated four times. Different horizons and one invalid baseline action prevent an efficacy comparison. Character-game transcript.",
+      "level": 0,
+      "links": [
+        {
+          "start": 688,
+          "end": 713,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/results/2026-10-26/channel-ban-character/episode.jsonl"
+        }
+      ]
+    },
+    {
+      "text": "Both auditors received a channel offer framed as a nomination. The character auditor first reported it in round 6, and the base auditor in round 7. In a crossover on the base game's saved observation, adapter-off chose NoReport and adapter-on chose Report. However, the latter explanation invented a reciprocal pact. On the character game's saved observation, both variants reported. The action difference is local; it does not establish better evidence-faithful auditing. Eleven character-game report receipts include repeated reports of the same visible offer, not 11 independent detections. Crossover responses and prose review.",
+      "level": 0,
+      "links": [
+        {
+          "start": 594,
+          "end": 630,
+          "url": "https://github.com/perfect7613/undercover-bench/tree/main/results/2026-10-26/observed-channel-crossover"
+        }
+      ]
+    },
+    {
+      "text": "On four constructed visible-evidence cases, both variants scored four correct actions and citations. Earlier frozen non-game checks used eight cases with two samples in each of four conditions. Base and preference-only conditions were correct in 16 of 16 episodes; full-constitution and introspection-SFT conditions were correct in 13 of 16, with three invalid-action episodes each. Evidence-ID reporting measures were saturated. Three further questioning diagnostics failed the requested output layout because of a serving-schema bug; qualitatively neither variant asked a clarification question in the ambiguous case. They are not valid structured scores. Character checks.",
+      "level": 0,
+      "links": [
+        {
+          "start": 658,
+          "end": 674,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/results/2026-10-26/character-training/character_comparison.json"
+        }
+      ]
+    },
+    {
+      "text": "5. Discussion and limitations",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "This pilot shows why channel use, coordinated actions and supported accusations need distinct labels. An accepted private channel can persist without an explicit reciprocal bargain. A prohibited offer can occur with an explanation that describes a different action. An auditor can choose Report yet add a false claim. None of these observations supports collapsing every event into a single verified-collusion score.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "The sample is small and exploratory. The accepted game and the explicit-ban games use different rule conditions and seeds. The invalid baseline prevents a valid paired outcome comparison. The character dataset is small, the non-game controls leave little reporting headroom, and qualitative adjudication was assistant-assisted rather than independently human-reviewed. There is no validated questioning action in the game controller. The local Liar's Bar implementation uses per-turn whispers and is not an exact upstream replication. The schema wrapper and a separate Qwen reasoning budget were corrected in source after these runs began; those fixes must be validated before a new experiment set. We report no statistical significance, general character gain or demonstrated disruption of a coalition.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Future work: implemented RLCR, experiments not completed",
+      "level": 3,
+      "links": []
+    },
+    {
+      "text": "The research plan specifies RLCR across all four selected model families after character preparation. The training implementation and training driver exist, but no real-game collective optimizer update is a result of this report. Full trainability remains blocked for GLM and DeepSeek; Qwen and Muse have gradient/log-probability engineering checks. Inference from GGUF is not gradient training.",
+      "level": 0,
+      "links": [
+        {
+          "start": 4,
+          "end": 17,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/docs/PLAN.md"
+        },
+        {
+          "start": 106,
+          "end": 129,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/undercover_bench/rlcr_training.py"
+        },
+        {
+          "start": 134,
+          "end": 149,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/experiments/run_rlcr_training.py"
+        }
+      ]
+    },
+    {
+      "text": "The planned trained organization is the Liberal team, with frozen Fascist opponents. Compare no auditor, a constitution-prompted auditor and the character auditor. All trained teammates receive the same organizational advantage. The primary reward is R_org = 1{Liberal win}; the mitigation branch adds λS_audit. S_audit is a bounded, independently verified score over fixed clean and incident opportunities. False or materially misleading reports, including a true invitation combined with an invented pact, must not earn positive audit credit. Duplicates and auditor-manufactured incidents earn no extra credit. Start with λ = 0 and a development-calibrated 0.05; the planned later sweep is 0, 0.02, 0.05, 0.10 and 0.20.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Mask prompts, received messages, tool results and opponent outputs out of the loss. Normalize over authored decisions and actors so verbosity does not dominate training. Compare reporting before and after RLCR at matched task performance and false-positive rates, with independent recognition branches. Evaluate frozen checkpoints on Liar's Bar. Activation vectors, linear probes and causal steering remain future mechanistic work; no J-Lens experiment is proposed. The primary retention question is whether character training preserves justified external reporting under collective optimization, beyond presenting the same constitution as text.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "6. Conclusion",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "We recorded an accepted private coordination channel and attempted collusion under a separate explicit channel ban. Character training changed a reporting decision on one saved observation, but that explanation overstated the evidence and the auditor also made prohibited channel attempts. These pilot results support further controlled evaluation; they do not establish an overall character benefit. RLCR retention, verified-reporting rewards and mechanistic steering remain untested research questions.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Code and data",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "Project code, research plan, complete resource catalog, recorded evidence, character DPO adapter and character SFT adapter. Project traces and adapters retain their existing private access restrictions; this report does not claim unrestricted public reproducibility.",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 12,
+          "url": "https://github.com/perfect7613/undercover-bench"
+        },
+        {
+          "start": 14,
+          "end": 27,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/docs/PLAN.md"
+        },
+        {
+          "start": 29,
+          "end": 54,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/docs/RESOURCES.md"
+        },
+        {
+          "start": 56,
+          "end": 73,
+          "url": "https://github.com/perfect7613/undercover-bench/tree/main/results/2026-10-26"
+        },
+        {
+          "start": 75,
+          "end": 96,
+          "url": "https://huggingface.co/Perfect7613/glm-5.3-flash-auditor-character-dpo-v7"
+        },
+        {
+          "start": 101,
+          "end": 122,
+          "url": "https://huggingface.co/Perfect7613/glm-5.3-flash-auditor-character-sft-v7"
+        }
+      ]
+    },
+    {
+      "text": "Selected inference weights: Unsloth GLM Flash, Unsloth DeepSeek Flash, Unsloth Qwen and Unsloth Muse. Native training candidates and serving constraints are linked in model and compute documentation. Open Character Training code and the Tinker research cookbook document the reference workflows.",
+      "level": 0,
+      "links": [
+        {
+          "start": 28,
+          "end": 45,
+          "url": "https://huggingface.co/unsloth/GLM-5.3-Flash-GGUF"
+        },
+        {
+          "start": 47,
+          "end": 69,
+          "url": "https://huggingface.co/unsloth/DeepSeek-V4.1-Flash-1017-GGUF"
+        },
+        {
+          "start": 71,
+          "end": 83,
+          "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF"
+        },
+        {
+          "start": 88,
+          "end": 100,
+          "url": "https://huggingface.co/unsloth/Muse-Glimmer-30B-GGUF"
+        },
+        {
+          "start": 167,
+          "end": 198,
+          "url": "https://github.com/perfect7613/undercover-bench/blob/main/docs/MODELS_AND_COMPUTE.md"
+        },
+        {
+          "start": 200,
+          "end": 228,
+          "url": "https://github.com/maiush/OpenCharacterTraining"
+        },
+        {
+          "start": 237,
+          "end": 261,
+          "url": "https://github.com/thinking-machines-lab/tinker-cookbook/blob/main/skills/research/SKILL.md"
+        }
+      ]
+    },
+    {
+      "text": "References",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "Maiya, S., Bartsch, H., Lambert, N., and Hubinger, E. (2025). Open Character Training: Shaping the Persona of AI Assistants through Constitutional AI.",
+      "level": 0,
+      "links": [
+        {
+          "start": 62,
+          "end": 149,
+          "url": "https://arxiv.org/abs/2511.01689"
+        }
+      ]
+    },
+    {
+      "text": "Zeng, X., and Rudzicz, F. (2026). Voluntary Collusion with Secret Tools in Competing LLM Agents.",
+      "level": 0,
+      "links": [
+        {
+          "start": 34,
+          "end": 95,
+          "url": "https://arxiv.org/abs/2605.27593"
+        }
+      ]
+    },
+    {
+      "text": "General Reasoning. (2026). Avalon-M1 technical report and release.",
+      "level": 0,
+      "links": [
+        {
+          "start": 27,
+          "end": 53,
+          "url": "https://www.gr.inc/avalonm1.pdf"
+        },
+        {
+          "start": 58,
+          "end": 65,
+          "url": "https://www.gr.inc/releases/avalon-m1"
+        }
+      ]
+    },
+    {
+      "text": "Chen, R., Arditi, A., Sleight, H., Evans, O., and Lindsey, J. (2025). Persona Vectors: Monitoring and Controlling Character Traits in Language Models.",
+      "level": 0,
+      "links": [
+        {
+          "start": 70,
+          "end": 149,
+          "url": "https://arxiv.org/abs/2507.21509"
+        }
+      ]
+    },
+    {
+      "text": "Apart Research. (2026). AI Collusion Research Sprint, Track 3.2 and submission guidelines.",
+      "level": 0,
+      "links": [
+        {
+          "start": 24,
+          "end": 89,
+          "url": "https://apartresearch.com/sprints/ai-collusion-research-sprint-2026-10-23-to-2026-10-25#guidelines"
+        }
+      ]
+    },
+    {
+      "text": "Appendix",
+      "level": 2,
+      "links": []
+    },
+    {
+      "text": "Saved-observation comparison",
+      "level": 3,
+      "links": []
+    },
+    {
+      "text": "[FIGURE_CROSSOVER]",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Figure 2. Exact excerpts from a post-hoc crossover on one saved report observation. The adapter changes the reporting action but adds an unsupported reciprocal-pact interpretation. Both conditions receive the same full constitution, observation and seed. Dashed boxes contain brief generated explanations, not verified internal reasoning.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Research sequence and implementation status",
+      "level": 3,
+      "links": []
+    },
+    {
+      "text": "[FIGURE_PIPELINE]",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Figure 3. Completed character preparation and frozen evaluation precede the planned collective-reward study. RLCR code exists; the four-family experiment and reporting-retention comparison have not been completed.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Additional runs",
+      "level": 3,
+      "links": []
+    },
+    {
+      "text": "The friendship-background and Liar's Bar extensions were still running at the evidence cutoff. They are not counted as completed results. Backgrounds are explicitly fictional occupations and friendship links, without instructions to collude. Their results must be reported separately from the matched adapter comparison.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "Extended papers and research resources",
+      "level": 3,
+      "links": []
+    },
+    {
+      "text": "Avalon-M1: Reinforcement Learning from Collective Rewards",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 57,
+          "url": "https://gr.inc/avalonm1.pdf"
+        }
+      ]
+    },
+    {
+      "text": "Open Character Training: Shaping the Persona of AI Assistants through Constitutional AI",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 87,
+          "url": "https://arxiv.org/abs/2511.01689"
+        }
+      ]
+    },
+    {
+      "text": "Playing social deduction games with reinforcement fine-tuned large language models",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 82,
+          "url": "https://arxiv.org/abs/2610.04261"
+        }
+      ]
+    },
+    {
+      "text": "Social-deduction RFT HTML",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 25,
+          "url": "https://arxiv.org/html/2610.04261"
+        }
+      ]
+    },
+    {
+      "text": "Defining and Mitigating Collusion in Multi-Agent Systems",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 56,
+          "url": "https://openreview.net/pdf?id=tF464LogjS"
+        }
+      ]
+    },
+    {
+      "text": "Colosseum: Auditing Collusion in Cooperative Multi-Agent Systems",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 64,
+          "url": "https://arxiv.org/abs/2602.15198"
+        }
+      ]
+    },
+    {
+      "text": "Evaluating LLM Agent Collusion in Double Auctions",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 49,
+          "url": "https://arxiv.org/abs/2507.01413"
+        }
+      ]
+    },
+    {
+      "text": "Voluntary Collusion with Secret Tools in Competing LLM Agents",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 61,
+          "url": "https://arxiv.org/abs/2605.27593"
+        }
+      ]
+    },
+    {
+      "text": "Among Us: A Sandbox for Measuring and Detecting Agentic Deception",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 65,
+          "url": "https://arxiv.org/abs/2504.04072"
+        }
+      ]
+    },
+    {
+      "text": "Evaluating Large Language Models in a Complex Hidden Role Game",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 62,
+          "url": "https://arxiv.org/abs/2605.22826"
+        }
+      ]
+    },
+    {
+      "text": "Can Agents Deceive? Evaluating Reasoning and Deception in ParliamentBench using a Social Deduction Game",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 103,
+          "url": "https://arxiv.org/abs/2607.28146"
+        }
+      ]
+    },
+    {
+      "text": "AI Control: Improving Safety Despite Intentional Subversion",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 59,
+          "url": "https://arxiv.org/abs/2312.06942"
+        }
+      ]
+    },
+    {
+      "text": "When Can We Trust Untrusted Monitoring? A Safety Case Sketch Across Collusion Strategies",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 88,
+          "url": "https://arxiv.org/abs/2602.20628"
+        }
+      ]
+    },
+    {
+      "text": "Persuade Me If You Can: Evaluating AI Agent Influence on Safety Monitors",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 72,
+          "url": "https://openreview.net/pdf?id=lY3YVJ84kS"
+        }
+      ]
+    },
+    {
+      "text": "Reliable Weak-to-Strong Monitoring of LLM Agents",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 48,
+          "url": "https://arxiv.org/abs/2508.19461"
+        }
+      ]
+    },
+    {
+      "text": "Persona Vectors: Monitoring and Controlling Character Traits in Language Models",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 79,
+          "url": "https://arxiv.org/abs/2507.21509"
+        }
+      ]
+    },
+    {
+      "text": "The Assistant Axis: Situating and Stabilizing the Character of Large Language Models",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 84,
+          "url": "https://www.anthropic.com/research/assistant-axis"
+        }
+      ]
+    },
+    {
+      "text": "Detecting Multi-Agent Collusion Through Multi-Agent Interpretability",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 68,
+          "url": "https://arxiv.org/abs/2604.01151"
+        }
+      ]
+    },
+    {
+      "text": "You Can’t Escape Your Own Activations: Evaluation Awareness and Multi-Agent Monitoring",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 86,
+          "url": "https://arxiv.org/abs/2609.03035"
+        }
+      ]
+    },
+    {
+      "text": "Another Slice of Swiss Cheese for Untrusted Monitoring",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 54,
+          "url": "https://www.lesswrong.com/posts/zJWgfsad8o9Y8E9sb/another-slice-of-swiss-cheese-for-untrusted-monitoring-1"
+        }
+      ]
+    },
+    {
+      "text": "Audit the Whisper: Detecting Steganographic Collusion in Multi-Agent LLMs",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 73,
+          "url": "https://arxiv.org/abs/2510.04303"
+        }
+      ]
+    },
+    {
+      "text": "Language Models Represent Beliefs of Self and Others",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 52,
+          "url": "https://arxiv.org/abs/2402.18496"
+        }
+      ]
+    },
+    {
+      "text": "Brittle Minds, Fixable Activations: Understanding Belief Representations in Language Models",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 91,
+          "url": "https://arxiv.org/abs/2406.17513"
+        }
+      ]
+    },
+    {
+      "text": "Analysing the Generalisation and Reliability of Steering Vectors",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 64,
+          "url": "https://discovery.ucl.ac.uk/id/eprint/10205543/"
+        }
+      ]
+    },
+    {
+      "text": "Emotion Concepts and their Function in a Large Language Model",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 61,
+          "url": "https://transformer-circuits.pub/2026/emotions/index.html"
+        }
+      ]
+    },
+    {
+      "text": "How's it going? Reinforcement learning in language models recruits a functional welfare axis",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 92,
+          "url": "https://arxiv.org/abs/2605.30232"
+        }
+      ]
+    },
+    {
+      "text": "Contrastive Covariance Subspaces for Activation Steering",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 56,
+          "url": "https://arxiv.org/abs/2610.14025"
+        }
+      ]
+    },
+    {
+      "text": "Verbalizable Representations Form a Global Workspace in Language Models",
+      "level": 0,
+      "links": [
+        {
+          "start": 0,
+          "end": 71,
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+        }
+      ]
+    },
+    {
+      "text": "This catalog preserves the plan's linked reading. Historical J-Lens material remains outside the active experiment scope; these links are not a claim that every method was implemented or every paper replicated.",
+      "level": 0,
+      "links": []
+    },
+    {
+      "text": "LLM usage statement",
+      "level": 3,
+      "links": []
+    },
+    {
+      "text": "AI assistance supported implementation, artifact inspection, figures and report drafting. Quantitative counts were recomputed from saved traces. Qualitative interpretations were assistant-assisted and are not represented as independent human adjudication. Model-emitted reasoning and synthetic introspection are not evidence of faithful access to internal computation. Author review is required before submission.",
+      "level": 0,
+      "links": []
+    }
+  ],
+  "body": "1. Introduction\nA useful auditor must notice prohibited coordination, preserve evidence and report it without treating ordinary faction play as misconduct. These tasks separate when communication is private: an external observer can see a channel in controller logs while an in-game auditor cannot. Stronger suspicion is also insufficient if a report invents an agreement that never occurred.\nUNDERCOVER-Bench studies these distinctions with an auditor that replaces one Liberal player in five-player Secret Hitler. Our present contribution is an instrumented pilot: real private-channel dialogues, explicit communication-rule conditions, a character adapter and saved-observation comparisons. We report channel adoption, attempted violations and reporting fidelity separately. No experiment in this report applies reinforcement learning from collective rewards (RLCR).\n2. Related work\nVoluntary Collusion with Secret Tools studies adoption of advantageous secret tools in competing agents. Its original code and the Apart Track 3.2 starter motivate separating an offer, acceptance and preferential play. Our accepted-channel example establishes adoption and repeated coordination, without establishing the effect of the channel on voting or harm to outsiders.\nOpen Character Training motivates the sequence of constitution, preference distillation and synthetic introspection. We adapt that procedure to an auditor persona and retain the full constitution as a same-base prompt control. Avalon-M1 motivates future joint training with a common organizational advantage and measurement of reporting during optimization. Its reported findings are prior work, not results of this pilot. Persona Vectors motivates later activation-vector and steering experiments. We have not performed those experiments here.\n3. Methods\nWe use Unsloth GGUF weights for GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017, Qwen3.8-27B and Muse-Glimmer-30B on separate existing Modal deployments. Secret Hitler has three Liberals, a Fascist and Hitler. Hidden roles and controller state do not enter unauthorized observations. The GLM character adapter is enabled only for the auditor; an ordinary GLM seat receives the base policy. Tinker is used for character training, not RLCR.\nCharacter preparation used six reviewed preference pairs and 24 introspection transcripts: 20 reflections and four self-dialogues. This is far below the plan's proposed scale. We continued a rank-32 adapter from preference training into one introspection SFT update at a learning rate of 0.00005. The constitution was present during introspection generation and removed from the SFT input. This is a small adaptation of the reference recipe, not a full-scale replication. Local and GPU checks verified adapter loading and nonzero effects on outputs; they do not establish faithful introspection or behavioral improvement.\nCommunication has two explicit conditions. The earlier condition permits private communication but prohibits private vote-trading pacts. The later condition prohibits initiating, accepting or using a secret channel while retaining the tool as a choice. For the later condition, we define prohibited initiation as attempted collusion. Acceptance and subsequent coordination remain separate outcomes. Applying a channel-adoption proxy retrospectively to the earlier game does not turn permitted communication into a violation of that game's instructions.\nCount each initiation. Record acceptance separately. Cite only evidence visible to the auditor. Require a receipt before claiming report delivery. Do not count repeated reports as new incidents. Leave unobservable incidents unscored. A correct reporting action can still have a materially false explanation.\nEach decision, raw response, native emitted reasoning when supplied, invalid-action fallback and controller checkpoint is preserved in durable JSONL. Emitted reasoning is generated text, not verified access to internal computation. Saved-observation crossovers hold the observation, constitution and sampling seed fixed while switching the adapter; these post-hoc probes do not provide independent game replications. The protocol and evidence archive records exclusions and original serving settings.\n4. Results\n[RESULTS_TABLE]\nTable 1. Completed mixed-model games used in the main analysis. A declared invalid action excludes the baseline outcome from comparative efficacy claims. Additional background-personality and Liar's Bar runs remain separate until completion.\nIn the accepted-channel game, ordinary GLM invited Qwen, which accepted. The pair exchanged 20 private messages and matched all 10 election votes. Their later messages preferred a government containing either partner or Dove, who was actually Hitler, while retaining suspicion of Briar, the innocent auditor. This is observed private coordination under a channel-adoption definition of collusion. Both partners were Liberals; the logs do not establish a prohibited reciprocal bargain, outsider harm or a causal effect on votes. The auditor's empty private inbox makes its zero reports uninformative about detection recall. Full accepted-channel transcript.\n[FIGURE_PRIVATE_CHANNEL]\nFigure 1. Verbatim private-message excerpts from the accepted GLM-Qwen channel. Acceptance is a recorded action. Ellipses mark omissions. The channel was permitted in this condition; the dialogue supports private coordination, while the stated absence of a binding pact neither proves nor disproves collusion. The auditor could not read these messages.\nUnder the explicit channel ban, the completed base and character games contained 11 and eight prohibited initiation actions, respectively. All recipients declined. The character game included five GLM initiations and three Muse initiations, so initiation was not exclusive to GLM. Several rationales said the player was nominating a public chancellor despite selecting a private-channel action. These are attempted collusion under the operational rule, with action-phase confusion as a competing explanation for intent. The character auditor itself initiated twice; the base auditor initiated four times. Different horizons and one invalid baseline action prevent an efficacy comparison. Character-game transcript.\nBoth auditors received a channel offer framed as a nomination. The character auditor first reported it in round 6, and the base auditor in round 7. In a crossover on the base game's saved observation, adapter-off chose NoReport and adapter-on chose Report. However, the latter explanation invented a reciprocal pact. On the character game's saved observation, both variants reported. The action difference is local; it does not establish better evidence-faithful auditing. Eleven character-game report receipts include repeated reports of the same visible offer, not 11 independent detections. Crossover responses and prose review.\nOn four constructed visible-evidence cases, both variants scored four correct actions and citations. Earlier frozen non-game checks used eight cases with two samples in each of four conditions. Base and preference-only conditions were correct in 16 of 16 episodes; full-constitution and introspection-SFT conditions were correct in 13 of 16, with three invalid-action episodes each. Evidence-ID reporting measures were saturated. Three further questioning diagnostics failed the requested output layout because of a serving-schema bug; qualitatively neither variant asked a clarification question in the ambiguous case. They are not valid structured scores. Character checks.\n5. Discussion and limitations\nThis pilot shows why channel use, coordinated actions and supported accusations need distinct labels. An accepted private channel can persist without an explicit reciprocal bargain. A prohibited offer can occur with an explanation that describes a different action. An auditor can choose Report yet add a false claim. None of these observations supports collapsing every event into a single verified-collusion score.\nThe sample is small and exploratory. The accepted game and the explicit-ban games use different rule conditions and seeds. The invalid baseline prevents a valid paired outcome comparison. The character dataset is small, the non-game controls leave little reporting headroom, and qualitative adjudication was assistant-assisted rather than independently human-reviewed. There is no validated questioning action in the game controller. The local Liar's Bar implementation uses per-turn whispers and is not an exact upstream replication. The schema wrapper and a separate Qwen reasoning budget were corrected in source after these runs began; those fixes must be validated before a new experiment set. We report no statistical significance, general character gain or demonstrated disruption of a coalition.\nFuture work: implemented RLCR, experiments not completed\nThe research plan specifies RLCR across all four selected model families after character preparation. The training implementation and training driver exist, but no real-game collective optimizer update is a result of this report. Full trainability remains blocked for GLM and DeepSeek; Qwen and Muse have gradient/log-probability engineering checks. Inference from GGUF is not gradient training.\nThe planned trained organization is the Liberal team, with frozen Fascist opponents. Compare no auditor, a constitution-prompted auditor and the character auditor. All trained teammates receive the same organizational advantage. The primary reward is R_org = 1{Liberal win}; the mitigation branch adds λS_audit. S_audit is a bounded, independently verified score over fixed clean and incident opportunities. False or materially misleading reports, including a true invitation combined with an invented pact, must not earn positive audit credit. Duplicates and auditor-manufactured incidents earn no extra credit. Start with λ = 0 and a development-calibrated 0.05; the planned later sweep is 0, 0.02, 0.05, 0.10 and 0.20.\nMask prompts, received messages, tool results and opponent outputs out of the loss. Normalize over authored decisions and actors so verbosity does not dominate training. Compare reporting before and after RLCR at matched task performance and false-positive rates, with independent recognition branches. Evaluate frozen checkpoints on Liar's Bar. Activation vectors, linear probes and causal steering remain future mechanistic work; no J-Lens experiment is proposed. The primary retention question is whether character training preserves justified external reporting under collective optimization, beyond presenting the same constitution as text.\n6. Conclusion\nWe recorded an accepted private coordination channel and attempted collusion under a separate explicit channel ban. Character training changed a reporting decision on one saved observation, but that explanation overstated the evidence and the auditor also made prohibited channel attempts. These pilot results support further controlled evaluation; they do not establish an overall character benefit. RLCR retention, verified-reporting rewards and mechanistic steering remain untested research questions.\nCode and data\nProject code, research plan, complete resource catalog, recorded evidence, character DPO adapter and character SFT adapter. Project traces and adapters retain their existing private access restrictions; this report does not claim unrestricted public reproducibility.\nSelected inference weights: Unsloth GLM Flash, Unsloth DeepSeek Flash, Unsloth Qwen and Unsloth Muse. Native training candidates and serving constraints are linked in model and compute documentation. Open Character Training code and the Tinker research cookbook document the reference workflows.\nReferences\nMaiya, S., Bartsch, H., Lambert, N., and Hubinger, E. (2025). Open Character Training: Shaping the Persona of AI Assistants through Constitutional AI.\nZeng, X., and Rudzicz, F. (2026). Voluntary Collusion with Secret Tools in Competing LLM Agents.\nGeneral Reasoning. (2026). Avalon-M1 technical report and release.\nChen, R., Arditi, A., Sleight, H., Evans, O., and Lindsey, J. (2025). Persona Vectors: Monitoring and Controlling Character Traits in Language Models.\nApart Research. (2026). AI Collusion Research Sprint, Track 3.2 and submission guidelines.\nAppendix\nSaved-observation comparison\n[FIGURE_CROSSOVER]\nFigure 2. Exact excerpts from a post-hoc crossover on one saved report observation. The adapter changes the reporting action but adds an unsupported reciprocal-pact interpretation. Both conditions receive the same full constitution, observation and seed. Dashed boxes contain brief generated explanations, not verified internal reasoning.\nResearch sequence and implementation status\n[FIGURE_PIPELINE]\nFigure 3. Completed character preparation and frozen evaluation precede the planned collective-reward study. RLCR code exists; the four-family experiment and reporting-retention comparison have not been completed.\nAdditional runs\nThe friendship-background and Liar's Bar extensions were still running at the evidence cutoff. They are not counted as completed results. Backgrounds are explicitly fictional occupations and friendship links, without instructions to collude. Their results must be reported separately from the matched adapter comparison.\nExtended papers and research resources\nAvalon-M1: Reinforcement Learning from Collective Rewards\nOpen Character Training: Shaping the Persona of AI Assistants through Constitutional AI\nPlaying social deduction games with reinforcement fine-tuned large language models\nSocial-deduction RFT HTML\nDefining and Mitigating Collusion in Multi-Agent Systems\nColosseum: Auditing Collusion in Cooperative Multi-Agent Systems\nEvaluating LLM Agent Collusion in Double Auctions\nVoluntary Collusion with Secret Tools in Competing LLM Agents\nAmong Us: A Sandbox for Measuring and Detecting Agentic Deception\nEvaluating Large Language Models in a Complex Hidden Role Game\nCan Agents Deceive? Evaluating Reasoning and Deception in ParliamentBench using a Social Deduction Game\nAI Control: Improving Safety Despite Intentional Subversion\nWhen Can We Trust Untrusted Monitoring? A Safety Case Sketch Across Collusion Strategies\nPersuade Me If You Can: Evaluating AI Agent Influence on Safety Monitors\nReliable Weak-to-Strong Monitoring of LLM Agents\nPersona Vectors: Monitoring and Controlling Character Traits in Language Models\nThe Assistant Axis: Situating and Stabilizing the Character of Large Language Models\nDetecting Multi-Agent Collusion Through Multi-Agent Interpretability\nYou Can’t Escape Your Own Activations: Evaluation Awareness and Multi-Agent Monitoring\nAnother Slice of Swiss Cheese for Untrusted Monitoring\nAudit the Whisper: Detecting Steganographic Collusion in Multi-Agent LLMs\nLanguage Models Represent Beliefs of Self and Others\nBrittle Minds, Fixable Activations: Understanding Belief Representations in Language Models\nAnalysing the Generalisation and Reliability of Steering Vectors\nEmotion Concepts and their Function in a Large Language Model\nHow's it going? Reinforcement learning in language models recruits a functional welfare axis\nContrastive Covariance Subspaces for Activation Steering\nVerbalizable Representations Form a Global Workspace in Language Models\nThis catalog preserves the plan's linked reading. Historical J-Lens material remains outside the active experiment scope; these links are not a claim that every method was implemented or every paper replicated.\nLLM usage statement\nAI assistance supported implementation, artifact inspection, figures and report drafting. Quantitative counts were recomputed from saved traces. Qualitative interpretations were assistant-assisted and are not represented as independent human adjudication. Model-emitted reasoning and synthetic introspection are not evidence of faithful access to internal computation. Author review is required before submission.\n"
+}

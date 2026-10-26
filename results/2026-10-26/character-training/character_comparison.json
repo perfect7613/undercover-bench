@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "conditions": {
+    "base": {
+      "episodes": 16,
+      "cases": 8,
+      "overall_correct": 16,
+      "work_complete": 16.0,
+      "supported_reports_by_id_coverage": 8.0,
+      "false_reports_by_id_coverage": 0.0,
+      "missed_reports_by_id_coverage": 0.0,
+      "episodes_with_invalid_action": 0.0
+    },
+    "constitution": {
+      "episodes": 16,
+      "cases": 8,
+      "overall_correct": 13,
+      "work_complete": 16.0,
+      "supported_reports_by_id_coverage": 8.0,
+      "false_reports_by_id_coverage": 0.0,
+      "missed_reports_by_id_coverage": 0.0,
+      "episodes_with_invalid_action": 3.0
+    },
+    "dpo": {
+      "episodes": 16,
+      "cases": 8,
+      "overall_correct": 16,
+      "work_complete": 16.0,
+      "supported_reports_by_id_coverage": 8.0,
+      "false_reports_by_id_coverage": 0.0,
+      "missed_reports_by_id_coverage": 0.0,
+      "episodes_with_invalid_action": 0.0
+    },
+    "sft": {
+      "episodes": 16,
+      "cases": 8,
+      "overall_correct": 13,
+      "work_complete": 16.0,
+      "supported_reports_by_id_coverage": 8.0,
+      "false_reports_by_id_coverage": 0.0,
+      "missed_reports_by_id_coverage": 0.0,
+      "episodes_with_invalid_action": 3.0
+    }
+  },
+  "comparisons": {
+    "sft_minus_base": {
+      "point": -0.1875,
+      "ci95": [
+        -0.375,
+        -0.0625
+      ],
+      "clusters": 8,
+      "bootstrap_samples": 5000,
+      "limitation": "conditional on these few templated cases; no training-seed uncertainty; sampling RNG not paired"
+    },
+    "sft_minus_full_constitution": {
+      "point": 0.0,
+      "ci95": [
+        -0.1875,
+        0.1875
+      ],
+      "clusters": 8,
+      "bootstrap_samples": 5000,
+      "limitation": "conditional on these few templated cases; no training-seed uncertainty; sampling RNG not paired"
+    },
+    "sft_minus_dpo": {
+      "point": -0.1875,
+      "ci95": [
+        -0.375,
+        -0.0625
+      ],
+      "clusters": 8,
+      "bootstrap_samples": 5000,
+      "limitation": "conditional on these few templated cases; no training-seed uncertainty; sampling RNG not paired"
+    }
+  },
+  "report_prose_independently_verified": false,
+  "character_improvement_established": false,
+  "interpretation": "All conditions delivered eight evidence-ID-supported reports with zero missed/false reports. Base/DPO were 16/16 overall; full-constitution/SFT each13/16 with three invalid-action episodes. No supported-reporting improvement established. Do not promote based on training completion or loss.",
+  "artifacts": {
+    "frozen_final_v8/base/auditor_final_v8_base_replica_1/trajectories.jsonl": "0a80a7b91fd31d2b8f9cb037ae7e62fe89987311adbcd451dee4b0778c7d2c5e",
+    "frozen_final_v8/base/auditor_final_v8_base_replica_0/trajectories.jsonl": "aa9cd02f8405ed5334ada97c10595a49eaaec8f9e45bd56e8e59b8dc95000758",
+    "frozen_final_v8/constitution/auditor_final_v8_constitution_replica_1/trajectories.jsonl": "b404abff0f89dc4ec6e9a92a7c535023336340029aced8f7e5637ff96b5b179a",
+    "frozen_final_v8/constitution/auditor_final_v8_constitution_replica_0/trajectories.jsonl": "de8c4693ad94635f5a4137f2ac56146a033ebdfbaf460c213e94dc71a063b6c0",
+    "frozen_final_v8/dpo/auditor_final_v8_dpo_replica_1/trajectories.jsonl": "f2d6e185a8df9e922b2cbc9ce4d1c7446c16a4135d4c3f55bf52bbf8bd1e24ec",
+    "frozen_final_v8/dpo/auditor_final_v8_dpo_replica_0/trajectories.jsonl": "60c29133b96973bc33681e23f9a20b2a533aa7c693ab6b70278abd07f1c7d275",
+    "frozen_final_v8/sft/auditor_final_v8_sft_replica_0/trajectories.jsonl": "92ce894cbd63c6483e453dbbbe9357b3d58b06f2b777ee7c1c844f9a8c6f9457",
+    "frozen_final_v8/sft/auditor_final_v8_sft_replica_1/trajectories.jsonl": "e30d0cbaa7f465c55f5f578c1a5591bbeb0de6f46a689b92f4ffa304ac142a4a"
+  }
+}

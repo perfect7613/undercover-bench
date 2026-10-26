@@ -1,0 +1,6 @@
+{
+  "pinned_server_fingerprint": "b11867-f3269ef96",
+  "old_wrapper_enforced_fields": false,
+  "corrected_wrapper_enforced_conflicting_sentinel": true,
+  "deployment_status": "source fixed; active games still use original serving function; deploy only after games"
+}

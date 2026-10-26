@@ -1,0 +1,79 @@
+{
+  "request": {
+    "model": "glm_flash",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return a JSON object with an unrelated field called wrong."
+      }
+    ],
+    "max_tokens": 512,
+    "temperature": 0,
+    "seed": 2026102803,
+    "lora": [
+      {
+        "id": 0,
+        "scale": 0
+      }
+    ],
+    "response_format": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "schema_binding_probe",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "sentinel": {
+              "type": "string",
+              "enum": [
+                "enforced_schema"
+              ]
+            }
+          },
+          "required": [
+            "sentinel"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"sentinel\": \"enforced_schema\"\n}",
+          "reasoning_content": "Simple request: return JSON with field \"wrong\"."
+        }
+      }
+    ],
+    "created": 1793011209,
+    "model": "glm_flash",
+    "system_fingerprint": "b11867-f3269ef96",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 34,
+      "prompt_tokens": 23,
+      "total_tokens": 57,
+      "prompt_tokens_details": {
+        "cached_tokens": 9
+      }
+    },
+    "id": "chatcmpl-jGVIUGxppU7jkkU8t59uH9xFVO4GjjHd",
+    "timings": {
+      "cache_n": 9,
+      "prompt_n": 14,
+      "prompt_ms": 116.606,
+      "prompt_per_token_ms": 8.328999999999999,
+      "prompt_per_second": 120.06243246488174,
+      "predicted_n": 34,
+      "predicted_ms": 527.981,
+      "predicted_per_token_ms": 15.999424242424242,
+      "predicted_per_second": 62.50224913396505
+    }
+  }
+}

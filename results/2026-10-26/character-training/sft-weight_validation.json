@@ -1,0 +1,4323 @@
+{
+  "all_weights_finite": true,
+  "tensor_count": 862,
+  "changed_tensors": 862,
+  "adapter_delta_l2": 2.126547392840488,
+  "current_sha256": "b5c8aadb3685dce6fd6240d6c68aa17a882146417df22c2472afa0ef9d83f022",
+  "parent_sha256": "a6e81f26d3ea2d9fa02d12d8dbf5d73c61cca0574129e813406201a78ec2e101",
+  "method": "one tensor at a time; no base model loaded",
+  "compatibility_verified": false,
+  "behavioral_improvement_established": false,
+  "per_tensor": [
+    {
+      "name": "base_model.model.model.layers.0.mlp.down_proj.lora_A.weight",
+      "changed_values": 393129,
+      "l2_difference": 0.029471223035382528
+    },
+    {
+      "name": "base_model.model.model.layers.0.mlp.down_proj.lora_B.weight",
+      "changed_values": 131017,
+      "l2_difference": 0.018076206396596736
+    },
+    {
+      "name": "base_model.model.model.layers.0.mlp.gate_proj.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01755523617514284
+    },
+    {
+      "name": "base_model.model.model.layers.0.mlp.gate_proj.lora_B.weight",
+      "changed_values": 393062,
+      "l2_difference": 0.031263748708803114
+    },
+    {
+      "name": "base_model.model.model.layers.0.mlp.up_proj.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01755523617514284
+    },
+    {
+      "name": "base_model.model.model.layers.0.mlp.up_proj.lora_B.weight",
+      "changed_values": 393084,
+      "l2_difference": 0.03129311328714167
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.015287589808162121
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262041,
+      "l2_difference": 0.024631809754967305
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262045,
+      "l2_difference": 0.022000447244829066
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01807920085151271
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.014992113768449822
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262042,
+      "l2_difference": 0.024619052868330014
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.016874673693217244
+    },
+    {
+      "name": "base_model.model.model.layers.0.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262033,
+      "l2_difference": 0.025406359458726983
+    },
+    {
+      "name": "base_model.model.model.layers.1.mlp.down_proj.lora_A.weight",
+      "changed_values": 393112,
+      "l2_difference": 0.02936135124922096
+    },
+    {
+      "name": "base_model.model.model.layers.1.mlp.down_proj.lora_B.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.018074135085133364
+    },
+    {
+      "name": "base_model.model.model.layers.1.mlp.gate_proj.lora_A.weight",
+      "changed_values": 131051,
+      "l2_difference": 0.017717426479705083
+    },
+    {
+      "name": "base_model.model.model.layers.1.mlp.gate_proj.lora_B.weight",
+      "changed_values": 393056,
+      "l2_difference": 0.031266823288083105
+    },
+    {
+      "name": "base_model.model.model.layers.1.mlp.up_proj.lora_A.weight",
+      "changed_values": 131051,
+      "l2_difference": 0.017717426479705083
+    },
+    {
+      "name": "base_model.model.model.layers.1.mlp.up_proj.lora_B.weight",
+      "changed_values": 393080,
+      "l2_difference": 0.0312882608357839
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.0161334388326957
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261441,
+      "l2_difference": 0.02530350072700096
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262058,
+      "l2_difference": 0.023492823722043234
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.018071349000123353
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131016,
+      "l2_difference": 0.01605094313226961
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261401,
+      "l2_difference": 0.02529552420909862
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.016459879123149074
+    },
+    {
+      "name": "base_model.model.model.layers.1.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262047,
+      "l2_difference": 0.025495545181178327
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131053,
+      "l2_difference": 0.017908182456900443
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865216,
+      "l2_difference": 0.2121695391725912
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865480,
+      "l2_difference": 0.13399457435615195
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131016,
+      "l2_difference": 0.01806915947898509
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131053,
+      "l2_difference": 0.017908182456900443
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865225,
+      "l2_difference": 0.21233738707223743
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65522,
+      "l2_difference": 0.012487755099807572
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131025,
+      "l2_difference": 0.018093189780627225
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.017579118136422375
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65517,
+      "l2_difference": 0.012784194869466348
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.017579118136422375
+    },
+    {
+      "name": "base_model.model.model.layers.10.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65506,
+      "l2_difference": 0.012786589905436511
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.016680339934859862
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261730,
+      "l2_difference": 0.02541289233585042
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262026,
+      "l2_difference": 0.02388720250715893
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.018084036794516305
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.017009188299915417
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261708,
+      "l2_difference": 0.025410401383274637
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.017139111798579937
+    },
+    {
+      "name": "base_model.model.model.layers.10.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262039,
+      "l2_difference": 0.025532598855303738
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.experts.w1.lora_A.weight",
+      "changed_values": 130996,
+      "l2_difference": 0.017502154088258032
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18864945,
+      "l2_difference": 0.21150673364524886
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865360,
+      "l2_difference": 0.12548042622061392
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131000,
+      "l2_difference": 0.018060877900054166
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.experts.w3.lora_A.weight",
+      "changed_values": 130996,
+      "l2_difference": 0.017502154088258032
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18864954,
+      "l2_difference": 0.211723860421077
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65512,
+      "l2_difference": 0.012324504789384355
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.01809224188298506
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.0173136929155319
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65509,
+      "l2_difference": 0.012784580742229384
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.0173136929155319
+    },
+    {
+      "name": "base_model.model.model.layers.11.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012788135883726142
+    },
+    {
+      "name": "base_model.model.model.layers.11.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01737505512592996
+    },
+    {
+      "name": "base_model.model.model.layers.11.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16373,
+      "l2_difference": 0.006396392188988995
+    },
+    {
+      "name": "base_model.model.model.layers.11.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524207,
+      "l2_difference": 0.034384117052081956
+    },
+    {
+      "name": "base_model.model.model.layers.11.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.018081023645943436
+    },
+    {
+      "name": "base_model.model.model.layers.11.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 130995,
+      "l2_difference": 0.017546771926340455
+    },
+    {
+      "name": "base_model.model.model.layers.11.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49117,
+      "l2_difference": 0.011072300809371133
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.01761639754935169
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865287,
+      "l2_difference": 0.21192267875099133
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865298,
+      "l2_difference": 0.136238680833695
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131027,
+      "l2_difference": 0.018071869995706417
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.01761639754935169
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865125,
+      "l2_difference": 0.21221573810736244
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012473758966335177
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131005,
+      "l2_difference": 0.018091354812667843
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 130999,
+      "l2_difference": 0.017510081225273838
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65495,
+      "l2_difference": 0.012785619718191312
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 130999,
+      "l2_difference": 0.017510081225273838
+    },
+    {
+      "name": "base_model.model.model.layers.12.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65509,
+      "l2_difference": 0.012790449202572425
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.0171417578479138
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262020,
+      "l2_difference": 0.025521680700136086
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262014,
+      "l2_difference": 0.024221238535570084
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131011,
+      "l2_difference": 0.018085320281517468
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.017238425110877784
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262012,
+      "l2_difference": 0.025518424674615164
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.01729608253462744
+    },
+    {
+      "name": "base_model.model.model.layers.12.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262020,
+      "l2_difference": 0.025559826639095153
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131025,
+      "l2_difference": 0.017723204630793434
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865231,
+      "l2_difference": 0.21077816065528193
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865274,
+      "l2_difference": 0.1353697763456142
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.018073771513958035
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131025,
+      "l2_difference": 0.017723204630793434
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865049,
+      "l2_difference": 0.2115226263704299
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012531841477886274
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131000,
+      "l2_difference": 0.01809200748203127
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131015,
+      "l2_difference": 0.017565056602058513
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012787999142895811
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131015,
+      "l2_difference": 0.017565056602058513
+    },
+    {
+      "name": "base_model.model.model.layers.13.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65514,
+      "l2_difference": 0.012791753582040434
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.017307922973654154
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261980,
+      "l2_difference": 0.02553310818144253
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262001,
+      "l2_difference": 0.02439899002792509
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.018087909426509185
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131017,
+      "l2_difference": 0.017387899942880067
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261977,
+      "l2_difference": 0.025532040662087616
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131006,
+      "l2_difference": 0.017476598698683482
+    },
+    {
+      "name": "base_model.model.model.layers.13.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262032,
+      "l2_difference": 0.02556624367552007
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.017808771333116858
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865485,
+      "l2_difference": 0.21029607956112426
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865466,
+      "l2_difference": 0.13374937179973578
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.experts.w2.lora_B.weight",
+      "changed_values": 130997,
+      "l2_difference": 0.01807580736913164
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.017808771333116858
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865153,
+      "l2_difference": 0.2110648638723526
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65519,
+      "l2_difference": 0.012450334294264767
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01809367271514901
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131011,
+      "l2_difference": 0.017665991607570312
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65509,
+      "l2_difference": 0.012789400328412496
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131011,
+      "l2_difference": 0.017665991607570312
+    },
+    {
+      "name": "base_model.model.model.layers.14.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012792183284869993
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.017420837156144453
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261736,
+      "l2_difference": 0.025513766033443415
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262027,
+      "l2_difference": 0.024532612619502805
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131009,
+      "l2_difference": 0.018090087742717666
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131011,
+      "l2_difference": 0.017518064946297325
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261762,
+      "l2_difference": 0.025516370404574665
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.017568273027602183
+    },
+    {
+      "name": "base_model.model.model.layers.14.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262027,
+      "l2_difference": 0.025569395724438643
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131047,
+      "l2_difference": 0.017875507942846904
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865452,
+      "l2_difference": 0.2111522729815437
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865598,
+      "l2_difference": 0.1358629433924078
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.01807707304520153
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131047,
+      "l2_difference": 0.017875507942846904
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865330,
+      "l2_difference": 0.21165061431954046
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65521,
+      "l2_difference": 0.012554197012661857
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.018094681228607693
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01769993855330512
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65504,
+      "l2_difference": 0.01278953813157202
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01769993855330512
+    },
+    {
+      "name": "base_model.model.model.layers.15.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65500,
+      "l2_difference": 0.012790836092474354
+    },
+    {
+      "name": "base_model.model.model.layers.15.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.017624985418712092
+    },
+    {
+      "name": "base_model.model.model.layers.15.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16378,
+      "l2_difference": 0.006398116008905348
+    },
+    {
+      "name": "base_model.model.model.layers.15.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524179,
+      "l2_difference": 0.03536170302652386
+    },
+    {
+      "name": "base_model.model.model.layers.15.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.018090381977786164
+    },
+    {
+      "name": "base_model.model.model.layers.15.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.017762903023900573
+    },
+    {
+      "name": "base_model.model.model.layers.15.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49130,
+      "l2_difference": 0.01107868887907573
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131048,
+      "l2_difference": 0.017939184037921965
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865502,
+      "l2_difference": 0.21016707869785628
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865794,
+      "l2_difference": 0.13968862701927304
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131003,
+      "l2_difference": 0.01807837543813488
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131048,
+      "l2_difference": 0.017939184037921965
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865380,
+      "l2_difference": 0.21077977088735972
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65517,
+      "l2_difference": 0.012601090653781602
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.01809507751649108
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.017720516196327994
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65515,
+      "l2_difference": 0.01279229112927239
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.017720516196327994
+    },
+    {
+      "name": "base_model.model.model.layers.16.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65507,
+      "l2_difference": 0.012792150876298976
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.017465485621052625
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261985,
+      "l2_difference": 0.02554955520567454
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262058,
+      "l2_difference": 0.02479381271772686
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.018091900346520483
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131025,
+      "l2_difference": 0.017582280390540037
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261989,
+      "l2_difference": 0.025554615946247704
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.017686297867834756
+    },
+    {
+      "name": "base_model.model.model.layers.16.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262034,
+      "l2_difference": 0.025569920963019153
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131046,
+      "l2_difference": 0.017976702976599656
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865649,
+      "l2_difference": 0.20938154092589104
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866044,
+      "l2_difference": 0.14436945286934583
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131011,
+      "l2_difference": 0.018078391435001007
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131046,
+      "l2_difference": 0.017976702976599656
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865397,
+      "l2_difference": 0.20995505199161468
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65517,
+      "l2_difference": 0.012600880526324713
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01809461433148852
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.017754124067276326
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65504,
+      "l2_difference": 0.012791425858309979
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.017754124067276326
+    },
+    {
+      "name": "base_model.model.model.layers.17.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012792787223869938
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.01761867669206367
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261988,
+      "l2_difference": 0.025560352925502027
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262041,
+      "l2_difference": 0.024860902883414596
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.o_proj.lora_B.weight",
+      "changed_values": 130993,
+      "l2_difference": 0.018090146657643524
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.017694456490632157
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261977,
+      "l2_difference": 0.025562476237453547
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.01773576722491278
+    },
+    {
+      "name": "base_model.model.model.layers.17.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262032,
+      "l2_difference": 0.025577154395853643
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131049,
+      "l2_difference": 0.01793991398881287
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866102,
+      "l2_difference": 0.20401898544953914
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865454,
+      "l2_difference": 0.12500789546474037
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131016,
+      "l2_difference": 0.01808347696942334
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131049,
+      "l2_difference": 0.01793991398881287
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865732,
+      "l2_difference": 0.20531990474969805
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65520,
+      "l2_difference": 0.012604386240124804
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131017,
+      "l2_difference": 0.01809444475981059
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.017803744733097728
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65506,
+      "l2_difference": 0.012791686638776008
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.017803744733097728
+    },
+    {
+      "name": "base_model.model.model.layers.18.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65511,
+      "l2_difference": 0.012792570287816588
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01767676624787816
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262011,
+      "l2_difference": 0.025567007636992475
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262052,
+      "l2_difference": 0.024945201495623143
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.018091891392531246
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.01775702222891711
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262028,
+      "l2_difference": 0.025566780766762397
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.01787651693047353
+    },
+    {
+      "name": "base_model.model.model.layers.18.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262038,
+      "l2_difference": 0.025580647391456067
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131044,
+      "l2_difference": 0.01792059718607825
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866367,
+      "l2_difference": 0.20435647238266025
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866458,
+      "l2_difference": 0.12559223293078675
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.01807711346385933
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131044,
+      "l2_difference": 0.01792059718607825
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866321,
+      "l2_difference": 0.20529276710051708
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65517,
+      "l2_difference": 0.012544424701756879
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.018094843369357363
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.017763070719635073
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65500,
+      "l2_difference": 0.012791447333535853
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.017763070719635073
+    },
+    {
+      "name": "base_model.model.model.layers.19.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65503,
+      "l2_difference": 0.012791891268986217
+    },
+    {
+      "name": "base_model.model.model.layers.19.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.01781460822694049
+    },
+    {
+      "name": "base_model.model.model.layers.19.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16381,
+      "l2_difference": 0.006398875933575777
+    },
+    {
+      "name": "base_model.model.model.layers.19.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524227,
+      "l2_difference": 0.0358150038107995
+    },
+    {
+      "name": "base_model.model.model.layers.19.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131027,
+      "l2_difference": 0.018093597408428974
+    },
+    {
+      "name": "base_model.model.model.layers.19.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131037,
+      "l2_difference": 0.017923304358687484
+    },
+    {
+      "name": "base_model.model.model.layers.19.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49129,
+      "l2_difference": 0.011080238102990105
+    },
+    {
+      "name": "base_model.model.model.layers.2.mlp.down_proj.lora_A.weight",
+      "changed_values": 393133,
+      "l2_difference": 0.02998185856367544
+    },
+    {
+      "name": "base_model.model.model.layers.2.mlp.down_proj.lora_B.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.018074862453498135
+    },
+    {
+      "name": "base_model.model.model.layers.2.mlp.gate_proj.lora_A.weight",
+      "changed_values": 131051,
+      "l2_difference": 0.017678555653761887
+    },
+    {
+      "name": "base_model.model.model.layers.2.mlp.gate_proj.lora_B.weight",
+      "changed_values": 393071,
+      "l2_difference": 0.031240473943115517
+    },
+    {
+      "name": "base_model.model.model.layers.2.mlp.up_proj.lora_A.weight",
+      "changed_values": 131051,
+      "l2_difference": 0.017678555653761887
+    },
+    {
+      "name": "base_model.model.model.layers.2.mlp.up_proj.lora_B.weight",
+      "changed_values": 393072,
+      "l2_difference": 0.031244122741666738
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131015,
+      "l2_difference": 0.01603829880908474
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262021,
+      "l2_difference": 0.025277996210301034
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262045,
+      "l2_difference": 0.023315894982220052
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.018077626122856405
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.016482910815403876
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262034,
+      "l2_difference": 0.025280066567906573
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.016545279530235813
+    },
+    {
+      "name": "base_model.model.model.layers.2.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262019,
+      "l2_difference": 0.025503745654323808
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131051,
+      "l2_difference": 0.017965847627143948
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865599,
+      "l2_difference": 0.20794226817866918
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18864740,
+      "l2_difference": 0.13585502602591804
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.01807542001975588
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131051,
+      "l2_difference": 0.017965847627143948
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865558,
+      "l2_difference": 0.2086237766771263
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65520,
+      "l2_difference": 0.01260894780676087
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131037,
+      "l2_difference": 0.018095659925211546
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131038,
+      "l2_difference": 0.017730071575862993
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65506,
+      "l2_difference": 0.012791094199418158
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131038,
+      "l2_difference": 0.017730071575862993
+    },
+    {
+      "name": "base_model.model.model.layers.20.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65509,
+      "l2_difference": 0.012791307356478463
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.01762118539469581
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262019,
+      "l2_difference": 0.02556355559543118
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262046,
+      "l2_difference": 0.02489798522750561
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131015,
+      "l2_difference": 0.01809131773012575
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.01771240874189517
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262026,
+      "l2_difference": 0.025565846190216235
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.017818870237553203
+    },
+    {
+      "name": "base_model.model.model.layers.20.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262022,
+      "l2_difference": 0.02557619266410466
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131056,
+      "l2_difference": 0.01798564225141861
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865525,
+      "l2_difference": 0.20876185673556166
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866009,
+      "l2_difference": 0.14008905081556294
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131009,
+      "l2_difference": 0.018073569273193625
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131056,
+      "l2_difference": 0.01798564225141861
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865350,
+      "l2_difference": 0.20939827275701767
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65519,
+      "l2_difference": 0.012647946264705107
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.018095175697224276
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.017819591826194397
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65512,
+      "l2_difference": 0.012792033876270542
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.017819591826194397
+    },
+    {
+      "name": "base_model.model.model.layers.21.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65505,
+      "l2_difference": 0.01279182878007021
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.017622953817496817
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262026,
+      "l2_difference": 0.02555992366965618
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262082,
+      "l2_difference": 0.02499071911749063
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131006,
+      "l2_difference": 0.01809064191708226
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.017748754083374865
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262043,
+      "l2_difference": 0.025564298942305486
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131045,
+      "l2_difference": 0.017794621788322782
+    },
+    {
+      "name": "base_model.model.model.layers.21.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262013,
+      "l2_difference": 0.025575064453519935
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131059,
+      "l2_difference": 0.017968472671920827
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865784,
+      "l2_difference": 0.20770062640350667
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865714,
+      "l2_difference": 0.14207859430156405
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131002,
+      "l2_difference": 0.018073236106817193
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131059,
+      "l2_difference": 0.017968472671920827
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865489,
+      "l2_difference": 0.2082512097762507
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65522,
+      "l2_difference": 0.012618141538616795
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.018093901248588076
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131042,
+      "l2_difference": 0.017887332529160287
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65503,
+      "l2_difference": 0.012790877987755106
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131042,
+      "l2_difference": 0.017887332529160287
+    },
+    {
+      "name": "base_model.model.model.layers.22.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65502,
+      "l2_difference": 0.012791030523463108
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131037,
+      "l2_difference": 0.017753259872956256
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261918,
+      "l2_difference": 0.02555269289086329
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262070,
+      "l2_difference": 0.025070227962844818
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131038,
+      "l2_difference": 0.01809360605357896
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131035,
+      "l2_difference": 0.017811930097202413
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261926,
+      "l2_difference": 0.02555744154667427
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131055,
+      "l2_difference": 0.017910819386773174
+    },
+    {
+      "name": "base_model.model.model.layers.22.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262024,
+      "l2_difference": 0.025573036810680048
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131056,
+      "l2_difference": 0.017956753258556543
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865615,
+      "l2_difference": 0.20803244685671746
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865827,
+      "l2_difference": 0.13881348164334192
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131006,
+      "l2_difference": 0.01807109185965633
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131056,
+      "l2_difference": 0.017956753258556543
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865724,
+      "l2_difference": 0.20858037746876895
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65527,
+      "l2_difference": 0.012654515954295852
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.018094658510112816
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131054,
+      "l2_difference": 0.017861052629964545
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65506,
+      "l2_difference": 0.01279099157305457
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131054,
+      "l2_difference": 0.017861052629964545
+    },
+    {
+      "name": "base_model.model.model.layers.23.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65501,
+      "l2_difference": 0.01279105578287476
+    },
+    {
+      "name": "base_model.model.model.layers.23.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.01783023403872702
+    },
+    {
+      "name": "base_model.model.model.layers.23.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16377,
+      "l2_difference": 0.006398074621716694
+    },
+    {
+      "name": "base_model.model.model.layers.23.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524230,
+      "l2_difference": 0.03586777941340393
+    },
+    {
+      "name": "base_model.model.model.layers.23.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.018091556527396437
+    },
+    {
+      "name": "base_model.model.model.layers.23.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.01779549018213309
+    },
+    {
+      "name": "base_model.model.model.layers.23.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49134,
+      "l2_difference": 0.011080251233689564
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.017801957263343715
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865894,
+      "l2_difference": 0.20734309016348057
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865884,
+      "l2_difference": 0.13040780701224092
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.018072914070116394
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.017801957263343715
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865886,
+      "l2_difference": 0.20804606818984084
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012465363156527765
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.018094433450355073
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.017687075553600325
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65513,
+      "l2_difference": 0.012791087174739988
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.017687075553600325
+    },
+    {
+      "name": "base_model.model.model.layers.24.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65513,
+      "l2_difference": 0.012791132711557919
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131050,
+      "l2_difference": 0.01782992144493792
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261708,
+      "l2_difference": 0.025543997216509833
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262069,
+      "l2_difference": 0.02486980820790909
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.018090655369512283
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131053,
+      "l2_difference": 0.01784001415190307
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261695,
+      "l2_difference": 0.02554510897497977
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131040,
+      "l2_difference": 0.01785725687882962
+    },
+    {
+      "name": "base_model.model.model.layers.24.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262038,
+      "l2_difference": 0.02557235591395284
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01772579703134598
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18801070,
+      "l2_difference": 0.20499944959570143
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18800923,
+      "l2_difference": 0.11903132339285526
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.018069831054241172
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01772579703134598
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18800912,
+      "l2_difference": 0.20562174969859412
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65511,
+      "l2_difference": 0.012382576746320515
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01809151922732827
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.01749839327505658
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65515,
+      "l2_difference": 0.012789168495394953
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.01749839327505658
+    },
+    {
+      "name": "base_model.model.model.layers.25.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012788747344664847
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.017190293724596354
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261878,
+      "l2_difference": 0.02552231080978896
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262057,
+      "l2_difference": 0.024631246201427842
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131011,
+      "l2_difference": 0.018090928109749365
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.01747265549368419
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261878,
+      "l2_difference": 0.025531616148804132
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131041,
+      "l2_difference": 0.017744021140918553
+    },
+    {
+      "name": "base_model.model.model.layers.25.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262030,
+      "l2_difference": 0.02557161613991396
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.0177184771432494
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866477,
+      "l2_difference": 0.2058891086373456
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865287,
+      "l2_difference": 0.12116153006291064
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131003,
+      "l2_difference": 0.01807113365717262
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.0177184771432494
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866284,
+      "l2_difference": 0.2064854211323239
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65500,
+      "l2_difference": 0.012336612402540447
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131017,
+      "l2_difference": 0.018091383751750612
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.01740071923708176
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012788778636597664
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.01740071923708176
+    },
+    {
+      "name": "base_model.model.model.layers.26.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65503,
+      "l2_difference": 0.012788856572186846
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.01761188374331556
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262020,
+      "l2_difference": 0.025553995310648493
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262052,
+      "l2_difference": 0.024758558015813937
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131001,
+      "l2_difference": 0.018087776325597226
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.0177631004145613
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262015,
+      "l2_difference": 0.025559355123477512
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131046,
+      "l2_difference": 0.017734025404897876
+    },
+    {
+      "name": "base_model.model.model.layers.26.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262029,
+      "l2_difference": 0.025566794380018017
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131035,
+      "l2_difference": 0.01770875972994209
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18801031,
+      "l2_difference": 0.2058396707220859
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18800923,
+      "l2_difference": 0.11441644378097196
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131001,
+      "l2_difference": 0.018064343035362373
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131035,
+      "l2_difference": 0.01770875972994209
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18800799,
+      "l2_difference": 0.20638892281918383
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65510,
+      "l2_difference": 0.012311112566750262
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.01809151182400154
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.017432868392526498
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65505,
+      "l2_difference": 0.012788176787055008
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.017432868392526498
+    },
+    {
+      "name": "base_model.model.model.layers.27.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65498,
+      "l2_difference": 0.012787924249971088
+    },
+    {
+      "name": "base_model.model.model.layers.27.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131009,
+      "l2_difference": 0.01768295661312172
+    },
+    {
+      "name": "base_model.model.model.layers.27.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16377,
+      "l2_difference": 0.006397854886933153
+    },
+    {
+      "name": "base_model.model.model.layers.27.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524144,
+      "l2_difference": 0.03534454470607478
+    },
+    {
+      "name": "base_model.model.model.layers.27.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131005,
+      "l2_difference": 0.01808823961030331
+    },
+    {
+      "name": "base_model.model.model.layers.27.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 130987,
+      "l2_difference": 0.017588816699852097
+    },
+    {
+      "name": "base_model.model.model.layers.27.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49127,
+      "l2_difference": 0.011079190527706343
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.017690261146289955
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866265,
+      "l2_difference": 0.20779120220814845
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865941,
+      "l2_difference": 0.12256219197590765
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.01806444038387228
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.017690261146289955
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865826,
+      "l2_difference": 0.2083748333474899
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65511,
+      "l2_difference": 0.012386950493399957
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131004,
+      "l2_difference": 0.01808953144413149
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01745795736906904
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65510,
+      "l2_difference": 0.012789464771677533
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01745795736906904
+    },
+    {
+      "name": "base_model.model.model.layers.28.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65515,
+      "l2_difference": 0.012790154886752066
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131040,
+      "l2_difference": 0.017486333668330124
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261314,
+      "l2_difference": 0.025499706035966064
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262056,
+      "l2_difference": 0.02445230014451805
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.01808721747995726
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.017599377350100528
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261377,
+      "l2_difference": 0.025509587193479104
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131017,
+      "l2_difference": 0.01756750641101455
+    },
+    {
+      "name": "base_model.model.model.layers.28.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262043,
+      "l2_difference": 0.02556249624075086
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01778062830737794
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866366,
+      "l2_difference": 0.20682471023312285
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866115,
+      "l2_difference": 0.12360136771853919
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131009,
+      "l2_difference": 0.01806628327998222
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.01778062830737794
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866061,
+      "l2_difference": 0.20761902026993162
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65520,
+      "l2_difference": 0.012473077066684038
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018091164330667615
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.017527138080763394
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65497,
+      "l2_difference": 0.012787029487948296
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.017527138080763394
+    },
+    {
+      "name": "base_model.model.model.layers.29.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65502,
+      "l2_difference": 0.012787888807964625
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131000,
+      "l2_difference": 0.017187771894394598
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261874,
+      "l2_difference": 0.025509888940224937
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262024,
+      "l2_difference": 0.024204204641547995
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.01808729636682852
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.017575457905652587
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261885,
+      "l2_difference": 0.025519358862328402
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.01739800357027837
+    },
+    {
+      "name": "base_model.model.model.layers.29.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262026,
+      "l2_difference": 0.025562886053855188
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131063,
+      "l2_difference": 0.01789004263081707
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865734,
+      "l2_difference": 0.2102547510814687
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866288,
+      "l2_difference": 0.11624766790223491
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131016,
+      "l2_difference": 0.018072734640353097
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131063,
+      "l2_difference": 0.01789004263081707
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865705,
+      "l2_difference": 0.2103575637498601
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65519,
+      "l2_difference": 0.012284510972622734
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.01808995018070839
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131038,
+      "l2_difference": 0.01720955045049515
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65515,
+      "l2_difference": 0.012768609273626911
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131038,
+      "l2_difference": 0.01720955045049515
+    },
+    {
+      "name": "base_model.model.model.layers.3.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65518,
+      "l2_difference": 0.012778342275443534
+    },
+    {
+      "name": "base_model.model.model.layers.3.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.01682929499423061
+    },
+    {
+      "name": "base_model.model.model.layers.3.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16372,
+      "l2_difference": 0.006395018242657876
+    },
+    {
+      "name": "base_model.model.model.layers.3.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524118,
+      "l2_difference": 0.032093632616297094
+    },
+    {
+      "name": "base_model.model.model.layers.3.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131013,
+      "l2_difference": 0.018059563976535856
+    },
+    {
+      "name": "base_model.model.model.layers.3.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 130995,
+      "l2_difference": 0.016780926611613553
+    },
+    {
+      "name": "base_model.model.model.layers.3.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49131,
+      "l2_difference": 0.011061246656573218
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131017,
+      "l2_difference": 0.017618725003606745
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866639,
+      "l2_difference": 0.2087078554815747
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866193,
+      "l2_difference": 0.11769821492624598
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018065763362333023
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131017,
+      "l2_difference": 0.017618725003606745
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866209,
+      "l2_difference": 0.20930035345725817
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65509,
+      "l2_difference": 0.012277212028507255
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131003,
+      "l2_difference": 0.018088389818796263
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.01727872837366239
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65513,
+      "l2_difference": 0.01278750961976929
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.01727872837366239
+    },
+    {
+      "name": "base_model.model.model.layers.30.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65501,
+      "l2_difference": 0.012787203302726606
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131042,
+      "l2_difference": 0.01778807861361634
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262025,
+      "l2_difference": 0.025540210462724203
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262088,
+      "l2_difference": 0.025149619641428877
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.01809048934044374
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.017862490590368
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262029,
+      "l2_difference": 0.02554446864447789
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131045,
+      "l2_difference": 0.01786243925109522
+    },
+    {
+      "name": "base_model.model.model.layers.30.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262024,
+      "l2_difference": 0.025559725401051787
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.017565052140236053
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866511,
+      "l2_difference": 0.2077428906514547
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866057,
+      "l2_difference": 0.11311421578381738
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.018063487106335107
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.017565052140236053
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866437,
+      "l2_difference": 0.2082671263799472
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012287362537035683
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.018089339182844177
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01733538814139497
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65509,
+      "l2_difference": 0.012785617938979525
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01733538814139497
+    },
+    {
+      "name": "base_model.model.model.layers.31.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65505,
+      "l2_difference": 0.01278751995471498
+    },
+    {
+      "name": "base_model.model.model.layers.31.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.01762932777641318
+    },
+    {
+      "name": "base_model.model.model.layers.31.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16381,
+      "l2_difference": 0.006398091753516849
+    },
+    {
+      "name": "base_model.model.model.layers.31.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524189,
+      "l2_difference": 0.03507936880927704
+    },
+    {
+      "name": "base_model.model.model.layers.31.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01807416610172589
+    },
+    {
+      "name": "base_model.model.model.layers.31.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.017529663994559685
+    },
+    {
+      "name": "base_model.model.model.layers.31.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49130,
+      "l2_difference": 0.01107442025529676
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.017611645508849673
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866281,
+      "l2_difference": 0.20817373354282967
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865813,
+      "l2_difference": 0.11877099702517452
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.experts.w2.lora_B.weight",
+      "changed_values": 130996,
+      "l2_difference": 0.01805787258260953
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.017611645508849673
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866131,
+      "l2_difference": 0.20864678567893719
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65518,
+      "l2_difference": 0.012334094477674414
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131016,
+      "l2_difference": 0.01808998571014174
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.01733421030317486
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65504,
+      "l2_difference": 0.012785577819007988
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.01733421030317486
+    },
+    {
+      "name": "base_model.model.model.layers.32.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65511,
+      "l2_difference": 0.012787931302690951
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131050,
+      "l2_difference": 0.01749142213883078
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262004,
+      "l2_difference": 0.02553421767497785
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262051,
+      "l2_difference": 0.02455495312710737
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.01808521911481789
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131025,
+      "l2_difference": 0.017627766243087196
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262020,
+      "l2_difference": 0.025538364163216785
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.01752664615794748
+    },
+    {
+      "name": "base_model.model.model.layers.32.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262032,
+      "l2_difference": 0.025552162742969297
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.01757536337473402
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866977,
+      "l2_difference": 0.2045604112623405
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866352,
+      "l2_difference": 0.10510012190998225
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131006,
+      "l2_difference": 0.018058804062574204
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.01757536337473402
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866840,
+      "l2_difference": 0.20532195594423627
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65495,
+      "l2_difference": 0.01227251454014576
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018090189374963116
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.017326929050556293
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65504,
+      "l2_difference": 0.012784119816519762
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.017326929050556293
+    },
+    {
+      "name": "base_model.model.model.layers.33.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65513,
+      "l2_difference": 0.01278802726616417
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.016936586179007538
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261992,
+      "l2_difference": 0.025516990447693674
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262064,
+      "l2_difference": 0.02421237773258626
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.01808568203474679
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.01746841367697665
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261981,
+      "l2_difference": 0.025527409345504404
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.017510308582651304
+    },
+    {
+      "name": "base_model.model.model.layers.33.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262044,
+      "l2_difference": 0.025564784117312597
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131040,
+      "l2_difference": 0.017647713042916135
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18867010,
+      "l2_difference": 0.20292176452316332
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866276,
+      "l2_difference": 0.10022072370713898
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.018063859166585216
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131040,
+      "l2_difference": 0.017647713042916135
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866494,
+      "l2_difference": 0.20378785145754644
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65514,
+      "l2_difference": 0.01231836511029404
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.018092539299573145
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131015,
+      "l2_difference": 0.0172723313903292
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65514,
+      "l2_difference": 0.012784031844790066
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131015,
+      "l2_difference": 0.0172723313903292
+    },
+    {
+      "name": "base_model.model.model.layers.34.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012786520839497342
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131052,
+      "l2_difference": 0.017592666850797
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261785,
+      "l2_difference": 0.02549930166969029
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262088,
+      "l2_difference": 0.02500634837195536
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.018088787634896564
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.017641057126802005
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261768,
+      "l2_difference": 0.02549300376183872
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.01780881447503011
+    },
+    {
+      "name": "base_model.model.model.layers.34.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262031,
+      "l2_difference": 0.025544500925065283
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.017583856169739176
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18867153,
+      "l2_difference": 0.20587921829630493
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866726,
+      "l2_difference": 0.10637864501125156
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.018056662473237766
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.017583856169739176
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866825,
+      "l2_difference": 0.2065005464502364
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012310347641184759
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131014,
+      "l2_difference": 0.018090616612946968
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.017373154698674648
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65503,
+      "l2_difference": 0.012781079136817716
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.017373154698674648
+    },
+    {
+      "name": "base_model.model.model.layers.35.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65500,
+      "l2_difference": 0.012784154722163977
+    },
+    {
+      "name": "base_model.model.model.layers.35.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.017449925385000124
+    },
+    {
+      "name": "base_model.model.model.layers.35.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16375,
+      "l2_difference": 0.0063965866571975335
+    },
+    {
+      "name": "base_model.model.model.layers.35.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524135,
+      "l2_difference": 0.03487413835110052
+    },
+    {
+      "name": "base_model.model.model.layers.35.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.018060090057740046
+    },
+    {
+      "name": "base_model.model.model.layers.35.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.017462978665834936
+    },
+    {
+      "name": "base_model.model.model.layers.35.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49122,
+      "l2_difference": 0.011072974574385436
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131013,
+      "l2_difference": 0.017547953853853444
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18867098,
+      "l2_difference": 0.20563070768426528
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866401,
+      "l2_difference": 0.10484146783337363
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.018056282266586676
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131013,
+      "l2_difference": 0.017547953853853444
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866777,
+      "l2_difference": 0.20642814140522
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65517,
+      "l2_difference": 0.012289700166994294
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.018087232982285813
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.017306787873840254
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65500,
+      "l2_difference": 0.012780328695548748
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.017306787873840254
+    },
+    {
+      "name": "base_model.model.model.layers.36.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65502,
+      "l2_difference": 0.012785739458887104
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.017261654962494183
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261897,
+      "l2_difference": 0.02548010365352885
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262069,
+      "l2_difference": 0.024251337084519597
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131027,
+      "l2_difference": 0.01808479950759591
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.017441853034236017
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261902,
+      "l2_difference": 0.025478540906632683
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.017621207131164395
+    },
+    {
+      "name": "base_model.model.model.layers.36.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262049,
+      "l2_difference": 0.025535752526792948
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.017591648482349932
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866726,
+      "l2_difference": 0.2048282409039166
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866314,
+      "l2_difference": 0.10708232260635656
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.experts.w2.lora_B.weight",
+      "changed_values": 130995,
+      "l2_difference": 0.01805380536082276
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.017591648482349932
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866382,
+      "l2_difference": 0.20589936721092175
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65519,
+      "l2_difference": 0.012460922406634283
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.018089404607284826
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.017420222363889383
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012780807147646279
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.017420222363889383
+    },
+    {
+      "name": "base_model.model.model.layers.37.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65498,
+      "l2_difference": 0.012785348275885847
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.016863371343416936
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261988,
+      "l2_difference": 0.02549629748670967
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262057,
+      "l2_difference": 0.023815822614301013
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018072918869722385
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.017293488902452962
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261973,
+      "l2_difference": 0.025496798516201333
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.017168253298475405
+    },
+    {
+      "name": "base_model.model.model.layers.37.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262030,
+      "l2_difference": 0.025518227451127428
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.01762252270720339
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18867084,
+      "l2_difference": 0.2025828399171967
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866149,
+      "l2_difference": 0.10256723035272428
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.018059149254293402
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.01762252270720339
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866611,
+      "l2_difference": 0.20376682570738133
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65521,
+      "l2_difference": 0.012425254542801668
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018089810952315585
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.0176206709414704
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012780557824510942
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.0176206709414704
+    },
+    {
+      "name": "base_model.model.model.layers.38.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65512,
+      "l2_difference": 0.012785403161413017
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131052,
+      "l2_difference": 0.01781294229921228
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261932,
+      "l2_difference": 0.02550096331874202
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262073,
+      "l2_difference": 0.02482338372581879
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.018079425066626457
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131040,
+      "l2_difference": 0.017754536288598865
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261932,
+      "l2_difference": 0.025506981541723227
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131048,
+      "l2_difference": 0.017824987237738458
+    },
+    {
+      "name": "base_model.model.model.layers.38.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262042,
+      "l2_difference": 0.02553368739588231
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.017628609013443767
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866924,
+      "l2_difference": 0.20348288419930105
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866762,
+      "l2_difference": 0.10238463068576935
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01805781910938357
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.017628609013443767
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866549,
+      "l2_difference": 0.20458187002792616
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65523,
+      "l2_difference": 0.012438123348627523
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131027,
+      "l2_difference": 0.0180894444612598
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131035,
+      "l2_difference": 0.017540507174728964
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65515,
+      "l2_difference": 0.012780039827975724
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131035,
+      "l2_difference": 0.017540507174728964
+    },
+    {
+      "name": "base_model.model.model.layers.39.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65504,
+      "l2_difference": 0.012785144494084
+    },
+    {
+      "name": "base_model.model.model.layers.39.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131038,
+      "l2_difference": 0.017885453574011823
+    },
+    {
+      "name": "base_model.model.model.layers.39.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16377,
+      "l2_difference": 0.00639757033548824
+    },
+    {
+      "name": "base_model.model.model.layers.39.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524171,
+      "l2_difference": 0.034346725418219586
+    },
+    {
+      "name": "base_model.model.model.layers.39.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131023,
+      "l2_difference": 0.01806920866114789
+    },
+    {
+      "name": "base_model.model.model.layers.39.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.017863231333899342
+    },
+    {
+      "name": "base_model.model.model.layers.39.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49137,
+      "l2_difference": 0.011077480849642728
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131063,
+      "l2_difference": 0.017901254666992904
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865565,
+      "l2_difference": 0.21320508946742947
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865987,
+      "l2_difference": 0.12818821564807012
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.experts.w2.lora_B.weight",
+      "changed_values": 130992,
+      "l2_difference": 0.018046152194595728
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131063,
+      "l2_difference": 0.017901254666992904
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865611,
+      "l2_difference": 0.21326329949657993
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65510,
+      "l2_difference": 0.011653595949975734
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018081566683058072
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.016676646101293602
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012758189030496542
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.016676646101293602
+    },
+    {
+      "name": "base_model.model.model.layers.4.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012762948495576661
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.016168179725711298
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262015,
+      "l2_difference": 0.025176118577168716
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262045,
+      "l2_difference": 0.023796896938702225
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.01808279702219889
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.016403583384289745
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262024,
+      "l2_difference": 0.025197908036219803
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131015,
+      "l2_difference": 0.017107907701078513
+    },
+    {
+      "name": "base_model.model.model.layers.4.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262031,
+      "l2_difference": 0.02553204860250618
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131044,
+      "l2_difference": 0.017670860863599824
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866789,
+      "l2_difference": 0.20405248339093704
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866775,
+      "l2_difference": 0.10638794385466936
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.018051098964376865
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131044,
+      "l2_difference": 0.017670860863599824
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866677,
+      "l2_difference": 0.20581565109875988
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65512,
+      "l2_difference": 0.012538562197065398
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.01808992023728905
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131035,
+      "l2_difference": 0.017670268385234545
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65494,
+      "l2_difference": 0.012778185593129652
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131035,
+      "l2_difference": 0.017670268385234545
+    },
+    {
+      "name": "base_model.model.model.layers.40.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65513,
+      "l2_difference": 0.012785295685700613
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131061,
+      "l2_difference": 0.01768063499639429
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261931,
+      "l2_difference": 0.025490501424741668
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262090,
+      "l2_difference": 0.024439707786142163
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.01808110482657502
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131037,
+      "l2_difference": 0.01761055240079959
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261939,
+      "l2_difference": 0.02549447918871876
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131045,
+      "l2_difference": 0.017689854772241626
+    },
+    {
+      "name": "base_model.model.model.layers.40.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262044,
+      "l2_difference": 0.025531821847235146
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.017639474865640582
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18867013,
+      "l2_difference": 0.20129609176715857
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866611,
+      "l2_difference": 0.11063120731230275
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.01805793448209774
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.017639474865640582
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866491,
+      "l2_difference": 0.2041226066873794
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65527,
+      "l2_difference": 0.012585358503910212
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131037,
+      "l2_difference": 0.018091833210411707
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131042,
+      "l2_difference": 0.017880732595166114
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65505,
+      "l2_difference": 0.012780125304971702
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131042,
+      "l2_difference": 0.017880732595166114
+    },
+    {
+      "name": "base_model.model.model.layers.41.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65512,
+      "l2_difference": 0.012785837713855032
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131053,
+      "l2_difference": 0.017810993904954737
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261414,
+      "l2_difference": 0.02545035346307836
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262078,
+      "l2_difference": 0.024625690135761623
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131033,
+      "l2_difference": 0.018079769557184284
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131051,
+      "l2_difference": 0.017917998801081917
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261418,
+      "l2_difference": 0.025465435935419962
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.01768072966204203
+    },
+    {
+      "name": "base_model.model.model.layers.41.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262047,
+      "l2_difference": 0.02552612838069442
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.017693002983278357
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866990,
+      "l2_difference": 0.1980836954237254
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18867149,
+      "l2_difference": 0.1130914045617518
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018055751415982566
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.017693002983278357
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866358,
+      "l2_difference": 0.202167353551226
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65526,
+      "l2_difference": 0.012633235256906598
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.018092528379977275
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131057,
+      "l2_difference": 0.01784680157188723
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65517,
+      "l2_difference": 0.012779016955567397
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131057,
+      "l2_difference": 0.01784680157188723
+    },
+    {
+      "name": "base_model.model.model.layers.42.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65514,
+      "l2_difference": 0.012783512260682093
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131052,
+      "l2_difference": 0.01767565832192693
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262044,
+      "l2_difference": 0.02550054088062226
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262104,
+      "l2_difference": 0.025001859472634995
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.018083388479715898
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131047,
+      "l2_difference": 0.017830610118559683
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262018,
+      "l2_difference": 0.025518133761411096
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131059,
+      "l2_difference": 0.01785920790507788
+    },
+    {
+      "name": "base_model.model.model.layers.42.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262030,
+      "l2_difference": 0.025549386880317715
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.017740589226780266
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18866974,
+      "l2_difference": 0.1979246514423812
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866472,
+      "l2_difference": 0.11026142313654629
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.018058163524586508
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.017740589226780266
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866412,
+      "l2_difference": 0.20138508378346587
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65522,
+      "l2_difference": 0.012548696278409852
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131027,
+      "l2_difference": 0.01809309049943262
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.017776318251123236
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65503,
+      "l2_difference": 0.012776195092522506
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.017776318251123236
+    },
+    {
+      "name": "base_model.model.model.layers.43.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65510,
+      "l2_difference": 0.012781740410275846
+    },
+    {
+      "name": "base_model.model.model.layers.43.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131039,
+      "l2_difference": 0.017757554929400635
+    },
+    {
+      "name": "base_model.model.model.layers.43.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16377,
+      "l2_difference": 0.006396870483431502
+    },
+    {
+      "name": "base_model.model.model.layers.43.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524220,
+      "l2_difference": 0.034878101827256786
+    },
+    {
+      "name": "base_model.model.model.layers.43.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131031,
+      "l2_difference": 0.018067790310734976
+    },
+    {
+      "name": "base_model.model.model.layers.43.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131043,
+      "l2_difference": 0.01774211447479083
+    },
+    {
+      "name": "base_model.model.model.layers.43.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49134,
+      "l2_difference": 0.011073875665464075
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.017748640222207762
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18867022,
+      "l2_difference": 0.19213755126206197
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18794643,
+      "l2_difference": 0.1326325221154014
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.018063201802738012
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.017748640222207762
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18866941,
+      "l2_difference": 0.194931477250484
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012662669869357702
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.018097123556647256
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01771369658367924
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65509,
+      "l2_difference": 0.012777563531776814
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01771369658367924
+    },
+    {
+      "name": "base_model.model.model.layers.44.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65512,
+      "l2_difference": 0.012782055730773113
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131047,
+      "l2_difference": 0.01759565094806611
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262038,
+      "l2_difference": 0.025473574965754222
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262058,
+      "l2_difference": 0.0243827897274897
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131030,
+      "l2_difference": 0.01808590286351079
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131041,
+      "l2_difference": 0.01767486231359508
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262026,
+      "l2_difference": 0.025478883712109223
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131040,
+      "l2_difference": 0.017619105067799075
+    },
+    {
+      "name": "base_model.model.model.layers.44.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262036,
+      "l2_difference": 0.02554104187744724
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131065,
+      "l2_difference": 0.017955731178520954
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865486,
+      "l2_difference": 0.21322994572505108
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866092,
+      "l2_difference": 0.12516515184172744
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131009,
+      "l2_difference": 0.018048602422662423
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131065,
+      "l2_difference": 0.017955731178520954
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865674,
+      "l2_difference": 0.21326945926303484
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65529,
+      "l2_difference": 0.011509473127784503
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131041,
+      "l2_difference": 0.01808312321745725
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131054,
+      "l2_difference": 0.01730003373583892
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65514,
+      "l2_difference": 0.012750290205491966
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131054,
+      "l2_difference": 0.01730003373583892
+    },
+    {
+      "name": "base_model.model.model.layers.5.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65512,
+      "l2_difference": 0.012751983145519915
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131032,
+      "l2_difference": 0.01657532607501853
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262035,
+      "l2_difference": 0.025251190846828243
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262045,
+      "l2_difference": 0.023338090449311056
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131013,
+      "l2_difference": 0.018076782395314347
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131038,
+      "l2_difference": 0.016885030704659725
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262020,
+      "l2_difference": 0.025266534308843305
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131034,
+      "l2_difference": 0.017263466433152026
+    },
+    {
+      "name": "base_model.model.model.layers.5.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262031,
+      "l2_difference": 0.025523301046899764
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131065,
+      "l2_difference": 0.017957720260757485
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865385,
+      "l2_difference": 0.21307681833790065
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18866094,
+      "l2_difference": 0.13175001702987807
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131021,
+      "l2_difference": 0.018054514958160284
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131065,
+      "l2_difference": 0.017957720260757485
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865488,
+      "l2_difference": 0.2131436908143038
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65525,
+      "l2_difference": 0.012044753440266282
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131036,
+      "l2_difference": 0.018088957097791788
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131050,
+      "l2_difference": 0.017559596989200336
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65513,
+      "l2_difference": 0.012767564404557093
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131050,
+      "l2_difference": 0.017559596989200336
+    },
+    {
+      "name": "base_model.model.model.layers.6.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65518,
+      "l2_difference": 0.012772184472473962
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131026,
+      "l2_difference": 0.01670945264071747
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262041,
+      "l2_difference": 0.025288307394905025
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262058,
+      "l2_difference": 0.023361196412296267
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.018077210882224616
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01674800243283065
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262021,
+      "l2_difference": 0.025295054842596268
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01688147818826949
+    },
+    {
+      "name": "base_model.model.model.layers.6.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262032,
+      "l2_difference": 0.025518078854271892
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.01712431006829704
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865148,
+      "l2_difference": 0.21032625296955323
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865620,
+      "l2_difference": 0.10813486078596311
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131013,
+      "l2_difference": 0.01804031962761944
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131018,
+      "l2_difference": 0.01712431006829704
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865079,
+      "l2_difference": 0.21048470685706802
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65514,
+      "l2_difference": 0.011688129780566242
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131019,
+      "l2_difference": 0.018083377554633382
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.016532559502379383
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65495,
+      "l2_difference": 0.012759814561219752
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.016532559502379383
+    },
+    {
+      "name": "base_model.model.model.layers.7.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012769469275851915
+    },
+    {
+      "name": "base_model.model.model.layers.7.self_attn.kv_a_proj_with_mqa.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.016602203700171996
+    },
+    {
+      "name": "base_model.model.model.layers.7.self_attn.kv_a_proj_with_mqa.lora_B.weight",
+      "changed_values": 16373,
+      "l2_difference": 0.006395252558866715
+    },
+    {
+      "name": "base_model.model.model.layers.7.self_attn.o_proj.lora_A.weight",
+      "changed_values": 524030,
+      "l2_difference": 0.03087401236158372
+    },
+    {
+      "name": "base_model.model.model.layers.7.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.018046253796384595
+    },
+    {
+      "name": "base_model.model.model.layers.7.self_attn.q_a_proj.lora_A.weight",
+      "changed_values": 131002,
+      "l2_difference": 0.017194371214957434
+    },
+    {
+      "name": "base_model.model.model.layers.7.self_attn.q_a_proj.lora_B.weight",
+      "changed_values": 49132,
+      "l2_difference": 0.011063921801003398
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.017422661620396313
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865336,
+      "l2_difference": 0.21193110251720906
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865509,
+      "l2_difference": 0.12359900841766505
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131006,
+      "l2_difference": 0.018054608566350043
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131008,
+      "l2_difference": 0.017422661620396313
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865113,
+      "l2_difference": 0.21212749438205666
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65516,
+      "l2_difference": 0.012236369702496933
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131028,
+      "l2_difference": 0.018088239644727843
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.017200013044584208
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65510,
+      "l2_difference": 0.012777720249477768
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131010,
+      "l2_difference": 0.017200013044584208
+    },
+    {
+      "name": "base_model.model.model.layers.8.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65504,
+      "l2_difference": 0.012785126412546503
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.k_proj.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.01647073769991389
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.k_proj.lora_B.weight",
+      "changed_values": 261683,
+      "l2_difference": 0.02530916927912017
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262043,
+      "l2_difference": 0.023073983983019887
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131012,
+      "l2_difference": 0.018077801775247374
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131020,
+      "l2_difference": 0.01669271756411106
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.q_proj.lora_B.weight",
+      "changed_values": 261707,
+      "l2_difference": 0.025305523872891686
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.016834397769220532
+    },
+    {
+      "name": "base_model.model.model.layers.8.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262046,
+      "l2_difference": 0.025520776916645945
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.experts.w1.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.017585997251361965
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.experts.w1.lora_B.weight",
+      "changed_values": 18865299,
+      "l2_difference": 0.21215731153112974
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.experts.w2.lora_A.weight",
+      "changed_values": 18865703,
+      "l2_difference": 0.12711609943103835
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.experts.w2.lora_B.weight",
+      "changed_values": 131000,
+      "l2_difference": 0.01805907943524547
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.experts.w3.lora_A.weight",
+      "changed_values": 131024,
+      "l2_difference": 0.017585997251361965
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.experts.w3.lora_B.weight",
+      "changed_values": 18865441,
+      "l2_difference": 0.21231994415918518
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.shared_experts.down_proj.lora_A.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012184964744357768
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.shared_experts.down_proj.lora_B.weight",
+      "changed_values": 131029,
+      "l2_difference": 0.018090066860358172
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.shared_experts.gate_proj.lora_A.weight",
+      "changed_values": 131001,
+      "l2_difference": 0.0171755428723489
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.shared_experts.gate_proj.lora_B.weight",
+      "changed_values": 65508,
+      "l2_difference": 0.012781197224644327
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.shared_experts.up_proj.lora_A.weight",
+      "changed_values": 131001,
+      "l2_difference": 0.0171755428723489
+    },
+    {
+      "name": "base_model.model.model.layers.9.mlp.shared_experts.up_proj.lora_B.weight",
+      "changed_values": 65500,
+      "l2_difference": 0.012783369647736907
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.k_proj.lora_A.weight",
+      "changed_values": 130999,
+      "l2_difference": 0.016732216864250315
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.k_proj.lora_B.weight",
+      "changed_values": 262032,
+      "l2_difference": 0.025428946227714556
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.o_proj.lora_A.weight",
+      "changed_values": 262046,
+      "l2_difference": 0.023638726355623703
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.o_proj.lora_B.weight",
+      "changed_values": 131022,
+      "l2_difference": 0.018082843734375728
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.q_proj.lora_A.weight",
+      "changed_values": 131007,
+      "l2_difference": 0.017084888381305636
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.q_proj.lora_B.weight",
+      "changed_values": 262030,
+      "l2_difference": 0.025429255169538166
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.v_proj.lora_A.weight",
+      "changed_values": 131027,
+      "l2_difference": 0.017042959137745384
+    },
+    {
+      "name": "base_model.model.model.layers.9.self_attn.v_proj.lora_B.weight",
+      "changed_values": 262027,
+      "l2_difference": 0.025536441645386886
+    },
+    {
+      "name": "base_model.model.model.lm_head.lora_A.weight",
+      "changed_values": 131009,
+      "l2_difference": 0.017889945276156016
+    },
+    {
+      "name": "base_model.model.model.lm_head.lora_B.weight",
+      "changed_values": 4954753,
+      "l2_difference": 0.057175762264652465
+    }
+  ]
+}
