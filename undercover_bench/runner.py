@@ -181,6 +181,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                  sampling_seed=seed if sampling_seed is None else sampling_seed,
                  oversight_protocol="append_only_inbox_v1",
                  auditor_initialization=getattr(policy, "initialization", None),
+                 protocol_metadata=getattr(policy, "protocol_metadata", None),
                  policy_identities=policy.identities if training else None,
                  provenance="trainable_rlcr" if training else "pilot; no RL weight update")
     ledger.write("controller_initial_state", visibility="controller", state=game.state())
@@ -216,7 +217,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                      model_emitted_reasoning=response.get("model_emitted_reasoning"),
                      model_message=response.get("model_message"),
                      model_metadata=response.get("model_metadata"),
-                     reasoning_kind="scripted" if isinstance(policy, ScriptedPolicy) else "model_self_report")
+                     reasoning_kind=response.get("reasoning_kind", "scripted" if isinstance(policy, ScriptedPolicy) else "model_self_report"))
         if training:
             from .rlcr import AuthoredDecision, RLCRInputError
             trace = response.get("training_trace")
