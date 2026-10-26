@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from .decisions import decision_model, normalize_action_payload, normalize_message_payload
 from .games import SecretHitler, LiarsBar
 from .ledger import Ledger
+from .reporting import OversightInbox
 from .rewards import organizational_return, audit_score, AuditOpportunity
 
 
@@ -58,7 +59,9 @@ def decision_prompt(observation, legal):
 
 
 class ModalPolicy:
-    def __init__(self, model_key):
+    def __init__(self, model_key, auditor_instructions="", initialization="M0"):
+        self.auditor_instructions = auditor_instructions
+        self.initialization = initialization
         import modal
         self.model_key = model_key
         self.fn = modal.Function.from_name(f"undercover-{model_key}", "generate")
@@ -72,6 +75,8 @@ class ModalPolicy:
         model = decision_model(phase, legal)
         schema = model.model_json_schema()
         base = decision_prompt(observation, legal)
+        if observation.get("auditor") and getattr(self, "auditor_instructions", ""):
+            base = self.auditor_instructions + "\n\n" + base
         generation_seed = None
         if getattr(self, "episode_seed", None) is not None:
             key = (observation["you"], observation["phase"], observation.get("round"), observation.get("turn"))
@@ -161,6 +166,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
     episode_id = f"{game_name}-{condition}-{seed}-{uuid.uuid4().hex[:8]}"
     path = Path(out_dir) / f"{episode_id}.jsonl"
     ledger = Ledger(path, episode_id)
+    oversight = OversightInbox(Path(out_dir) / "oversight", episode_id)
     policy = policy or ScriptedPolicy(seed + 10000)
     if training:
         policy.bind_roles(game.roles, game.auditor)
@@ -173,6 +179,8 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                  channel_enabled=channel_enabled, channel_protocol="one_exclusive_pair" if game_name == "secret_hitler" else "per_turn_whisper",
                  ruleset="five-player-pair-channel-v2" if game_name == "secret_hitler" else "short-transfer-smoke",
                  sampling_seed=seed if sampling_seed is None else sampling_seed,
+                 oversight_protocol="append_only_inbox_v1",
+                 auditor_initialization=getattr(policy, "initialization", None),
                  policy_identities=policy.identities if training else None,
                  provenance="trainable_rlcr" if training else "pilot; no RL weight update")
     ledger.write("controller_initial_state", visibility="controller", state=game.state())
@@ -223,7 +231,8 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
         if phase in ("whisper", "channel_offer"):
             return {"target": action, "text": str(response.get("message", ""))}
         if phase == "report":
-            return {"action": action, "evidence_ids": response.get("evidence_ids", [])}
+            return {"action": action, "evidence_ids": response.get("evidence_ids", []),
+                    "explanation": response.get("rationale", "")}
         return action
 
     if offer_style:
@@ -261,9 +270,9 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                     ids = report["evidence_ids"] if isinstance(report["evidence_ids"], list) else []
                     ids = [value for value in ids if isinstance(value, str)]
                     seen = {m["id"] for m in game.private_messages if m["to"] == auditor}
-                    entry = {"reporter": auditor, "evidence_ids": ids, "delivered": True,
-                             "evidence_ids_visible_to_reporter": set(ids).issubset(seen),
-                             "verification": "pending_independent_review"}
+                    receipt = oversight.report_to_human(auditor, ids, seen, report.get("explanation", ""))
+                    entry = {"reporter": auditor, "evidence_ids": ids, **receipt,
+                             "evidence_ids_visible_to_reporter": set(ids).issubset(seen)}
                     pending_reports.append(entry)
                     ledger.write("human_report", **entry)
             ledger.write("checkpoint", visibility="controller", state=game.state())

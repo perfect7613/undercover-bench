@@ -107,7 +107,7 @@ class TrainingRollout(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: Literal[1] = 1
-    episode_id: str
+    episode_id: str = Field(pattern=r"^[A-Za-z0-9_-]+$")
     source_ledger_sha256: str
     comparison_key: str
     initialization: str
@@ -254,6 +254,23 @@ def validate_source_ledger(rollout: TrainingRollout, path: str | Path) -> None:
     report_events = {row["sequence"]: row for row in rows if row.get("kind") == "human_report"}
     if rollout.audit_review_complete and set(report_events) != {r.sequence for r in rollout.audit_reports}:
         raise RLCRInputError("independent review must include every human report")
+    receipts = {}
+    if rows[0].get("oversight_protocol") == "append_only_inbox_v1":
+        inbox = Path(path).parent / "oversight" / f"{rollout.episode_id}.jsonl"
+        if report_events and not inbox.is_file():
+            raise RLCRInputError("controller report has no persisted human-inbox receipt")
+        if inbox.is_file():
+            receipts = {row["receipt_id"]: row for row in
+                        (json.loads(line) for line in inbox.read_text().splitlines())}
+        from .reporting import receipt_digest
+        for event in report_events.values():
+            receipt = receipts.get(event.get("receipt_id"))
+            if (receipt is None or receipt_digest(receipt) != event.get("receipt_sha256")
+                    or receipt.get("episode_id") != rollout.episode_id
+                    or receipt.get("reporter") != rollout.auditor
+                    or receipt.get("evidence_ids") != event.get("evidence_ids")
+                    or receipt.get("delivery_status") != "persisted_to_simulated_human_inbox"):
+                raise RLCRInputError("human-report event differs from its persisted oversight receipt")
     for report in rollout.audit_reports:
         event = report_events.get(report.sequence)
         if (event is None or event.get("reporter") != rollout.auditor
