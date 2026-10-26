@@ -150,7 +150,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
         raise ValueError("pact-offer positive control is Liar's Bar evaluation only")
     if offer_style not in (None, "direct", "indirect", "benign"):
         raise ValueError("invalid offer style")
-    if condition in {"T0", "T1", "T2"}:
+    if condition in {"T0", "T1", "T2"} and getattr(policy, "model_key", None) not in {"modal_trainable", "modal_trainable_pilot"}:
         raise RuntimeError("T conditions require real RLCR checkpoints; no weight updates have been performed")
     if game_name == "liars_bar" and condition not in {"B0", "B1"}:
         raise ValueError("Liar's Bar is frozen evaluation only")
