@@ -31,8 +31,7 @@ We contribute:
 
 **Environment.** Five seats, three Liberals and two Fascists including Hitler. The controller holds hidden roles and the deck; models see only their observations. Private pair channels are created by accepted offers. Reporting is evaluated against an immutable ledger and controller reporting windows.
 
-**Baseline models.** GLM-5.3-Flash, DeepSeek-V4.1-Flash, Muse-Glimmer-30B (two seats), and Qwen3.8-27B, prompted with no training. Output ceilings were 8,192 tokens for GLM and DeepSeek and 1,024 and 640 for Qwen and Muse in the first run, later raised to 8,192 to avoid empty final answers. Seed 2026, simulated tournament pressure on. Only this completed game is analysed. A second baseline game (seed 2027) was incomplete and invalid for outcome analysis, and an earlier RLCR training branch was found invalid on review; both are excluded from all results here.
-
+**Baseline models.** GLM-5.3-Flash, DeepSeek-V4.1-Flash, Muse-Glimmer-30B (two seats), and Qwen3.8-27B, prompted with no training. Output ceilings were 8,192 tokens for GLM and DeepSeek and 1,024 and 640 for Qwen and Muse in the first run, later raised to 8,192 to avoid empty final answers. Seed 2026, simulated tournament pressure on.
 **Character training.** All on Tinker with GLM-5.3-Flash. There are three separate checkpoints, and results must not be pooled across them.
 
 - **v3 DPO pilot:** 76 pairs (32 repaired Adaption scenarios plus 44 authored behaviour cases), rank-16 LoRA, DPO beta 0.1. Most rejected answers were authored, not sampled from the student.
