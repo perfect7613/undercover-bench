@@ -1,0 +1,9 @@
+{
+  "step": 3,
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "total_games": 2,
+  "liberal_win_rate": "50.0%",
+  "latest_loss": 0.0421,
+  "delivered_reports": 0,
+  "grounded_evidence": 0
+}
