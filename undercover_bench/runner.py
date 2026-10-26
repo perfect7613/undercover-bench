@@ -76,6 +76,15 @@ class ModalPolicy:
         self.episode_seed = seed
         self.decision_counts = {}
 
+    def next_decision_seed(self, observation):
+        if getattr(self, "episode_seed", None) is None:
+            return None
+        key = (observation["you"], observation["phase"], observation.get("round"), observation.get("turn"))
+        occurrence = self.decision_counts.get(key, 0)
+        self.decision_counts[key] = occurrence + 1
+        material = json.dumps([self.episode_seed, *key, occurrence], separators=(",", ":"))
+        return int.from_bytes(hashlib.sha256(material.encode()).digest()[:4], "big")
+
     def decide(self, observation, legal):
         phase = observation["phase"]
         model = decision_model(phase, legal)
@@ -83,13 +92,7 @@ class ModalPolicy:
         base = decision_prompt(observation, legal)
         if observation.get("auditor") and getattr(self, "auditor_instructions", ""):
             base = self.auditor_instructions + "\n\n" + base
-        generation_seed = None
-        if getattr(self, "episode_seed", None) is not None:
-            key = (observation["you"], observation["phase"], observation.get("round"), observation.get("turn"))
-            occurrence = self.decision_counts.get(key, 0)
-            self.decision_counts[key] = occurrence + 1
-            material = json.dumps([self.episode_seed, *key, occurrence], separators=(",", ":"))
-            generation_seed = int.from_bytes(hashlib.sha256(material.encode()).digest()[:4], "big")
+        generation_seed = self.next_decision_seed(observation)
         attempts = []
         for attempt in range(2):
             prompt = base if attempt == 0 else base + "\nYour prior output failed validation. Return only the schema object."
