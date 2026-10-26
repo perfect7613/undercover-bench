@@ -9,6 +9,7 @@ import hashlib
 import json
 import math
 import uuid
+from collections.abc import Mapping
 from pathlib import Path
 
 from .rlcr import AuthoredDecision, RLCRInputError
@@ -35,10 +36,30 @@ def token_logprobs(logits, target_ids, temperature):
         -1, target_ids.unsqueeze(-1)).squeeze(-1)
 
 
+def normalize_token_ids(encoded):
+    """Accept native tokenizer containers without changing or truncating tokens."""
+    if isinstance(encoded, Mapping):
+        encoded = encoded["input_ids"]
+    if hasattr(encoded, "ids"):
+        encoded = encoded.ids
+    if hasattr(encoded, "tolist"):
+        encoded = encoded.tolist()
+    if isinstance(encoded, (list, tuple)) and len(encoded) == 1:
+        first = encoded[0]
+        if hasattr(first, "ids"):
+            encoded = first.ids
+        elif isinstance(first, (list, tuple)):
+            encoded = first
+    if (not isinstance(encoded, (list, tuple)) or not encoded
+            or any(type(token) is not int or token < 0 for token in encoded)):
+        raise RLCRInputError("template must return exactly one nonempty integer token sequence")
+    return list(encoded)
+
+
 class TorchPolicyBackend:
     def __init__(self, model, tokenizer, *, model_revision, learning_rate=1e-5,
                  temperature=.7, max_new_tokens=8192, max_context_tokens=32768,
-                 prompt_config=None, version=None):
+                 prompt_config=None, version=None, checkpointed_backward=False, optimizer_kind="adamw"):
         import torch
         self.model = model
         self.tokenizer = tokenizer
@@ -56,7 +77,20 @@ class TorchPolicyBackend:
         self.parameters = [p for p in model.parameters() if p.requires_grad]
         if not self.parameters:
             raise RLCRInputError("backend has no trainable parameters")
-        self.optimizer = torch.optim.AdamW(self.parameters, lr=learning_rate)
+        self.checkpointed_backward = checkpointed_backward
+        self.optimizer_kind = optimizer_kind
+        if optimizer_kind == "adamw8bit":
+            from bitsandbytes.optim import AdamW8bit
+            self.optimizer = AdamW8bit(self.parameters, lr=learning_rate)
+        elif optimizer_kind == "adamw":
+            self.optimizer = torch.optim.AdamW(self.parameters, lr=learning_rate)
+        else:
+            raise RLCRInputError("unknown optimizer kind")
+        if checkpointed_backward:
+            # Checkpointed forwards must remain deterministic relative to sampling.
+            for module in self.model.modules():
+                if isinstance(module, torch.nn.Dropout):
+                    module.p = 0.
         self.version = version or "initial-" + uuid.uuid4().hex
         self.updates = 0
         self.model.eval()
@@ -84,10 +118,7 @@ class TorchPolicyBackend:
         ids = self.tokenizer.apply_chat_template(
             [{"role": "user", "content": prompt}], tokenize=True,
             add_generation_prompt=True, **self.prompt_config)
-        if hasattr(ids, "tolist"):
-            ids = ids.tolist()
-        if not ids or isinstance(ids[0], list):
-            raise RLCRInputError("template must return one flat token sequence")
+        ids = normalize_token_ids(ids)
         budget = min(self.max_new_tokens, self.max_context_tokens - len(ids))
         if budget <= 0:
             raise RLCRInputError("prompt exceeds context budget; refusing silent truncation")
@@ -122,7 +153,7 @@ class TorchPolicyBackend:
         import torch
         self._check_decision(decision)
         # eval disables dropout but deliberately retains autograd.
-        self.model.eval()
+        self.model.train(self.checkpointed_backward)
         full = torch.tensor([decision.context_token_ids + decision.generated_token_ids], device=self.device)
         result = self.model(input_ids=full, use_cache=False)
         start = len(decision.context_token_ids) - 1
@@ -157,7 +188,8 @@ class TorchPolicyBackend:
         torch.save({"optimizer": self.optimizer.state_dict(), "updates": self.updates}, path / "optimizer.pt")
         metadata = {**self.identity(), "parent_version": parent, "updates": self.updates,
                     "prompt_config": self.prompt_config, "max_new_tokens": self.max_new_tokens,
-                    "max_context_tokens": self.max_context_tokens}
+                    "max_context_tokens": self.max_context_tokens,
+                    "checkpointed_backward": self.checkpointed_backward, "optimizer_kind": self.optimizer_kind}
         self.version = seal_checkpoint(path, metadata)
         return self.version
 
@@ -167,6 +199,9 @@ class TorchPolicyBackend:
         from .checkpoint_hf import verify_checkpoint
         manifest = verify_checkpoint(path)
         meta = manifest["metadata"]
+        if (meta.get("optimizer_kind", "adamw") != self.optimizer_kind
+                or meta.get("checkpointed_backward", False) != self.checkpointed_backward):
+            raise RLCRInputError("checkpoint optimizer or activation-checkpoint mode differs")
         for field in ("model_revision", "tokenizer_hash", "template_hash", "sampling_temperature"):
             if meta[field] != self.identity()[field]:
                 raise RLCRInputError(f"checkpoint {field} does not match backend")

@@ -18,7 +18,8 @@ KEY = os.environ.get("RLCR_MODEL_KEY")
 if not KEY:
     raise ValueError("Set RLCR_MODEL_KEY to glm_flash, deepseek_flash, qwen_dense or muse_glimmer")
 PROFILE = model_profile(KEY)
-if PROFILE["blocked_reason"]:
+EXPERIMENTAL_GLM = KEY == "glm_flash" and os.environ.get("GLM_EXPERIMENTAL_MOE") == "1"
+if PROFILE["blocked_reason"] and not EXPERIMENTAL_GLM:
     raise ValueError(PROFILE["blocked_reason"])
 # Extend the existing deployment, preserving its GGUF generate/stage functions.
 # A trainable worker still needs safetensors; it cannot backpropagate into GGUF.
@@ -32,6 +33,13 @@ image = (modal.Image.debian_slim(python_version="3.12")
          .env({"RLCR_MODEL_KEY": KEY, "MODEL_KEY": KEY, "HF_HOME": "/weights/trainable-hf-cache"})
          .add_local_python_source("undercover_bench", "modal_services")
          .add_local_dir(Path(__file__).resolve().parents[1] / "configs", "/root/configs"))
+if EXPERIMENTAL_GLM:
+    from undercover_bench.glm_moe_backend import AXOLOTL_REVISION
+    image = (image.apt_install("git")
+        .run_commands("git clone https://github.com/axolotl-ai-cloud/axolotl.git /opt/axolotl",
+                      f"cd /opt/axolotl && git checkout {AXOLOTL_REVISION}",
+                      "pip install --no-deps /opt/axolotl")
+        .env({"GLM_EXPERIMENTAL_MOE": "1", "HF_DEACTIVATE_ASYNC_LOAD": "1"}))
 volume = modal.Volume.from_name("undercover-rlcr-checkpoints", create_if_missing=True)
 
 
@@ -84,10 +92,18 @@ class TrainablePolicyServer:
         tokenizer = AutoTokenizer.from_pretrained(PROFILE["repo_id"], revision=PROFILE["revision"])
         if not tokenizer.chat_template:
             raise ValueError("native text chat template unavailable")
+        if EXPERIMENTAL_GLM:
+            from undercover_bench.glm_moe_backend import enable_expert_quantization
+            enable_expert_quantization()
         model = loader.from_pretrained(PROFILE["repo_id"], revision=PROFILE["revision"], dtype=torch.bfloat16,
             device_map={"": 0}, quantization_config=BitsAndBytesConfig(load_in_4bit=True,
-                bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True))
-        model = prepare_model_for_kbit_training(model)
+                bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True),
+            **({"attn_implementation": "sdpa"} if EXPERIMENTAL_GLM else {}))
+        if EXPERIMENTAL_GLM:
+            from undercover_bench.glm_moe_backend import prepare_glm_for_adapters
+            self.expert_quantization = prepare_glm_for_adapters(model)
+        else:
+            model = prepare_model_for_kbit_training(model)
         initial = self.root / "initial"
         selected = Path(self.checkpoint_path).resolve() if self.checkpoint_path else initial
         if self.checkpoint_path:
@@ -104,15 +120,27 @@ class TrainablePolicyServer:
             from undercover_bench.checkpoint_hf import verify_checkpoint
             # Character export requires an explicit reviewed base-compatibility manifest.
             adapter = Path(self.initial_adapter)
-            compatibility = json.loads((adapter / "compatibility.json").read_text())
-            if compatibility.get("model_revision") != f"{PROFILE['repo_id']}@{PROFILE['revision']}" or compatibility.get("verified") is not True:
-                raise ValueError("character adapter/base compatibility is not verified")
+            if EXPERIMENTAL_GLM:
+                conversion = json.loads((adapter / "conversion_report.json").read_text())
+                config = json.loads((adapter / "adapter_config.json").read_text())
+                if (conversion.get("source_pairs_preserved") != 431
+                        or config.get("base_model_name_or_path") != PROFILE["repo_id"]
+                        or config.get("revision") != PROFILE["revision"]):
+                    raise ValueError("experimental GLM adapter lacks a complete pinned native conversion")
+            else:
+                compatibility = json.loads((adapter / "compatibility.json").read_text())
+                if compatibility.get("model_revision") != f"{PROFILE['repo_id']}@{PROFILE['revision']}" or compatibility.get("verified") is not True:
+                    raise ValueError("character adapter/base compatibility is not verified")
             model = PeftModel.from_pretrained(model, str(adapter), is_trainable=True)
         else:
+            if EXPERIMENTAL_GLM:
+                raise ValueError("experimental GLM preflight requires an explicitly converted full character adapter")
             model = get_peft_model(model, LoraConfig(r=32, lora_alpha=32, lora_dropout=0.,
                 target_modules="all-linear", task_type="CAUSAL_LM"))
         self.backend = TorchPolicyBackend(model, tokenizer,
-            model_revision=f"{PROFILE['repo_id']}@{PROFILE['revision']}")
+            model_revision=f"{PROFILE['repo_id']}@{PROFILE['revision']}",
+            checkpointed_backward=EXPERIMENTAL_GLM,
+            optimizer_kind="adamw8bit" if EXPERIMENTAL_GLM else "adamw")
         if selected.exists():
             self.backend.restore_optimizer(selected)
         else:
@@ -172,7 +200,8 @@ class TrainablePolicyServer:
             raise ValueError("sampled/recomputed probability or gradient preflight failed")
         self.preflight_ok = True
         proof = {"identity": self.backend.identity(), "max_logprob_difference": drift, "grad_norm": norm,
-                 "optimizer_steps_applied": 0}
+                 "optimizer_steps_applied": 0, "experimental_backend": EXPERIMENTAL_GLM,
+                 "character_compatibility_verified": False if EXPERIMENTAL_GLM else None}
         (self.root / "preflight.json").write_text(json.dumps(proof, indent=2))
         volume.commit()
         return proof
