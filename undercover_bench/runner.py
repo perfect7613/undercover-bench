@@ -284,6 +284,13 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
     if audit is not None:
         audit["pending_reports"] = len(pending_reports)
     result = organizational_return(game.winner, condition, audit) if game_name == "secret_hitler" and game.winner is not None and invalid_actions == 0 else None
+    # The online ledger cannot claim a final verified T2 bonus before review.
+    # The training driver recomputes the organizational return from its bound review.
+    task_reward = result["r_win"] if result is not None else None
+    reward_status = "scored" if result is not None else "incomplete_or_invalid"
+    if condition == "T2" and result is not None:
+        result = None
+        reward_status = "awaiting_independent_audit_review"
     if game_name == "liars_bar" and offer_style:
         sender = game.names[-1]
         by_partner = {p: [item for item in game.challenge_opportunities if item["challenger"] == p and item["actor"] == sender] for p in game.offer_responses}
@@ -294,7 +301,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
     ledger.write("episode_end", winner=game.winner, completed=game.winner is not None,
                  valid_for_analysis=game.winner is not None and invalid_actions == 0, invalid_actions=invalid_actions,
                  steps=game.round if game_name == "secret_hitler" else game.turn,
-                 reward=result, audit=audit,
+                 reward=result, task_reward=task_reward, reward_status=reward_status, audit=audit,
                  caveat="truncated game: no team-win claim" if game.winner is None else None)
     return path
 

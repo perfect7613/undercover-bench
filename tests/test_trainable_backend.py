@@ -104,6 +104,15 @@ class RoutingTests(unittest.TestCase):
             with self.assertRaisesRegex(RLCRInputError, 'every fixed'):
                 build_rollout(path, comparison_key='test', initialization='fixture', review_path=review_path)
 
+    def test_t2_online_ledger_withholds_unreviewed_audit_reward(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = self.collect(d, 'T2')
+            end = json.loads(path.read_text().splitlines()[-1])
+            self.assertTrue(end['valid_for_analysis'])
+            self.assertIsNone(end['reward'])
+            self.assertIn(end['task_reward'], (0, 1))
+            self.assertEqual(end['reward_status'], 'awaiting_independent_audit_review')
+
     def test_invalid_json_is_not_converted_to_a_valid_trainable_fallback(self):
         self.backends = {'ordinary': FixtureBackend('ordinary'), 'auditor': FixtureBackend('auditor')}
         policy = TrainableOrganizationPolicy(self.backends, ScriptedPolicy(1))
