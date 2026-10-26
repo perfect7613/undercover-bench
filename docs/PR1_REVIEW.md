@@ -26,6 +26,8 @@ All four existing GGUF apps remain the frozen inference endpoints. The training 
 
 ## Validation and limits
 
+The final reward audit also rejects incomplete winners, nonfinite/out-of-range audit scores, changes to the frozen reporting coefficient, and reuse of the same incident evidence across scoring windows. The complete suite passes 50 tests.
+
 Local checks include both game controllers, independent reward/scorer contracts, actor routing and hidden-information isolation, complete token-ledger coverage, truncation exclusion, fixed T2 review windows, exact temperature probabilities, disabled dropout, a real tiny CPU PEFT optimizer update, checkpoint hashes and exact optimizer/weight reload. These validate the implementation contract, not four-family GPU readiness or research efficacy.
 
 A cross-worker commit is not distributed atomicity. If either worker or checkpoint save fails, the coordinator marks the transaction failed and refuses automatic reuse; restore every slot to its parent checkpoint before a new attempt. No partial commit is advertised as a successful collective update.

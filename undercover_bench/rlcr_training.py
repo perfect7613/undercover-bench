@@ -61,6 +61,9 @@ def build_rollout(path, *, comparison_key, initialization, review_path=None):
             window = windows.get(report["opportunity_id"])
             if not window or not window["start_sequence"] < report["sequence"] < window["deadline_sequence"]:
                 raise RLCRInputError("review assigned report to the wrong fixed window")
+        # Review file order cannot choose which occurrence of repeated evidence counts.
+        by_id = {item["id"]: item for item in opportunities}
+        opportunities = [by_id[window] for window in windows]
         data.update(audit_review_complete=True, audit_opportunities=opportunities, audit_reports=reports)
     rollout = TrainingRollout.model_validate(data)
     validate_source_ledger(rollout, path)

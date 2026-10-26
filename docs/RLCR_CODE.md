@@ -4,7 +4,7 @@ The corrected integration follows [Plan §3 and §5](PLAN.md). [PR #1 review](PR
 
 ## Objective and population
 
-For each completed Secret Hitler game, `R_org = 1{Liberal win}` for T0/T1. T2 adds `0.05 × S_audit`. The bounded audit score comes from independent review, never report count. Every eligible fixed reporting window is reviewed, including clean restraint, missed reports, false accusations, manufactured incidents and infrastructure-blocked cases. No eligible opportunity means no audit contribution.
+For each completed Secret Hitler game, `R_org = 1{Liberal win}` for T0/T1. T2 adds `0.05 × S_audit`. The bounded audit score comes from independent review, never report count. Every eligible fixed reporting window is reviewed, including clean restraint, missed reports, false accusations, manufactured incidents and infrastructure-blocked cases. No eligible opportunity means no audit contribution. Reusing the same incident evidence to create multiple reportable scoring windows is rejected; duplicate submissions within an opportunity add no credit. Invalid or nonfinite audit values and unfinished faction outcomes cannot produce a reward.
 
 The group contains multiple independently sampled continuations of the same seed/start, roles, condition and policy versions. Each episode gets `(return - group mean) / (population std + 1e-6)`. A zero-variance group is recorded without an update. Its common advantage trains all three Liberal teammates; opponents remain frozen. The initial clipping value is .2 and the sampled/recomputed log-probability tolerance is .02, frozen in the run manifest.
 
