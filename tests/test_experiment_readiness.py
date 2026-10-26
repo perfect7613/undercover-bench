@@ -92,7 +92,9 @@ class OfflineReadinessTests(unittest.TestCase):
             self.assertFalse(report["ready_for_primary_rlcr"])
             self.assertTrue(report["baseline_pilot_configured"])
             self.assertFalse(report["checks"]["introspection_sft"]["passed"])
-            self.assertFalse(report["optional_training_profiles"]["deepseek_flash"]["required_for_initial_glm_rlcr"])
+            self.assertTrue(report["all_model_training_required"])
+            self.assertFalse(report["required_training_families"]["deepseek_flash"]["passed"])
+            self.assertFalse(report["ready_for_all_model_rlcr"])
 
     def test_started_file_is_not_completed_training(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -231,6 +231,30 @@ def check_pilot(path):
                    manifest_sha256=manifest["manifest_sha256"], cloud_deployment_checked=False)
 
 
+def check_family_preflight(run, models, key):
+    profile = _json(models).get("models", {}).get(key)
+    _require(isinstance(profile, dict), f"missing required training family: {key}")
+    if profile.get("blocked_reason"):
+        return _result(False, "blocked", [profile["blocked_reason"]])
+    _require(profile.get("gpu") and re.fullmatch(r"[a-f0-9]{40}", profile.get("revision", "")),
+             "training needs an explicit GPU and pinned model revision")
+    evidence = _json(run / "training_preflights" / f"{key}.json")
+    _require(evidence.get("model_revision") == f"{profile['repo_id']}@{profile['revision']}",
+             "preflight belongs to a different model revision")
+    for slot in ("ordinary", "auditor"):
+        proof = evidence.get("slots", {}).get(slot, {})
+        identity = proof.get("identity", {})
+        _require(identity.get("model_revision") == evidence["model_revision"]
+                 and all(identity.get(name) for name in ("policy_version", "tokenizer_hash", "template_hash")),
+                 f"{key}/{slot} lacks exact policy provenance")
+        drift, grad = proof.get("max_logprob_difference"), proof.get("grad_norm")
+        _require(_finite(drift) and 0 <= drift <= .02 and _finite(grad) and grad > 0,
+                 f"{key}/{slot} exact-policy or gradient check failed")
+    _verify_supporting_artifacts(evidence, run)
+    return _result(True, "recorded_probability_and_gradient_preflight",
+                   optimizer_update_verified=False, cloud_requeried=False)
+
+
 def check_readiness(run_dir=Path("runs/character/paper-v7"), models=Path("configs/rlcr.models.json"), pilot_manifest=None):
     run, models = Path(run_dir), Path(models)
     checks = {}
@@ -242,19 +266,15 @@ def check_readiness(run_dir=Path("runs/character/paper-v7"), models=Path("config
     checks["full_adapter_runtime_compatibility"] = _check(check_runtime, run, checks["introspection_sft"], checks["sft_export"], profile)
     pilot = Path(pilot_manifest) if pilot_manifest else ROOT / "runs/rlcr/pilot-32-manifest.json"
     checks["baseline_32_game_manifest"] = _check(check_pilot, pilot)
-    optional = {}
-    try:
-        all_models = _json(models).get("models", {})
-        for name in ("deepseek_flash", "qwen_dense", "muse_glimmer"):
-            model = all_models.get(name, {})
-            optional[name] = {"status": "blocked" if model.get("blocked_reason") else "training_preflight_pending",
-                              "blocked_reason": model.get("blocked_reason"), "required_for_initial_glm_rlcr": False}
-    except (ValueError, OSError):
-        pass
+    required_families = {name: _check(check_family_preflight, run, models, name)
+                        for name in ("glm_flash", "deepseek_flash", "qwen_dense", "muse_glimmer")}
+    primary_ready = all(check["passed"] for check in checks.values())
     return {"schema": 1, "offline_only": True, "run_dir": str(run), "checks": checks,
         "baseline_pilot_configured": checks["baseline_32_game_manifest"]["passed"],
-        "ready_for_primary_rlcr": all(check["passed"] for check in checks.values()),
-        "optional_training_profiles": optional,
+        "ready_for_primary_rlcr": primary_ready,
+        "all_model_training_required": True,
+        "required_training_families": required_families,
+        "ready_for_all_model_rlcr": primary_ready and all(c["passed"] for c in required_families.values()),
         "blockers": [{"check": name, "reasons": check["reasons"]} for name, check in checks.items() if not check["passed"]],
         "interpretation": "Configuration and locally recorded evidence only; this command launches no job, runs no tests, and makes no cloud reachability or remote checkpoint-existence claim."}
 
@@ -268,7 +288,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     report = check_readiness(args.run_dir, args.models, args.pilot_manifest)
     print(json.dumps(report, indent=2))
-    return 1 if args.require_ready and not report["ready_for_primary_rlcr"] else 0
+    return 1 if args.require_ready and not report["ready_for_all_model_rlcr"] else 0
 
 
 if __name__ == "__main__":
