@@ -25,17 +25,30 @@ if PROFILE["blocked_reason"]:
 if os.environ.get("MODEL_KEY", KEY) != KEY:
     raise ValueError("MODEL_KEY and RLCR_MODEL_KEY must select the same existing app")
 os.environ["MODEL_KEY"] = KEY
-from modal_services.serve import app, generate, stage  # noqa: E402,F401
+from modal_services.serve import app, generate, stage, volume as weights_volume  # noqa: E402,F401
 image = (modal.Image.debian_slim(python_version="3.12")
          .pip_install("torch==2.14.1", "transformers==5.20.2", "peft==0.21.2",
                       "accelerate==1.15.0", "bitsandbytes==0.50.2", "pydantic>=2,<3")
-         .env({"RLCR_MODEL_KEY": KEY, "MODEL_KEY": KEY})
+         .env({"RLCR_MODEL_KEY": KEY, "MODEL_KEY": KEY, "HF_HOME": "/weights/trainable-hf-cache"})
          .add_local_python_source("undercover_bench", "modal_services")
          .add_local_dir(Path(__file__).resolve().parents[1] / "configs", "/root/configs"))
 volume = modal.Volume.from_name("undercover-rlcr-checkpoints", create_if_missing=True)
 
 
-@app.cls(image=image, gpu=PROFILE["gpu"], volumes={"/checkpoints": volume},
+@app.function(image=image, volumes={"/weights": weights_volume},
+              cpu=4, memory=8192, timeout=3600, retries=0)
+def stage_training_weights():
+    """Stage differentiable weights on CPU; preserve the existing GGUF files."""
+    from huggingface_hub import snapshot_download
+    path = snapshot_download(PROFILE["repo_id"], revision=PROFILE["revision"],
+        allow_patterns=["*.safetensors", "*.json", "*.jinja", "*.model", "*.txt"], max_workers=8)
+    weights_volume.commit()
+    return {"model": KEY, "revision": PROFILE["revision"], "cache_path": path,
+            "gpu_allocated": False}
+
+
+@app.cls(image=image, gpu=PROFILE["gpu"],
+         volumes={"/checkpoints": volume, "/weights": weights_volume}, cpu=8, memory=65536,
          secrets=([modal.Secret.from_name(os.environ["RLCR_HF_SECRET"])] if os.environ.get("RLCR_HF_SECRET") else []),
          min_containers=0, max_containers=1, scaledown_window=60, timeout=3600)
 class TrainablePolicyServer:

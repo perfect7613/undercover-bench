@@ -7,7 +7,7 @@ import unittest
 
 from build_character_pilot_v3 import build as build_combined
 from build_curated_dataset import validate_export, validate_three_field_export
-from curate_adaption_behavior_v3 import SELECTIONS, DROP_REASONS, build as build_adaption
+from curate_adaption_behavior_v3 import SOURCE, SELECTIONS, DROP_REASONS, build as build_adaption
 
 DATA = Path(__file__).resolve().parent / "data"
 
@@ -17,6 +17,7 @@ class AdaptionCurationTests(unittest.TestCase):
         self.assertFalse(set(SELECTIONS) & set(DROP_REASONS))
         self.assertEqual(set(SELECTIONS) | set(DROP_REASONS), set(range(44)))
 
+    @unittest.skipUnless(SOURCE.is_file(), "requires private archived Adaption candidate responses")
     def test_repaired_adaption_pairs_are_single_decisions(self):
         result = build_adaption()
         self.assertEqual(result["accepted_rows"], 32)
@@ -32,6 +33,7 @@ class AdaptionCurationTests(unittest.TestCase):
             self.assertFalse(row["human_reviewed"])
             self.assertEqual(row["source_dataset_id"], result["source_dataset_id"])
 
+    @unittest.skipUnless(SOURCE.is_file(), "requires private archived Adaption candidate responses")
     def test_combined_data_keeps_sources_and_labels(self):
         result = build_combined()
         self.assertEqual(result["rows"], 76)
