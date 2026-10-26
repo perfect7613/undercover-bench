@@ -11,7 +11,7 @@ uv run python -m experiments.check_readiness \
 
 The command prints JSON and normally exits zero even when preparation is incomplete, so its report can be inspected. Add `--require-ready` for an automated gate that exits nonzero unless every required check passes. It makes no cloud/API calls, launches no jobs, and runs no hidden tests. Its adapter integrity checks stream bytes for SHA-256 with bounded memory; they do not load model tensors.
 
-`baseline_pilot_configured` means the frozen 32-job protocol validates against current local source hashes. It does not mean those games ran, the stopped apps are reachable, or a GPU was tested. `ready_for_primary_rlcr` additionally requires every character, export, learning, GLM-backend and runtime gate below. DeepSeek training availability is reported separately because the main plan initially trains a GLM organization and uses four families for frozen baselines.
+`baseline_pilot_configured` means the frozen 32-job protocol validates against current local source hashes. It does not mean those games ran, the stopped apps are reachable, or a GPU was tested. `ready_for_primary_rlcr` additionally requires every character, export, learning, GLM-backend and runtime gate below. The user subsequently required RLCR for all four families. `required_training_families` therefore includes GLM, DeepSeek, Qwen and Muse, and `ready_for_all_model_rlcr` must pass for `--require-ready` to exit zero. A GLM-only preparation flag does not establish four-model readiness.
 
 ## Required records
 

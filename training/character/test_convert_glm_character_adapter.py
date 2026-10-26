@@ -1,4 +1,5 @@
 import json
+import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
@@ -70,6 +71,7 @@ class ConverterTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'missing A/B'):
                 convert(src,root/'out',cfg,index,'toy','a'*40)
             self.assertFalse((root/'out').exists())
+    @unittest.skipUnless(importlib.util.find_spec("peft"), "Run this integration check with uv run --extra rlcr")
     def test_cpu_peft_load_actual_wrapper_layout_and_deltas(self):
         import torch
         from torch import nn

@@ -1,5 +1,12 @@
 # Implementation status and validation gates
 
+## Current status — 26 October 2026
+
+Character DPO plus introspection SFT is complete as an unpromoted candidate. All 431 exported targets are preserved by the native/GGUF converters; the mixed-precision GGUF passes all 36,593 expert-slice delta checks and live base → character → base switching on the existing GLM weights. The final base text replays after deactivation, and ordinary-player requests explicitly disable the character adapter. [Current repair details and remaining RLCR blockers](GLM_RUNTIME_BLOCKERS.md).
+
+Core CPU checks pass (85 tests); character checks run in their pinned environment separately. No model RLCR update has been completed. The requested scope requires all four model families, whose differentiated backends and runtime gates must all pass. The historic setup observations below do not replace this status.
+
+
 Updated 25 October 2026. The [research plan](PLAN.md) remains the experiment specification; this document states what the code actually does.
 
 ## Controllers
@@ -34,7 +41,7 @@ Modal authentication and both L40S/B300 GPU allocation preflights passed. The [p
 | Qwen3.8-27B | [L40S app](https://modal.com/apps/ameymuke252003/main/deployed/undercover-qwen_dense) | Structured decision |
 | Muse-Glimmer-30B | [L40S app](https://modal.com/apps/ameymuke252003/main/deployed/undercover-muse_glimmer) | Structured decision |
 
-Actual GLM character training and RLCR weight updates have **not** occurred. No `TINKER_API_KEY` is configured in this environment. Tinker is reserved for character training. The proposed Modal GGUF rollout route does not yet furnish token IDs and behavior log-probabilities matched to a trainable policy, so it must not be treated as on-policy RLCR. The M2 adapter export/merge and same-base comparison also remain unvalidated. [The first RLCR code](RLCR_CODE.md) validates complete trainable rollouts, computes the frozen shared return and group advantage, and defines an optional PyTorch optimizer step; it has only been tested on CPU contracts. T0/T1/T2 game execution remains blocked until a trainable GLM backend emits the required traces and checkpoints.
+At initial setup, neither GLM character training nor RLCR weight updates had occurred; completed character training is described in the current status above. No `TINKER_API_KEY` is configured in this environment. Tinker is reserved for character training. The proposed Modal GGUF rollout route does not yet furnish token IDs and behavior log-probabilities matched to a trainable policy, so it must not be treated as on-policy RLCR. The M2 adapter export/merge and same-base comparison also remain unvalidated. [The first RLCR code](RLCR_CODE.md) validates complete trainable rollouts, computes the frozen shared return and group advantage, and defines an optional PyTorch optimizer step; it has only been tested on CPU contracts. T0/T1/T2 game execution remains blocked until a trainable GLM backend emits the required traces and checkpoints.
 
 ## Reproducible checks
 
@@ -57,4 +64,4 @@ The corrected RLCR implementation is merged into main via PR #2 and a final pend
 
 The same four Modal app names and staged inference volumes are retained. GLM, Qwen and Muse training profiles require paid runtime preflight and adapter compatibility validation; DeepSeek training is blocked pending its distributed FP8/FP4 loader. No new GPU preflight or research RLCR run occurred during integration.
 
-The Tinker DPO-only rank-32 candidate is now privately exported with real weights, evaluation records and provenance. Introspection SFT has not completed and no character improvement is established. [Verified private release](../training/character/EXPORT_V7_STATUS.md).
+The Tinker DPO-only rank-32 candidate is now privately exported with real weights, evaluation records and provenance. At the DPO-only export milestone, introspection SFT had not completed. The later SFT continuation and serving repair are recorded above; no character improvement is established. [Verified private release](../training/character/EXPORT_V7_STATUS.md).

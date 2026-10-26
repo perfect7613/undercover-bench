@@ -1,5 +1,17 @@
 # GLM character adapter: runtime blockers and feasible preparation
 
+## Repair status — 26 October 2026
+
+The original GGUF graph bypass is repaired by `training/character/patch_glm_lora_graph.py`. The pinned patched sources compiled on CPU and CUDA. Both native PEFT and direct GGUF converters preserve all 431 original trained projection pairs. The native conversion uses exact rank-32 gate/up fusion, which is possible because every one of the 42 gate/up A-factor pairs is identical in this export.
+
+The first all-FP16 serving copy failed the fixed numerical gate because it erased tiny B-factor updates; it was not served. The replacement retains all B factors in FP32 and A factors in FP16. Across all 431 pairs and 36,593 expert slices, its worst relative L2 error was 0.0023048535, below the predeclared 0.005 threshold. This is a conversion-delta check, not a full base-model equivalence proof.
+
+The replacement was staged in the **existing `undercover-weights-glm_flash` volume**, with no GLM base download. A live base → character → base check passed: all three outputs were legal, character activation changed text/log probabilities, and the final base output replayed exactly after deactivation. Ordinary players explicitly request adapter scale zero; only the auditor uses scale one. The candidate remains unpromoted because held-out character improvement has not been established.
+
+**RLCR remains a separate unresolved gate.** These repairs enable character inference on the existing GGUF model; they do not add differentiable sampling or gradients to llama.cpp. An experimental native Axolotl expert-NF4 loader is implemented but has not been validated on full GLM weights. The existing GLM volume contains GGUF, not a trainable native base. The generic profile remains blocked, and no GLM RLCR update is claimed.
+
+## Original audit and remaining native requirements
+
 Inspected 26 October 2026 using exported tensor headers, pinned public HF configuration/index metadata, Transformers 5.20.2, PEFT 0.21.2, and llama.cpp `f3269ef96aee8c9ec8a3a89a14025e33641827e3`. No model tensors were expanded, full base weights downloaded, or GPU jobs started for this audit. Finishing introspection SFT does not by itself remove these deployment blockers.
 
 ## Native training is blocked on the current generic worker

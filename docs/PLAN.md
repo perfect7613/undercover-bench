@@ -243,7 +243,7 @@ where $b$ is a baseline estimated from comparable rollouts.
 
 The ordinary players can share policy parameters. A separately character-trained auditor may have distinct parameters or an adapter. Jointly updating these policies using a common advantage is an **adaptation of the RLCR principle**, rather than an exact replication of Avalon’s shared-policy organisation. [Avalon-M1](https://gr.inc/avalonm1.pdf).
 
-The provisional implementation uses a shared ordinary-player GLM policy and a distinct auditor GLM adapter, updating both with the same organizational advantage. Keep ordinary-player initialization identical across M0c/M2 comparisons. A fully shared role-conditioned policy is a separate closer-to-Avalon variant; applying the character adapter to every teammate changes the whole organization and cannot isolate auditor-only character training.
+The updated scope requires RLCR for all four selected model families, each using its corresponding Modal model setup. Within each family, use a shared ordinary-player policy and a distinct auditor policy, updating both with the same organizational advantage. The character-trained M2 adapter belongs only to GLM; do not attach it to another family or label an untrained auditor M2. Keep ordinary-player initialization identical across M0c/M2 comparisons. A fully shared role-conditioned policy is a separate closer-to-Avalon variant; applying the character adapter to every teammate changes the whole organization and cannot isolate auditor-only character training.
 
 Credit assignment is over each agent's own generated tokens/actions. Mask prompts, received messages, observations, tool results, controller ground truth and frozen-opponent outputs out of its training loss. When a generated message appears again in another agent's context, do not train it twice as if both agents authored it. Specify token versus trajectory weighting so a verbose agent does not accidentally dominate the organizational update.
 
@@ -444,7 +444,7 @@ The implementation order is:
 6. Run auditor swaps and full-game disruption experiments.
 7. Conduct mechanistic analysis on the resulting dataset.
 
-If resources are constrained, preserve the no-undercover baseline, full-constitution control, character-trained condition, and reporting endpoint. Reduce optional steering and additional model families first.
+If resources are constrained, preserve the no-undercover baseline, full-constitution control, character-trained condition, and reporting endpoint. Reduce optional steering and extra variants first; all four model families remain required under the updated scope, and an unsupported family remains an explicit readiness blocker.
 
 ### Pilot allocation and stage gates
 
