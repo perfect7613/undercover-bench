@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "protocol": "non_game_frozen_final_v8",
+  "cases_sha256": "c456479a3b0850fe5278cf9c4c409719d07b3222f1a9cdbc7d89f40ad4a0bc72",
+  "constitution_sha256": "5a7aba6e2bf85f2778ff88c252d236fe28dc4fab48e2ef2fd4d869ca021ba2a3",
+  "checkpoints": {
+    "base": "tinker://a1ad3845-95a2-5098-8c36-5e0fb6b3c321:train:0/sampler_weights/untrained_base_reference",
+    "constitution": "tinker://a1ad3845-95a2-5098-8c36-5e0fb6b3c321:train:0/sampler_weights/untrained_base_reference",
+    "dpo": "tinker://572a8b15-2d09-5510-a78f-c9b063faa762:train:0/sampler_weights/final",
+    "sft": "tinker://5983f7e6-9abc-5a42-beca-504bc1e1cdae:train:0/sampler_weights/final"
+  },
+  "cases": 8,
+  "replicates_per_condition": 2,
+  "conditions": 4,
+  "episodes_total": 64,
+  "purpose": "non-game held-out regression and character check; no game or RLCR experiment",
+  "post_test_selection_or_training": false,
+  "full_constitution_control": true
+}
