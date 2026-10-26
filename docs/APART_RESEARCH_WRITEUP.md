@@ -4,6 +4,8 @@
 
 *With Apart Research*
 
+**Tag: AI-assisted.** Drafted with an LLM assistant (Claude); see the LLM Usage Statement.
+
 *Research conducted at the AI Collusion Research Sprint, October 2026.*
 
 > **DRAFT.** Author list and affiliations are placeholders. Status as of 26 October 2026. Only results recorded in this repository are stated. Items marked **not run** or **not validated** have no supporting evaluation output here.
