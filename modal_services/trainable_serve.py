@@ -30,9 +30,7 @@ from modal_services.serve import app, generate, stage, volume as weights_volume 
 image = (modal.Image.debian_slim(python_version="3.12")
          .pip_install("torch==2.14.1", "transformers==5.20.2", "peft==0.21.2",
                       "accelerate==1.15.0", "bitsandbytes==0.50.2", "pydantic>=2,<3")
-         .env({"RLCR_MODEL_KEY": KEY, "MODEL_KEY": KEY, "HF_HOME": "/weights/trainable-hf-cache"})
-         .add_local_python_source("undercover_bench", "modal_services")
-         .add_local_dir(Path(__file__).resolve().parents[1] / "configs", "/root/configs"))
+         .env({"RLCR_MODEL_KEY": KEY, "MODEL_KEY": KEY, "HF_HOME": "/weights/trainable-hf-cache"}))
 if EXPERIMENTAL_GLM:
     from undercover_bench.glm_moe_backend import AXOLOTL_REVISION
     image = (image.apt_install("git")
@@ -40,6 +38,8 @@ if EXPERIMENTAL_GLM:
                       f"cd /opt/axolotl && git checkout {AXOLOTL_REVISION}",
                       "pip install --no-deps /opt/axolotl")
         .env({"GLM_EXPERIMENTAL_MOE": "1", "HF_DEACTIVATE_ASYNC_LOAD": "1"}))
+image = (image.add_local_python_source("undercover_bench", "modal_services")
+         .add_local_dir(Path(__file__).resolve().parents[1] / "configs", "/root/configs"))
 volume = modal.Volume.from_name("undercover-rlcr-checkpoints", create_if_missing=True)
 
 
@@ -197,7 +197,11 @@ class TrainablePolicyServer:
         norm = self.backend.trainable_grad_norm()
         self.backend.zero_grad()
         if not math.isfinite(drift) or drift > .02 or not math.isfinite(norm) or norm <= 0:
-            raise ValueError("sampled/recomputed probability or gradient preflight failed")
+            failure = {"max_logprob_difference": drift, "grad_norm": norm,
+                       "optimizer_steps_applied": 0, "identity": self.backend.identity()}
+            (self.root / "preflight_failed.json").write_text(json.dumps(failure, indent=2))
+            volume.commit()
+            raise ValueError(f"sampled/recomputed probability or gradient preflight failed: drift={drift}, grad_norm={norm}")
         self.preflight_ok = True
         proof = {"identity": self.backend.identity(), "max_logprob_difference": drift, "grad_norm": norm,
                  "optimizer_steps_applied": 0, "experimental_backend": EXPERIMENTAL_GLM,

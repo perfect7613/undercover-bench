@@ -155,7 +155,7 @@ class TinyTokenizer:
 
 @unittest.skipUnless(HAS_TORCH, 'uv sync --extra rlcr for actual CPU LoRA tests')
 class TorchBackendTests(unittest.TestCase):
-    def backend(self):
+    def backend(self, **options):
         torch.manual_seed(123)
         base = GPT2LMHeadModel(GPT2Config(vocab_size=32, n_embd=16, n_layer=1,
                                          n_head=2, n_positions=128, bos_token_id=1, eos_token_id=31))
@@ -163,7 +163,17 @@ class TorchBackendTests(unittest.TestCase):
         model = get_peft_model(base, LoraConfig(r=2, lora_alpha=4, lora_dropout=.5,
                               target_modules=['c_attn'], task_type='CAUSAL_LM'))
         return TorchPolicyBackend(model, TinyTokenizer(), model_revision='cpu-fixture',
-                                  temperature=.7, max_new_tokens=5, max_context_tokens=128)
+                                  temperature=.7, max_new_tokens=5, max_context_tokens=128, **options)
+
+    def test_checkpointed_backward_matches_sampling_with_stochastic_layers_disabled(self):
+        backend = self.backend(checkpointed_backward=True)
+        backend.model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+        decision = self.decision(backend)
+        current = backend.authored_logprobs(decision)
+        self.assertTrue(backend.model.training)
+        self.assertTrue(torch.allclose(current.detach(), torch.tensor(decision.behavior_logprobs), atol=2e-6))
+        (-current.mean()).backward()
+        self.assertGreater(backend.trainable_grad_norm(), 0)
 
     def decision(self, backend, actor='Aster', sequence=1):
         sample = backend.sample('fixture', 7)

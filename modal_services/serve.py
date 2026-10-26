@@ -29,7 +29,12 @@ llama_repo = "https://github.com/danielhanchen/llama.cpp.git" if KEY == "deepsee
 cuda_arch = "103" if MODEL["modal"]["gpu"] == "B300" else "89"
 image = (modal.Image.from_registry(base, add_python="3.12")
          .apt_install("git", "cmake", "build-essential", "libcurl4-openssl-dev")
-         .run_commands(f"git clone {llama_repo} /opt/llama.cpp && cd /opt/llama.cpp && git checkout {llama_revision}")
+         .run_commands(f"git clone {llama_repo} /opt/llama.cpp && cd /opt/llama.cpp && git checkout {llama_revision}"))
+if KEY == "glm_flash":
+    image = (image.add_local_file(str(Path(__file__).resolve().parents[1] /
+                 "training/character/patch_glm_lora_graph.py"), "/opt/patch_glm_lora_graph.py", copy=True)
+             .run_commands("python /opt/patch_glm_lora_graph.py --source-dir /opt/llama.cpp"))
+image = (image
          .run_commands(f"cmake -S /opt/llama.cpp -B /opt/llama.cpp/build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES={cuda_arch} -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release && cmake --build /opt/llama.cpp/build -j 8 --target llama-server")
          .pip_install("huggingface-hub>=0.34,<2")
          .env({"MODEL_KEY": KEY})
@@ -56,6 +61,8 @@ def stage():
 
 _server = None
 _server_log = None
+_server_character = None
+CHARACTER_PATH = Path("/weights/character/glm-sft-v7/adapter.gguf")
 
 
 def _server_log_tail():
@@ -71,8 +78,10 @@ def _server_log_tail():
               timeout=1800, min_containers=0, max_containers=1, scaledown_window=300,
               memory=245760 if KEY == "deepseek_flash" else 32768)
 def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = None,
-             temperature: float = 0.2, seed: int | None = None):
-    global _server, _server_log
+             temperature: float = 0.2, seed: int | None = None, use_character: bool = False):
+    global _server, _server_log, _server_character
+    if use_character and KEY != "glm_flash":
+        raise ValueError("The GLM character adapter cannot be applied to a different model family")
     first = Path("/weights") / MODEL["selected_files"][0]["path"]
     if not first.is_file():
         raise RuntimeError(f"Weights not staged for {KEY}; run stage first")
@@ -89,6 +98,22 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
             command += ["--chat-template-kwargs", '{"reasoning_strength":"low"}']
         if KEY == "glm_flash":
             command += ["--reasoning-effort", "low", "--reasoning-budget", "128"]
+            if CHARACTER_PATH.is_file():
+                import hashlib
+                manifest = json.loads(CHARACTER_PATH.with_name("adapter_manifest.json").read_text())
+                if (manifest.get("source_pairs_preserved") != 431
+                        or manifest.get("serving_revision") != MODEL["revision"]):
+                    raise ValueError("Character conversion targets or pinned serving revision differ")
+                digest = hashlib.sha256()
+                with CHARACTER_PATH.open("rb") as source:
+                    for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                        digest.update(chunk)
+                if digest.hexdigest() != manifest.get("gguf_sha256"):
+                    raise ValueError("Character GGUF integrity check failed")
+                _server_character = manifest
+                # Each request explicitly selects scale 0 or 1; ordinary players
+                # must never inherit the auditor adapter from a preceding call.
+                command += ["--lora", str(CHARACTER_PATH), "--lora-init-without-apply"]
         if KEY == "deepseek_flash":
             command += ["--override-tensor", "per_layer_token_embd.weight=CPU", "--reasoning", "on", "--reasoning-effort", "low"]
         # A pipe fills while a large GGUF loads and can block the server before /health.
@@ -111,8 +136,12 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
             _server.kill()
             _server.wait(timeout=30)
             raise TimeoutError(f"llama-server did not become healthy: {_server_log_tail()}")
+    if use_character and _server_character is None:
+        raise ValueError("Character adapter was not staged when this inference container started")
     payload = {"model": KEY, "messages": [{"role": "user", "content": prompt}],
                "max_tokens": max_tokens, "temperature": temperature, "cache_prompt": False}
+    if _server_character is not None:
+        payload["lora"] = [{"id": 0, "scale": 1.0 if use_character else 0.0}]
     if seed is not None:
         payload["seed"] = seed
     if response_schema is not None:
@@ -125,4 +154,6 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
     msg = choice["message"]
     return {"text": msg.get("content") or "", "model_emitted_reasoning": msg.get("reasoning_content"),
             "model_message": msg, "finish_reason": choice.get("finish_reason"),
-            "model": MODEL["repo_id"], "revision": MODEL["revision"], "usage": result.get("usage")}
+            "model": MODEL["repo_id"], "revision": MODEL["revision"], "usage": result.get("usage"),
+            "character_adapter_applied": use_character,
+            "character_manifest": _server_character if use_character else None}
