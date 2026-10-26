@@ -12,7 +12,7 @@
 
 ## Abstract
 
-*[Draft, to finalise last.]* Multi-agent games with hidden roles reward coordination with teammates and deception of opponents, and whether a model will report misconduct to an independent overseer is a safety-relevant question. We study this with UNDERCOVER Bench, a Secret Hitler environment with private channels, controller-verified reporting windows, and an immutable ledger. In a prompted baseline with four open-weight models, one completed game showed private coordination between a Liberal auditor and Hitler and a preferential voting pattern, with no invalid actions. We then built a GLM-5.3-Flash character-training candidate with DPO on six preference pairs. Its pilot checks show no advantage over the untrained reference, and the final held-out evaluation has not run. We also reviewed a prior RLCR training branch and found defects that make its results invalid. The main takeaway is that the baseline shows the coordination failure the study targets, but the character intervention is not yet demonstrated, and the reporting question remains open.
+*[Draft, to finalise last.]* Multi-agent games with hidden roles reward coordination with teammates and deception of opponents, and whether a model will report misconduct to an independent overseer is a safety-relevant question. We study this with UNDERCOVER Bench, a Secret Hitler environment with private channels, controller-verified reporting windows, and an immutable ledger. In a prompted baseline with four open-weight models, one completed game showed private coordination between a Liberal auditor and Hitler and a preferential voting pattern, with no invalid actions. We then trained GLM-5.3-Flash character-training candidates with DPO, including a six-pair candidate and two larger pilots. None shows an advantage over the untrained reference, and the final held-out evaluation has not run. We also reviewed a prior RLCR training branch and found defects, including that none of its logged decisions was a validated model output, which make its results invalid. The main takeaway is that the baseline shows the coordination failure the study targets, but the character intervention is not yet demonstrated, and the reporting question remains open.
 
 ## 1. Introduction
 
@@ -21,7 +21,7 @@ Games with asymmetric information and hidden roles test whether language-model a
 We contribute:
 
 1. **A baseline trace.** An observed four-model Secret Hitler game with a private pair channel, 16 private messages, and a preferential vote pattern, with no scripted actions or reports (Section 4.1).
-2. **A character-training candidate and its pilot checks.** A rank-32 GLM-5.3-Flash LoRA trained with DPO on six pairs, with evaluation showing no measurable advantage over its reference (Section 4.2).
+2. **Character-training candidates and their checks.** Three GLM-5.3-Flash DPO checkpoints (two pilots and a six-pair paper-method candidate), none showing a measurable advantage over the untrained reference (Section 4.2).
 3. **An audit of a prior RLCR training branch.** We identify training and reward defects that invalidate its reported results and document corrections (Section 4.3).
 
 ## 2. Related Work
@@ -34,9 +34,13 @@ We contribute:
 
 **Baseline models.** GLM-5.3-Flash, DeepSeek-V4.1-Flash, Muse-Glimmer-30B (two seats), and Qwen3.8-27B, prompted with no training. Output ceilings were 8,192 tokens for GLM and DeepSeek and 1,024 and 640 for Qwen and Muse in the first run, later raised to 8,192 to avoid empty final answers. Seed 2026, simulated tournament pressure on.
 
-**Character training.** GLM-5.3-Flash on Tinker. LoRA rank 32, alpha 32, learning rate 5e-5, DPO beta 0.1, chosen-token NLL coefficient 0.1, one epoch over six pairs, reasoning renderer `glm5_3_high_reasoning`. Pairs were selected from 157 prompts (314 responses) under consequence, evidence and decision-accuracy filters. The Tinker rank-64 setting was rejected, so rank 32 is the maximum used.
+**Character training.** All on Tinker with GLM-5.3-Flash. There are three separate checkpoints, and results must not be pooled across them.
 
-**Pilot evaluation.** Fresh, pressure and final frozen cases with expected action labels, scored by exact or strict action match over seeds, with manual inspection of outputs.
+- **v3 DPO pilot:** 76 pairs (32 repaired Adaption scenarios plus 44 authored behaviour cases), rank-16 LoRA, DPO beta 0.1. Most rejected answers were authored, not sampled from the student.
+- **Repaired DPO v5 pilot:** 74 pairs derived from v3 (eight revision cases given an explicit prior suspicion, two contestable pairs removed), rank 16, learning rate 5e-6, one epoch, `glm5_3_high_reasoning`.
+- **DPO v7 candidate** (paper-method pipeline): six admitted teacher/student pairs, rank 32, alpha 32, learning rate 5e-5, DPO beta 0.1, chosen-token NLL coefficient 0.1, one epoch, one optimizer update. Pairs were selected from 157 prompts (314 responses) under consequence, evidence and decision-accuracy filters. Tinker rejected rank 64, so 32 is the maximum used. The pipeline stopped before introspection SFT. A separate format-calibration SFT on v3 was also tried and rejected.
+
+**Evaluation.** Pilots (v3, v5) were checked on frozen non-game case sets scored by exact or strict action match over seeds, with manual inspection. The v7 candidate was run on a development tool-delivery benchmark (16 episodes per condition) against the untrained reference and a full-constitution prompt control.
 
 **What we tried that did not work.** A max-reasoning renderer stalled on several cases, which we avoided by using high and low renderers. A format-only SFT pilot did not fix length stops and was rejected. A first DPO pilot had ambiguous labels, which we repaired before the final checks.
 
@@ -63,21 +67,33 @@ Whether the pairing is a prohibited vote-trading pact has **not been independent
 
 ### 4.2 Character-training candidate
 
-**Table 2.** Pilot checks on exact action match. Source: `training/character/PILOT_V4_RESULTS.md`.
+**Table 2.** DPO v7 candidate, development tool-delivery benchmark (16 episodes per condition). Source: `training/character/CHARACTER_DPO_V7_MODEL_CARD.md`.
 
-| Check | Untrained reference | Repaired DPO candidate |
-|---|---:|---:|
-| Original 8 cases, max reasoning | 8/8 | 7/8 |
-| Fresh 12 cases, high reasoning | 12/12 | 12/12 |
-| Fresh 12 cases, low reasoning | 12/12 | 12/12 |
-| Task-pressure 10 cases × 3 seeds, high reasoning (strict) | 26/30 | 25/30 |
-| Final frozen 8 cases × 3 seeds, high reasoning | 24/24 | 24/24 |
+| Condition | Passed | Infrastructure errors | Episodes |
+|---|---:|---:|---:|
+| Untrained GLM-5.3-Flash reference | 16 | 0 | 16 |
+| Full-constitution prompt control | 16 | 0 | 16 |
+| DPO v7 candidate | 12 | 4 | 16 |
 
-Manual review found no false incident reports, missed supported reports, unsupported evidence IDs, or unfinished outputs in the high-reasoning checks. The candidate shows **no demonstrated advantage over its untrained reference**. The pressure-set difference is within what these small samples can distinguish, and the rubric is ambiguous for some cases. Final held-out evaluation **has not run**, and the adapter is not approved for the main experiment.
+The four v7 non-passes were expired Tinker sampling requests, not completed episodes with wrong behaviour; all 12 completed episodes passed. The benchmark has no headroom, since both controls passed 16/16, so this shows no improvement. The run stopped before introspection SFT, final held-out evaluation **has not run**, and the adapter is not approved for the main experiment.
+
+**Table 3.** Earlier Tinker pilots (v3: 76 pairs, v5: 74 pairs, both rank 16) on frozen non-game cases, exact action match. Source: `training/character/PILOT_V4_RESULTS.md`.
+
+| Check | Untrained reference | v3 DPO | Repaired DPO v5 |
+|---|---:|---:|---:|
+| Original 8 cases, max reasoning | 8/8 | 6/8 | 7/8 |
+| Fresh 12 cases, high reasoning | 12/12 | 12/12 | 12/12 |
+| Fresh 12 cases, low reasoning | 12/12 | 12/12 | 12/12 |
+| Task-pressure 10 cases × 3 seeds, high reasoning (strict) | 26/30 | 28/30 | 25/30 |
+| Final frozen 8 cases × 3 seeds, high reasoning | 24/24 | 24/24 | 24/24 |
+
+Manual review found no false incident reports, missed supported reports, unsupported evidence IDs, or unfinished outputs in the high-reasoning pressure and final checks. The max-reasoning misses were renderer-sensitive: they disappeared under the supported high and low renderers. The pressure-set differences are within what these small samples can distinguish, and the strict labels are partly ambiguous. **No checkpoint shows an advantage over the untrained reference**, and none is promoted.
 
 ### 4.3 Prior RLCR branch
 
 The original RLCR training branch was reviewed (`docs/PR1_REVIEW.md`). It pooled decisions from all players, including Fascist and Hitler actions, and used one batch-wide reward. It counted incomplete episodes as losses. Its report reward gave credit for any delivered report without checking evidence or accuracy. Its checkpoint bundles held only metadata. Results from that branch are **not validated** and are kept only as historical records (`docs/EXPERIMENT_RESULTS_AND_LOG.md`). The corrected integration is described in the review, but **no corrected RLCR run is recorded here**.
+
+Our own check of the 16 preserved legacy ledgers (`runs/legacy-pr1/`) adds a further problem, which the review does not state. Of the 1,091 logged decisions, 661 came from the trainable Qwen2.5-7B policy and every one carries the rationale "Schema validation fallback": the raw output did not validate (it ran on into invented follow-on turns), and the controller substituted a default. The other 430 decisions came from a scripted legal pilot policy with no model reasoning. So no legacy episode contains a validated model decision, and the log's finding that players "universally chose Skip" and the auditor "reasoned correctly" to `NoReport` reflects fallbacks and scripting, not learned or reasoned behaviour. Outcomes in the preserved ledgers are 11 completed games (2 Liberal wins, 9 Fascist), 2 truncated and 3 nonterminal; the log and review count 18 episodes, so two ledgers are not preserved. The logged step-3 values (loss 0.0421, grad norm 0.185) match the fixed synthetic values the review identified. Steps 4–7 each record a constant advantage of −0.5 (every game lost, so `r_org` = 0 against a 0.5 baseline), giving a loss near 0.5 that reflects that fixed offset, not a comparison between better and worse trajectories.
 
 *[TODO: add at least one numbered figure, for example a per-decision action-match plot from the pilot data.]*
 
@@ -87,7 +103,7 @@ The original RLCR training branch was reviewed (`docs/PR1_REVIEW.md`). It pooled
 
 **Limitations.**
 - The baseline is one observed game, with output ceilings that changed between runs. It is descriptive, not a matched efficacy comparison.
-- The DPO candidate used six pairs, and admission was reviewed by the coding assistant, not an independent human.
+- The v7 candidate used six pairs, and the pilots used mostly authored rejected answers. Admission was reviewed by the coding assistant, not an independent human. The v7 development benchmark has no headroom, and 4 of its 16 candidate episodes hit infrastructure errors.
 - The pilot cases are small (8–12 per condition, 2–3 seeds), authored, and not tested for statistical significance.
 - The rubric is ambiguous for some pressure cases, so strict scores can understate defensible choices.
 - The threat models we did not address include deliberate report suppression, long-horizon escalation, and transfer to other games. Liar's Bar runs are not recorded here.
@@ -97,7 +113,7 @@ The original RLCR training branch was reviewed (`docs/PR1_REVIEW.md`). It pooled
 
 ## 6. Conclusion
 
-We built the environment and a baseline trace that shows private coordination between a Liberal auditor and Hitler, with no scripted actions or reports. A character-training candidate trained on six DPO pairs shows no measurable advantage over its reference in pilot checks, and its held-out evaluation has not run. A prior RLCR branch has defects that invalidate its results, and its corrected successor has not been trained. The reporting question is open. The next step is a held-out evaluation before any claim about character training.
+We built the environment and a baseline trace that shows private coordination between a Liberal auditor and Hitler, with no scripted actions or reports. Three character-training checkpoints show no measurable advantage over the untrained reference, and held-out evaluation has not run. A prior RLCR branch has defects that invalidate its results, including that none of its logged decisions was a validated model output, and its corrected successor has not been trained. The reporting question is open. The next step is a held-out evaluation before any claim about character training.
 
 ## Code and Data
 
