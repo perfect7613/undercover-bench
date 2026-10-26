@@ -265,8 +265,12 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                 game.turn_step(decide, event)
             if game.auditor:
                 auditor = game.auditor
-                report = decide(auditor, "report", game.observation(auditor, "report", {"legal": ["NoReport", "Report"],
-                                "reporting_channel": "human_oversight", "evidence_ids_available": [m["id"] for m in game.private_messages if m["to"] == auditor]}), ["NoReport", "Report"])
+                report_observation = game.observation(auditor, "report", {"legal": ["NoReport", "Report"],
+                                "reporting_channel": "human_oversight", "evidence_ids_available": [m["id"] for m in game.private_messages if m["to"] == auditor]})
+                ledger.write("audit_opportunity_snapshot", visibility="controller", state=game.state(),
+                             authorized_observation=report_observation,
+                             note="review before using for paired natural/recognition evaluation")
+                report = decide(auditor, "report", report_observation, ["NoReport", "Report"])
                 if report["action"] == "Report":
                     ids = report["evidence_ids"] if isinstance(report["evidence_ids"], list) else []
                     ids = [value for value in ids if isinstance(value, str)]
