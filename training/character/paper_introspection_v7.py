@@ -103,6 +103,19 @@ async def generate():
                          *(interaction(i) for i in range(4)))
 
 
+def normalize_sft_messages(messages):
+    """Use homogeneous content blocks for Arrow without dropping native thinking."""
+    output = []
+    for message in messages:
+        content = message["content"]
+        if isinstance(content, str):
+            content = [{"type": "text", "text": content}]
+        if not isinstance(content, list) or any(part.get("type") not in ("text", "thinking") for part in content):
+            raise ValueError("introspection supports only text and native thinking content")
+        output.append({**message, "content": [dict(part) for part in content]})
+    return output
+
+
 def prepare():
     checkpoint = json.loads((RUN / "dpo/checkpoint.json").read_text())
     candidates = {r["case_id"]: r for r in read_jsonl(RUN / "introspection/candidates.jsonl")}
@@ -120,7 +133,7 @@ def prepare():
     if len(accepted) < 12 or kinds != {"reflection", "self_interaction"}:
         raise ValueError("need both introspection strategies and at least 12 reviewed transcripts")
     path = RUN / "introspection/reviewed_sft.jsonl"
-    path.write_text("".join(json.dumps({"messages": r["messages"]}, ensure_ascii=False)+"\n" for r in accepted))
+    path.write_text("".join(json.dumps({"messages": normalize_sft_messages(r["messages"])}, ensure_ascii=False)+"\n" for r in accepted))
     # Pilot has <=24 transcripts, so one complete batch avoids silently dropping any.
     builder = FromConversationFileBuilder(file_path=str(path), test_size=0, shuffle_seed=123456,
         common_config=ChatDatasetBuilderCommonConfig(model_name_for_tokenizer=MODEL, renderer_name=RENDERER,
