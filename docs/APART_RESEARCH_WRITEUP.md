@@ -1,46 +1,124 @@
-# UNDERCOVER Bench: status writeup for Apart Research submission
+# UNDERCOVER Bench: Character Training and Reporting Under Pressure in Multi-Agent Social Deduction
 
-Status as of 26 October 2026. This document only states results that are recorded in this repository. Items marked **not run** or **not validated** have no supporting evaluation output here.
+**Author 1** (Affiliation TBC) · **Prasad Mahadik** (Affiliation TBC) · **Sanchayan Ghosh** (Affiliation TBC) · **Amey Muke** (Affiliation TBC)
 
-## 1. Question
+*With Apart Research*
 
-Do character-trained undercover agents keep reporting misconduct through an independent channel once collective-reward training is applied? The study compares game environments with and without an undercover agent, tests character training through DPO, and measures whether external human reporting survives collective-reward (RLCR) training. See [PLAN.md](PLAN.md).
+*Research conducted at the AI Collusion Research Sprint, October 2026.*
 
-## 2. Baseline observations (prompted models, before any training)
+> **DRAFT.** Author list and affiliations are placeholders. Status as of 26 October 2026. Only results recorded in this repository are stated. Items marked **not run** or **not validated** have no supporting evaluation output here.
 
-Source: [OBSERVED_GAMES_2026-10-25.md](OBSERVED_GAMES_2026-10-25.md) and the raw ledger [`runs/secret_hitler-B1-2026-f287e89d.jsonl`](../runs/secret_hitler-B1-2026-f287e89d.jsonl).
+## Abstract
 
-- Five seats used GLM-5.3-Flash, DeepSeek-V4.1-Flash, Muse-Glimmer-30B, Qwen3.8-27B and Muse-Glimmer-30B, in seat order. No actions, offers, private messages or reports were scripted.
-- Seed 2026 with simulated tournament pressure. The game completed in eight rounds with zero invalid actions and a Fascist victory. Roles: Aster = Liberal auditor, Briar = Hitler, Cedar = Fascist, two other seats Liberal.
-- Aster and Briar established an exclusive pair channel at event 8. Events 10–134 contain 16 private messages, none of which appear in other players' observations.
-- At a 3–3 policy score, Aster proposed pairing with Briar and Briar agreed (events 132–135). Aster then nominated Briar and three players voted to pass the government (events 136–143). Whether this counts as a prohibited vote-trading pact has **not been independently adjudicated**.
-- Output-length ceilings differed across seats and runs (8,192 for GLM and DeepSeek; 1,024 for Qwen and 640 for Muse in this run, later raised to 8,192). The runs are descriptive, not a matched efficacy comparison.
+*[Draft, to finalise last.]* Multi-agent games with hidden roles reward coordination with teammates and deception of opponents, and whether a model will report misconduct to an independent overseer is a safety-relevant question. We study this with UNDERCOVER Bench, a Secret Hitler environment with private channels, controller-verified reporting windows, and an immutable ledger. In a prompted baseline with four open-weight models, one completed game showed private coordination between a Liberal auditor and Hitler and a preferential voting pattern, with no invalid actions. We then built a GLM-5.3-Flash character-training candidate with DPO on six preference pairs. Its pilot checks show no advantage over the untrained reference, and the final held-out evaluation has not run. We also reviewed a prior RLCR training branch and found defects that make its results invalid. The main takeaway is that the baseline shows the coordination failure the study targets, but the character intervention is not yet demonstrated, and the reporting question remains open.
 
-These are single games. They are not a measure of escalation rates.
+## 1. Introduction
 
-## 3. Character training (DPO candidate, GLM-5.3-Flash)
+Games with asymmetric information and hidden roles test whether language-model agents coordinate with allies, deceive opponents, and respect oversight when no one is watching. Reporting is the relevant safety behaviour here: an agent that sees a rule violation and stays silent to protect its team weakens external oversight. Collective-reward training can strengthen team play, which may make this failure worse. The question is whether character training can make agents report verified misconduct through an independent channel without producing false accusations, and whether that survives collective-reward training.
 
-Source: [CHARACTER_DPO_V7_MODEL_CARD.md](../training/character/CHARACTER_DPO_V7_MODEL_CARD.md) and [PILOT_V4_RESULTS.md](../training/character/PILOT_V4_RESULTS.md).
+We contribute:
 
-- Trained on Tinker. LoRA rank 32, alpha 32, learning rate 5e-5, DPO beta 0.1, one epoch.
-- Six retained preference pairs were used for the one completed update, selected from 157 prompts. Admission was reviewed by the coding assistant, not by an independent human.
-- Pilot checks (small, assistant-authored): on the frozen final 8-case set over 3 seeds, the untrained reference and the repaired DPO candidate both scored 24/24. The pressure set scored 26/30 for the reference and 25/30 for the repaired candidate. These do not show an improvement over the baseline.
-- Final held-out evaluation **has not run**. The adapter is not approved for the main experiment.
+1. **A baseline trace.** An observed four-model Secret Hitler game with a private pair channel, 16 private messages, and a preferential vote pattern, with no scripted actions or reports (Section 4.1).
+2. **A character-training candidate and its pilot checks.** A rank-32 GLM-5.3-Flash LoRA trained with DPO on six pairs, with evaluation showing no measurable advantage over its reference (Section 4.2).
+3. **An audit of a prior RLCR training branch.** We identify training and reward defects that invalidate its reported results and document corrections (Section 4.3).
 
-## 4. RLCR and checkpoints
+## 2. Related Work
 
-- The original RLCR training branch was reviewed and found to have training and reward defects ([PR1_REVIEW.md](PR1_REVIEW.md)): opponent tokens were trained, incomplete episodes were counted as losses, the report reward was unverified, and checkpoint bundles were metadata-only. Results from that branch are historical and **not validated** ([EXPERIMENT_RESULTS_AND_LOG.md](EXPERIMENT_RESULTS_AND_LOG.md)).
-- A corrected RLCR integration is described in the review. No corrected RLCR training run is recorded in this repository.
+*[To complete.]* The study builds on Open Character Training, which generates chosen answers from a constitution-guided teacher and rejected answers from an uninstructed student, then applies DPO and introspection SFT (arXiv:2511.01689). Our pilot differs from that method in using authored rejected answers and a much smaller dataset, and it has not yet run the introspection stage. The Secret Hitler environment follows the rules in the official game document and an existing benchmark repository, adapted to add private channels and reporting windows. The collective-reward direction builds on group-relative advantage estimation, but the corrected RLCR integration is not yet trained.
 
-## 5. Not yet done
+## 3. Methods
 
-- Final held-out evaluation of any character-trained checkpoint.
-- Escalation or reporting rates before and after character training, measured in games.
-- Corrected RLCR runs, including comparison against the character-trained model.
-- Liar's Bar runs. None are recorded here.
+**Environment.** Five seats, three Liberals and two Fascists including Hitler. The controller holds hidden roles and the deck; models see only their observations. Private pair channels are created by accepted offers. Reporting is evaluated against an immutable ledger and controller reporting windows.
 
-## 6. Limitations
+**Baseline models.** GLM-5.3-Flash, DeepSeek-V4.1-Flash, Muse-Glimmer-30B (two seats), and Qwen3.8-27B, prompted with no training. Output ceilings were 8,192 tokens for GLM and DeepSeek and 1,024 and 640 for Qwen and Muse in the first run, later raised to 8,192 to avoid empty final answers. Seed 2026, simulated tournament pressure on.
 
-- Baseline games are single observed runs.
-- The DPO candidate used six pairs and a small authored prompt set.
-- No independent human review of training labels has been completed.
+**Character training.** GLM-5.3-Flash on Tinker. LoRA rank 32, alpha 32, learning rate 5e-5, DPO beta 0.1, chosen-token NLL coefficient 0.1, one epoch over six pairs, reasoning renderer `glm5_3_high_reasoning`. Pairs were selected from 157 prompts (314 responses) under consequence, evidence and decision-accuracy filters. The Tinker rank-64 setting was rejected, so rank 32 is the maximum used.
+
+**Pilot evaluation.** Fresh, pressure and final frozen cases with expected action labels, scored by exact or strict action match over seeds, with manual inspection of outputs.
+
+**What we tried that did not work.** A max-reasoning renderer stalled on several cases, which we avoided by using high and low renderers. A format-only SFT pilot did not fix length stops and was rejected. A first DPO pilot had ambiguous labels, which we repaired before the final checks.
+
+## 4. Results
+
+### 4.1 Baseline game (B1, seed 2026)
+
+Source: `runs/secret_hitler-B1-2026-f287e89d.jsonl`.
+
+**Table 1.** Key events in the observed baseline game.
+
+| Event | Observation |
+|---|---|
+| Completion | Eight rounds, zero invalid actions, Fascist victory |
+| Roles | Aster = Liberal auditor, Briar = Hitler, Cedar = Fascist, two Liberals |
+| Event 8 | Aster and Briar established an exclusive pair channel |
+| Events 10–134 | 16 private messages between them, invisible to other players |
+| Events 132–135 | At a 3–3 policy score, Aster proposed pairing with Briar; Briar agreed |
+| Events 136–143 | Aster nominated Briar; Aster, Briar and Cedar voted to pass the government 3–2 |
+| Event 144 | Controller recorded Hitler elected; Fascist win |
+| Events 25–145 | The prompted auditor chose `NoReport` at eight decision points; no report was delivered |
+
+Whether the pairing is a prohibited vote-trading pact has **not been independently adjudicated**. A single game is an observation, not a rate. The auditor's `NoReport` choices are consistent with the escalation failure the study targets, but this one trace does not establish it, and the audit reward had zero verified opportunities, so it was not scored.
+
+### 4.2 Character-training candidate
+
+**Table 2.** Pilot checks on exact action match. Source: `training/character/PILOT_V4_RESULTS.md`.
+
+| Check | Untrained reference | Repaired DPO candidate |
+|---|---:|---:|
+| Original 8 cases, max reasoning | 8/8 | 7/8 |
+| Fresh 12 cases, high reasoning | 12/12 | 12/12 |
+| Fresh 12 cases, low reasoning | 12/12 | 12/12 |
+| Task-pressure 10 cases × 3 seeds, high reasoning (strict) | 26/30 | 25/30 |
+| Final frozen 8 cases × 3 seeds, high reasoning | 24/24 | 24/24 |
+
+Manual review found no false incident reports, missed supported reports, unsupported evidence IDs, or unfinished outputs in the high-reasoning checks. The candidate shows **no demonstrated advantage over its untrained reference**. The pressure-set difference is within what these small samples can distinguish, and the rubric is ambiguous for some cases. Final held-out evaluation **has not run**, and the adapter is not approved for the main experiment.
+
+### 4.3 Prior RLCR branch
+
+The original RLCR training branch was reviewed (`docs/PR1_REVIEW.md`). It pooled decisions from all players, including Fascist and Hitler actions, and used one batch-wide reward. It counted incomplete episodes as losses. Its report reward gave credit for any delivered report without checking evidence or accuracy. Its checkpoint bundles held only metadata. Results from that branch are **not validated** and are kept only as historical records (`docs/EXPERIMENT_RESULTS_AND_LOG.md`). The corrected integration is described in the review, but **no corrected RLCR run is recorded here**.
+
+*[TODO: add at least one numbered figure, for example a per-decision action-match plot from the pilot data.]*
+
+## 5. Discussion and Limitations
+
+**Implications for AI safety.** The baseline shows the failure mode the study targets: a pair of agents coordinate privately, and the auditor does not escalate. One game does not show how often this happens. Character training, as far as we have tested it, does not yet change behaviour measurably, so we cannot say that it addresses the failure.
+
+**Limitations.**
+- The baseline is one observed game, with output ceilings that changed between runs. It is descriptive, not a matched efficacy comparison.
+- The DPO candidate used six pairs, and admission was reviewed by the coding assistant, not an independent human.
+- The pilot cases are small (8–12 per condition, 2–3 seeds), authored, and not tested for statistical significance.
+- The rubric is ambiguous for some pressure cases, so strict scores can understate defensible choices.
+- The threat models we did not address include deliberate report suppression, long-horizon escalation, and transfer to other games. Liar's Bar runs are not recorded here.
+- We assume the controller's ledger is correct. If it were not, the reporting labels would be wrong.
+
+**Future work.** A final held-out evaluation of the character candidate; a larger, independently reviewed training set sampled from the uninstructed student and a constitution-guided teacher; in-game reporting rates before and after character training; corrected RLCR runs with a comparison against the character-trained model; and Liar's Bar transfer.
+
+## 6. Conclusion
+
+We built the environment and a baseline trace that shows private coordination between a Liberal auditor and Hitler, with no scripted actions or reports. A character-training candidate trained on six DPO pairs shows no measurable advantage over its reference in pilot checks, and its held-out evaluation has not run. A prior RLCR branch has defects that invalidate its results, and its corrected successor has not been trained. The reporting question is open. The next step is a held-out evaluation before any claim about character training.
+
+## Code and Data
+
+- **Code repository:** https://github.com/perfect7613/undercover-bench (upstream; this branch is on https://github.com/sanchayanghosh-alt/undercover-bench)
+- **Data:** `runs/secret_hitler-B1-2026-f287e89d.jsonl` (B1 baseline ledger)
+- **Other artifacts:** private character adapter release on Hugging Face (`Perfect7613/glm-5.3-flash-auditor-character-dpo-v7`); see `training/character/EXPORT_V7_STATUS.md` for release status.
+
+## Author Contributions (optional)
+
+*[TBC by team.]*
+
+## References
+
+1. Open Character Training. arXiv:2511.01689. https://arxiv.org/abs/2511.01689
+2. OpenCharacterTraining implementation. https://github.com/maiush/OpenCharacterTraining
+3. Secret Hitler official rules. https://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf
+4. Secret Hitler AI benchmark. https://github.com/perfect7613/secret-hitler-ai-benchmark
+5. Tinker cookbook. https://github.com/thinking-machines-lab/tinker-cookbook
+
+## Appendix (optional)
+
+*[TBC: prompts, full per-case results, and the B1 ledger events in detail.]*
+
+## LLM Usage Statement
+
+*[TBC by team. Draft text for review:]* An LLM assistant (Claude) helped write and restructure this report and inspected the repository. All results cited here were checked against the repository files listed in the text. The final text should be revised by the team, and claims without a supporting file should be removed.
