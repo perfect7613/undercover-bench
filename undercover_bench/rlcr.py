@@ -35,6 +35,7 @@ class AuthoredDecision(BaseModel):
     context_token_ids: tuple[int, ...]
     generated_token_ids: tuple[int, ...]
     behavior_logprobs: tuple[float, ...]
+    sampling_temperature: float = Field(default=1.0, gt=0, allow_inf_nan=False)
 
     @model_validator(mode="after")
     def check_token_alignment(self):
@@ -229,6 +230,10 @@ def validate_source_ledger(rollout: TrainingRollout, path: str | Path) -> None:
     logged_decisions = {(row["sequence"], row.get("player")) for row in rows if row.get("kind") == "decision"}
     if any((decision.sequence, decision.actor) not in logged_decisions for decision in rollout.decisions):
         raise RLCRInputError("authored-token trace has no matching controller decision")
+    expected_authors = {(row["sequence"], row.get("player")) for row in rows
+                        if row.get("kind") == "decision" and rollout.roles.get(row.get("player")) == "Liberal"}
+    if {(d.sequence, d.actor) for d in rollout.decisions} != expected_authors:
+        raise RLCRInputError("every Liberal decision, including reporting, must enter the token ledger")
     token_rows = [row for row in rows if row.get("kind") == "training_token_decision"]
     token_events = {row.get("decision_sequence"): row.get("trace") for row in token_rows}
     if len(token_events) != len(token_rows):
@@ -236,6 +241,8 @@ def validate_source_ledger(rollout: TrainingRollout, path: str | Path) -> None:
     if any(token_events.get(decision.sequence) != decision.model_dump(mode="json")
            for decision in rollout.decisions):
         raise RLCRInputError("authored-token trace is missing from or differs from the controller ledger")
+    if set(token_events) != {d.sequence for d in rollout.decisions}:
+        raise RLCRInputError("unexpected token events, including frozen opponent traces")
     incoming = {row["message"]["id"]: row["message"]
                 for row in rows if row.get("kind") in ("private_message", "pact_offer", "channel_offer")
                 and isinstance(row.get("message"), dict) and row["message"].get("to") == rollout.auditor}
@@ -245,6 +252,8 @@ def validate_source_ledger(rollout: TrainingRollout, path: str | Path) -> None:
                    for evidence_id in opportunity.evidence_ids):
                 raise RLCRInputError("reportable evidence was not sent to the auditor by another player")
     report_events = {row["sequence"]: row for row in rows if row.get("kind") == "human_report"}
+    if rollout.audit_review_complete and set(report_events) != {r.sequence for r in rollout.audit_reports}:
+        raise RLCRInputError("independent review must include every human report")
     for report in rollout.audit_reports:
         event = report_events.get(report.sequence)
         if (event is None or event.get("reporter") != rollout.auditor
@@ -286,7 +295,7 @@ def prepare_group(rollouts: tuple[TrainingRollout, ...], config: RLCRConfig) -> 
             raise RLCRInputError("group mixes conditions, starts, roles, or behavior-policy versions")
     def model_fingerprint(rollout: TrainingRollout):
         return {decision.policy_slot: (decision.model_revision, decision.tokenizer_hash,
-                                       decision.template_hash)
+                                       decision.template_hash, decision.sampling_temperature)
                 for decision in rollout.decisions}
     if any(model_fingerprint(rollout) != model_fingerprint(first) for rollout in rollouts[1:]):
         raise RLCRInputError("group mixes base models, tokenizers, or chat templates")

@@ -1,3 +1,5 @@
+> Historical engineering record imported from the original training branch. The claims below are not validated research results. The review found incomplete episodes counted as losses, opponent tokens trained, an unverified report-count bonus, simulated metrics mixed with live logs, and metadata-only checkpoint bundles. See [the correction and evidence](PR1_REVIEW.md). Preserve this record for provenance; do not pool it with the corrected experiment.
+
 # RLCR Live Training & Reporting Evaluation: Complete Experiment Log & Documentation
 
 **Date:** 26 October 2026  

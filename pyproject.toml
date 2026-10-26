@@ -9,6 +9,15 @@ dependencies = [
  "pydantic>=2,<3",
 ]
 
+[project.optional-dependencies]
+rlcr = [
+    "accelerate==1.15.0",
+    "peft==0.21.2",
+    "safetensors>=0.4",
+    "torch==2.14.1",
+    "transformers==5.20.2",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

@@ -1,298 +1,186 @@
-"""Modal trainable policy service for Undercover Bench.
+"""Explicit per-family Modal LoRA worker, replacing PR #1's Qwen-7B service.
 
-Serves token-level decisions with behavior log probabilities during game rollouts
-and applies LoRA policy-gradient updates on the same GPU container.
+No deploy/run is performed by this file's import. It extends the existing
+undercover-<model> app without replacing its generate/stage functions. Select RLCR_MODEL_KEY before
+Modal deploy. DeepSeek is blocked pending its distributed FP8/FP4 training loader.
 """
-
-from __future__ import annotations
-
+import json
+import math
 import os
+import re
 from pathlib import Path
-from typing import Any
 
 import modal
 
-APP_NAME = "undercover-trainable-policy"
-app = modal.App(APP_NAME)
+from undercover_bench.torch_backend import model_profile
 
-# Use PyTorch with CUDA 12.4+ and unsloth / peft support
-image = (
-    modal.Image.debian_slim(python_version="3.12")
-    .pip_install(
-        "torch>=2.4.0",
-        "transformers>=4.48.0",
-        "peft>=0.14.0",
-        "accelerate>=1.0.0",
-        "bitsandbytes>=0.45.0",
-        "pydantic>=2.0.0",
-        "sentencepiece>=0.2.0",
-        "protobuf>=4.25.0",
-    )
-)
-
-volume = modal.Volume.from_name("undercover-trainable-checkpoints", create_if_missing=True)
-
-
-def _get_hf_secret() -> list[modal.Secret]:
-    """Retrieve HF_TOKEN from environment or cached credentials."""
-    import huggingface_hub
-
-    token = os.environ.get("HF_TOKEN") or huggingface_hub.get_token()
-    secrets = []
-    if "huggingface-secret" in os.environ.get("MODAL_SECRETS", ""):
-        secrets.append(modal.Secret.from_name("huggingface-secret"))
-    elif token:
-        secrets.append(modal.Secret.from_dict({"HF_TOKEN": token}))
-    return secrets
+KEY = os.environ.get("RLCR_MODEL_KEY")
+if not KEY:
+    raise ValueError("Set RLCR_MODEL_KEY to glm_flash, deepseek_flash, qwen_dense or muse_glimmer")
+PROFILE = model_profile(KEY)
+if PROFILE["blocked_reason"]:
+    raise ValueError(PROFILE["blocked_reason"])
+# Extend the existing deployment, preserving its GGUF generate/stage functions.
+# A trainable worker still needs safetensors; it cannot backpropagate into GGUF.
+if os.environ.get("MODEL_KEY", KEY) != KEY:
+    raise ValueError("MODEL_KEY and RLCR_MODEL_KEY must select the same existing app")
+os.environ["MODEL_KEY"] = KEY
+from modal_services.serve import app, generate, stage  # noqa: E402,F401
+image = (modal.Image.debian_slim(python_version="3.12")
+         .pip_install("torch==2.14.1", "transformers==5.20.2", "peft==0.21.2",
+                      "accelerate==1.15.0", "bitsandbytes==0.50.2", "pydantic>=2,<3")
+         .env({"RLCR_MODEL_KEY": KEY, "MODEL_KEY": KEY})
+         .add_local_python_source("undercover_bench", "modal_services")
+         .add_local_dir(Path(__file__).resolve().parents[1] / "configs", "/root/configs"))
+volume = modal.Volume.from_name("undercover-rlcr-checkpoints", create_if_missing=True)
 
 
-@app.cls(
-    image=image,
-    gpu="L40S",  # Default GPU tier; can be configured per instance
-    volumes={"/checkpoints": volume},
-    secrets=_get_hf_secret(),
-    env={"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"},
-    timeout=3600,
-    scaledown_window=300,
-    min_containers=0,
-    max_containers=1,
-)
+@app.cls(image=image, gpu=PROFILE["gpu"], volumes={"/checkpoints": volume},
+         secrets=([modal.Secret.from_name(os.environ["RLCR_HF_SECRET"])] if os.environ.get("RLCR_HF_SECRET") else []),
+         min_containers=0, max_containers=1, scaledown_window=60, timeout=3600)
 class TrainablePolicyServer:
-    def __init__(
-        self,
-        base_model_name_or_path: str = "Qwen/Qwen2.5-7B-Instruct",
-        lora_r: int = 16,
-        lora_alpha: int = 32,
-        lora_dropout: float = 0.05,
-        learning_rate: float = 1e-5,
-    ):
-        self.base_model_name = base_model_name_or_path
-        self.lora_r = lora_r
-        self.lora_alpha = lora_alpha
-        self.lora_dropout = lora_dropout
-        self.lr = learning_rate
+    run_id: str = modal.parameter()
+    policy_slot: str = modal.parameter()
+    initial_adapter: str = modal.parameter(default="")
 
     @modal.enter()
     def setup(self):
         import torch
-        from peft import LoraConfig, get_peft_model, TaskType
-        from transformers import AutoModelForCausalLM, AutoTokenizer
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"Loading base model {self.base_model_name} on {self.device}...")
-
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.base_model_name,
-            trust_remote_code=True,
-        )
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-
-        # Load base model in bfloat16
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.base_model_name,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
-            trust_remote_code=True,
-        )
-
-        # Configure LoRA adapter
-        lora_config = LoraConfig(
-            task_type=TaskType.CAUSAL_LM,
-            r=self.lora_r,
-            lora_alpha=self.lora_alpha,
-            lora_dropout=self.lora_dropout,
-            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-        )
-        self.model = get_peft_model(self.model, lora_config)
-        self.model.print_trainable_parameters()
-
-        # Setup AdamW optimizer for LoRA parameters
-        self.optimizer = torch.optim.AdamW(
-            [p for p in self.model.parameters() if p.requires_grad],
-            lr=self.lr,
-        )
-
-        self.current_version = "init_v0"
-        self.step_count = 0
+        import transformers
+        from peft import LoraConfig, PeftModel, get_peft_model, prepare_model_for_kbit_training
+        from transformers import AutoConfig, AutoTokenizer, BitsAndBytesConfig
+        from undercover_bench.torch_backend import TorchPolicyBackend
+        if not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", self.run_id) or self.policy_slot not in ("ordinary", "auditor"):
+            raise ValueError("invalid run ID or policy slot")
+        self.root = Path("/checkpoints") / self.run_id / KEY / self.policy_slot
+        self.root.mkdir(parents=True, exist_ok=True)
+        session_config = {"model": PROFILE, "slot": self.policy_slot, "initial_adapter": self.initial_adapter}
+        session_file = self.root / "session.json"
+        if session_file.exists() and json.loads(session_file.read_text()) != session_config:
+            raise ValueError("run ID already belongs to a different model/character initialization")
+        session_file.write_text(json.dumps(session_config, indent=2))
+        torch.manual_seed(123456)
+        config = AutoConfig.from_pretrained(PROFILE["repo_id"], revision=PROFILE["revision"])
+        if config.model_type != PROFILE["model_type"] or PROFILE["architecture"] not in config.architectures:
+            raise ValueError("model architecture differs from pinned profile")
+        loader = getattr(transformers, PROFILE["architecture"], None)
+        if loader is None:
+            raise ValueError(f"Installed Transformers lacks {PROFILE['architecture']}; no model substitution")
+        tokenizer = AutoTokenizer.from_pretrained(PROFILE["repo_id"], revision=PROFILE["revision"])
+        if not tokenizer.chat_template:
+            raise ValueError("native text chat template unavailable")
+        model = loader.from_pretrained(PROFILE["repo_id"], revision=PROFILE["revision"], dtype=torch.bfloat16,
+            device_map={"": 0}, quantization_config=BitsAndBytesConfig(load_in_4bit=True,
+                bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True))
+        model = prepare_model_for_kbit_training(model)
+        initial = self.root / "initial"
+        if initial.exists():
+            model = PeftModel.from_pretrained(model, str(initial), is_trainable=True)
+        elif self.initial_adapter:
+            from undercover_bench.checkpoint_hf import verify_checkpoint
+            # Character export requires an explicit reviewed base-compatibility manifest.
+            adapter = Path(self.initial_adapter)
+            compatibility = json.loads((adapter / "compatibility.json").read_text())
+            if compatibility.get("model_revision") != f"{PROFILE['repo_id']}@{PROFILE['revision']}" or compatibility.get("verified") is not True:
+                raise ValueError("character adapter/base compatibility is not verified")
+            model = PeftModel.from_pretrained(model, str(adapter), is_trainable=True)
+        else:
+            model = get_peft_model(model, LoraConfig(r=32, lora_alpha=64, lora_dropout=0.,
+                target_modules="all-linear", task_type="CAUSAL_LM"))
+        self.backend = TorchPolicyBackend(model, tokenizer,
+            model_revision=f"{PROFILE['repo_id']}@{PROFILE['revision']}")
+        if initial.exists():
+            self.backend.restore_optimizer(initial)
+        else:
+            self.backend.commit_checkpoint(initial)
+            volume.commit()
+        self.pending = None
+        self.committed = None
+        self.preflight_ok = False
 
     @modal.method()
-    def sample_decision(
-        self,
-        prompt: str,
-        max_new_tokens: int = 120,
-        temperature: float = 0.7,
-        seed: int | None = None,
-    ) -> dict[str, Any]:
-        """Generate tokens while recording token IDs and exact behavior log probabilities."""
+    def identity(self):
+        return self.backend.identity()
+
+    @modal.method()
+    def sample(self, prompt, seed):
+        return self.backend.sample(prompt, seed)
+
+    @modal.method()
+    def restore(self, path):
+        from peft import set_peft_model_state_dict
+        from safetensors.torch import load_file
+        from undercover_bench.checkpoint_hf import verify_checkpoint
+        target = Path(path).resolve()
+        if not target.is_relative_to(self.root.resolve()):
+            raise ValueError("checkpoint belongs to a different run, model or slot")
+        verify_checkpoint(target)
+        restored = set_peft_model_state_dict(self.backend.model, load_file(str(target / "adapter_model.safetensors")))
+        if restored.unexpected_keys:
+            raise ValueError("checkpoint adapter keys do not match the loaded model")
+        self.backend.restore_optimizer(target)
+        self.backend.zero_grad()
+        self.pending = self.committed = None
+        self.preflight_ok = False
+        return self.backend.identity()
+
+    @modal.method()
+    def preflight(self):
+        from undercover_bench.rlcr import AuthoredDecision
+        self.backend.zero_grad()
+        budget = self.backend.max_new_tokens
+        try:
+            self.backend.max_new_tokens = 64
+            sample = self.backend.sample('Return only JSON: {"action":"Ja","rationale":"test"}', 19)
+        finally:
+            self.backend.max_new_tokens = budget
+        trace = {k: sample[k] for k in ("context_token_ids", "generated_token_ids", "behavior_logprobs",
+                 "policy_version", "model_revision", "tokenizer_hash", "template_hash", "sampling_temperature")}
+        d = AuthoredDecision(sequence=1, actor="preflight", policy_slot=self.policy_slot, **trace)
+        current = self.backend.authored_logprobs(d)
         import torch
-
-        if seed is not None:
-            torch.manual_seed(seed)
-            if torch.cuda.is_available():
-                torch.cuda.manual_seed_all(seed)
-
-        self.model.eval()
-
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-        context_ids = inputs.input_ids[0].tolist()
-
-        generated_ids: list[int] = []
-        behavior_logprobs: list[float] = []
-
-        curr_input_ids = inputs.input_ids
-        attention_mask = inputs.attention_mask
-
-        with torch.no_grad():
-            for _ in range(max_new_tokens):
-                outputs = self.model(input_ids=curr_input_ids, attention_mask=attention_mask)
-                next_token_logits = outputs.logits[:, -1, :]
-
-                if temperature > 0:
-                    probs = torch.softmax(next_token_logits / temperature, dim=-1)
-                    next_token = torch.multinomial(probs, num_samples=1)
-                else:
-                    next_token = torch.argmax(next_token_logits, dim=-1, keepdim=True)
-
-                token_id = next_token.item()
-                # Compute log probability under the unscaled or temperature policy
-                log_probs = torch.log_softmax(next_token_logits, dim=-1)
-                token_logprob = log_probs[0, token_id].item()
-
-                generated_ids.append(token_id)
-                behavior_logprobs.append(token_logprob)
-
-                if token_id == self.tokenizer.eos_token_id:
-                    break
-
-                curr_input_ids = torch.cat([curr_input_ids, next_token], dim=-1)
-                attention_mask = torch.cat(
-                    [attention_mask, torch.ones((1, 1), device=self.device, dtype=attention_mask.dtype)],
-                    dim=-1,
-                )
-
-        generated_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
-
-        return {
-            "text": generated_text,
-            "context_token_ids": context_ids,
-            "generated_token_ids": generated_ids,
-            "behavior_logprobs": behavior_logprobs,
-            "policy_version": self.current_version,
-            "model_revision": getattr(self.model.config, "_name_or_path", self.base_model_name),
-            "tokenizer_hash": str(hash(self.tokenizer.__class__.__name__)),
-            "template_hash": "default",
-        }
-
-    @modal.method()
-    def train_step(
-        self,
-        batch_decisions: list[dict[str, Any]],
-        advantage: float,
-        clip_epsilon: float = 0.2,
-    ) -> dict[str, Any]:
-        """Compute the clipped surrogate policy gradient and apply the LoRA update."""
-        import torch
-
-        if not batch_decisions:
-            return {"updated": False, "reason": "empty_decisions", "loss": 0.0}
-
-        self.model.train()
-        self.optimizer.zero_grad()
-        torch.cuda.empty_cache()
-
-        total_loss_val = 0.0
-        total_tokens = 0
-        num_decisions = len(batch_decisions)
-
-        for d in batch_decisions:
-            context_ids = d["context_token_ids"]
-            gen_ids = d["generated_token_ids"]
-            old_logprobs = torch.tensor(d["behavior_logprobs"], device=self.device, dtype=torch.float32)
-
-            full_ids = torch.tensor([context_ids + gen_ids], device=self.device)
-            # Forward pass with autograd
-            outputs = self.model(input_ids=full_ids)
-            logits = outputs.logits[0]  # [seq_len, vocab_size]
-
-            # Shift logits to align with targets
-            shift_logits = logits[len(context_ids) - 1 : len(context_ids) - 1 + len(gen_ids)]
-            shift_log_probs = torch.log_softmax(shift_logits, dim=-1)
-
-            target_tokens = torch.tensor(gen_ids, device=self.device).unsqueeze(1)
-            new_logprobs = shift_log_probs.gather(dim=1, index=target_tokens).squeeze(1)
-
-            # PPO Clipped Surrogate Loss
-            log_ratio = new_logprobs - old_logprobs
-            ratio = torch.exp(log_ratio)
-
-            surr1 = ratio * advantage
-            surr2 = torch.clamp(ratio, 1.0 - clip_epsilon, 1.0 + clip_epsilon) * advantage
-            decision_loss = -torch.min(surr1, surr2).mean()
-
-            # Immediate backward step per decision to release autograd graph memory
-            scaled_loss = decision_loss / num_decisions
-            scaled_loss.backward()
-
-            total_loss_val += float(decision_loss.detach().item())
-            total_tokens += len(gen_ids)
-
-        grad_norm = torch.nn.utils.clip_grad_norm_(
-            [p for p in self.model.parameters() if p.requires_grad],
-            max_norm=1.0,
-        )
-
-        self.optimizer.step()
-        torch.cuda.empty_cache()
-        self.step_count += 1
-        self.current_version = f"step_{self.step_count}"
-
-        return {
-            "updated": True,
-            "loss": total_loss_val / num_decisions,
-            "grad_norm": float(grad_norm.item() if hasattr(grad_norm, "item") else grad_norm),
-            "step": self.step_count,
-            "new_version": self.current_version,
-            "token_count": total_tokens,
-        }
-
-    @modal.method()
-    def save_checkpoint(
-        self,
-        tag: str | None = None,
-        hf_repo_id: str | None = None,
-        private: bool = True,
-    ) -> dict[str, Any]:
-        """Persist current LoRA weights to persistent volume and optionally push directly to Hugging Face."""
-        import os
-        from huggingface_hub import HfApi
-
-        save_tag = tag or self.current_version
-        target_dir = Path("/checkpoints") / save_tag
-        target_dir.mkdir(parents=True, exist_ok=True)
-        self.model.save_pretrained(str(target_dir))
-        self.tokenizer.save_pretrained(str(target_dir))
+        drift = float((current.detach().cpu() - torch.tensor(d.behavior_logprobs)).abs().max())
+        (-current.mean()).backward()
+        norm = self.backend.trainable_grad_norm()
+        self.backend.zero_grad()
+        if not math.isfinite(drift) or drift > .02 or not math.isfinite(norm) or norm <= 0:
+            raise ValueError("sampled/recomputed probability or gradient preflight failed")
+        self.preflight_ok = True
+        proof = {"identity": self.backend.identity(), "max_logprob_difference": drift, "grad_norm": norm,
+                 "optimizer_steps_applied": 0}
+        (self.root / "preflight.json").write_text(json.dumps(proof, indent=2))
         volume.commit()
+        return proof
 
-        hf_url = None
-        if hf_repo_id:
-            hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")
-            try:
-                api = HfApi(token=hf_token)
-                api.create_repo(repo_id=hf_repo_id, repo_type="model", private=private, exist_ok=True)
-                api.upload_folder(
-                    folder_path=str(target_dir),
-                    repo_id=hf_repo_id,
-                    repo_type="model",
-                )
-                hf_url = f"https://huggingface.co/{hf_repo_id}"
-                print(f"Successfully uploaded checkpoint {save_tag} to {hf_url}")
-            except Exception as exc:
-                print(f"Warning: Hugging Face upload failed ({exc}), but weights are safely stored at {target_dir}")
-                hf_url = f"error: {str(exc)}"
+    @modal.method()
+    def accumulate(self, weighted, config, transaction):
+        from undercover_bench.rlcr import AuthoredDecision, RLCRConfig
+        from undercover_bench.rlcr_torch import decision_loss
+        if not self.preflight_ok or self.pending is not None or self.committed is not None:
+            raise ValueError("preflight/restore required; cannot duplicate or overlap an optimizer transaction")
+        if not re.fullmatch(r"[a-f0-9]{32}", transaction) or not weighted:
+            raise ValueError("invalid transaction or empty decision batch")
+        self.pending = transaction
+        self.backend.zero_grad()
+        cfg = RLCRConfig.model_validate(config)
+        loss_total = 0.
+        for item in weighted:
+            d = AuthoredDecision.model_validate(item["decision"])
+            if d.policy_slot != self.policy_slot or not math.isfinite(item["weight"]) or not 0 < item["weight"] <= 1 or not math.isfinite(item["advantage"]):
+                raise ValueError("invalid weighted author credit")
+            loss = decision_loss(self.backend.authored_logprobs(d), d, item["advantage"], cfg) * item["weight"]
+            loss.backward()
+            loss_total += float(loss.detach().cpu())
+        return {"loss": loss_total, "grad_norm": self.backend.trainable_grad_norm()}
 
-        return {
-            "checkpoint_path": str(target_dir),
-            "version": save_tag,
-            "hf_url": hf_url,
-        }
+    @modal.method()
+    def commit(self, transaction):
+        if self.pending != transaction or self.committed is not None:
+            raise ValueError("no prepared transaction, or already committed; restore before retry")
+        # Mark before mutation: a save failure cannot accidentally permit a second step.
+        self.committed = transaction
+        self.backend.step()
+        destination = self.root / transaction
+        version = self.backend.commit_checkpoint(destination)
+        volume.commit()
+        return {"version": version, "checkpoint_path": str(destination)}

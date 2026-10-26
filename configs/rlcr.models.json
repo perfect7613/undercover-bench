@@ -1,0 +1,10 @@
+{
+  "checked_on": "2026-10-26",
+  "status": "pinned training candidates; GPU and adapter compatibility unverified",
+  "models": {
+    "glm_flash": {"repo_id": "unsloth/GLM-5.3-Flash", "revision": "61d609da1b5fef8f25c754534a0fba313aba1caf", "architecture": "Glm5NextForConditionalGeneration", "model_type": "glm5_next", "gpu": "B300", "load_in_4bit": true, "blocked_reason": null},
+    "deepseek_flash": {"repo_id": "unsloth/DeepSeek-V4.1-Flash-1017", "revision": "c02aad1faf63a89fc0b6fb301810a74d92cbaf19", "architecture": "DeepseekV41ForCausalLM", "model_type": "deepseek_v41", "gpu": null, "load_in_4bit": false, "blocked_reason": "Published checkpoint uses FP8/FP4 experts and exceeds the single-device backend capacity. A validated distributed trainable loader is required; GGUF Engram offload is inference only."},
+    "qwen_dense": {"repo_id": "unsloth/Qwen3.8-27B", "revision": "3ea932cee0a432ae86e9c7826cbe8aef52323a28", "architecture": "Qwen3_5ForConditionalGeneration", "model_type": "qwen3_5", "gpu": "L40S", "load_in_4bit": true, "blocked_reason": null},
+    "muse_glimmer": {"repo_id": "unsloth/Muse-Glimmer-30B", "revision": "55a49b91a33d176bc99db7569f678d4c64cd91a1", "architecture": "MuseGlimmerForConditionalGeneration", "model_type": "muse_glimmer", "gpu": "L40S", "load_in_4bit": true, "blocked_reason": null}
+  }
+}

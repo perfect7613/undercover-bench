@@ -33,7 +33,9 @@ def check_behavior(condition):
               "improvement_established": False, "cleared_for_rlcr": False}
     (RUN / condition / "behavior_review.json").write_text(json.dumps(result, indent=2))
     if not passed:
-        raise RuntimeError(f"{condition} failed development regression; preserve checkpoint without advancing")
+        errors = sum(bool(row.get("error")) for row in rows)
+        reason = "incomplete evaluation (infrastructure errors)" if errors else "development regression gate not passed"
+        raise RuntimeError(f"{condition}: {reason}; preserve checkpoint without advancing")
 
 
 async def screen_introspection():

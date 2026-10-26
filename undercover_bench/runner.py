@@ -143,15 +143,18 @@ class SeatPolicy:
         return self.policies[key].decide(observation, legal)
 
 
-def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, pressure=False, offer_style=None, channel_enabled=True):
+def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, pressure=False, offer_style=None, channel_enabled=True, sampling_seed=None):
     if condition not in {"B0", "B1", "T0", "T1", "T2"}:
         raise ValueError(condition)
     if offer_style and game_name != "liars_bar":
         raise ValueError("pact-offer positive control is Liar's Bar evaluation only")
     if offer_style not in (None, "direct", "indirect", "benign"):
         raise ValueError("invalid offer style")
-    if condition in {"T0", "T1", "T2"} and getattr(policy, "model_key", None) not in {"modal_trainable", "modal_trainable_pilot"}:
-        raise RuntimeError("T conditions require real RLCR checkpoints; no weight updates have been performed")
+    training = condition in {"T0", "T1", "T2"}
+    if training:
+        from .trainable_backend import TrainableOrganizationPolicy
+        if not isinstance(policy, TrainableOrganizationPolicy):
+            raise RuntimeError("T conditions require real RLCR checkpoints and an explicit organization router")
     if game_name == "liars_bar" and condition not in {"B0", "B1"}:
         raise ValueError("Liar's Bar is frozen evaluation only")
     game = SecretHitler(seed, condition in ("B1", "T1", "T2"), pressure=pressure, channel_enabled=channel_enabled) if game_name == "secret_hitler" else LiarsBar(seed, condition == "B1", pressure=pressure, channel_enabled=channel_enabled)
@@ -159,15 +162,19 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
     path = Path(out_dir) / f"{episode_id}.jsonl"
     ledger = Ledger(path, episode_id)
     policy = policy or ScriptedPolicy(seed + 10000)
+    if training:
+        policy.bind_roles(game.roles, game.auditor)
     if hasattr(policy, "set_episode_seed"):
-        policy.set_episode_seed(seed)
+        policy.set_episode_seed(seed if sampling_seed is None else sampling_seed)
     ledger.write("episode_start", game=game_name, condition=condition, seed=seed,
                  model=getattr(policy, "model_key", "scripted"),
                  seat_models=getattr(policy, "assignments", None),
                  undercover=game.auditor, pressure=pressure, offer_style=offer_style,
                  channel_enabled=channel_enabled, channel_protocol="one_exclusive_pair" if game_name == "secret_hitler" else "per_turn_whisper",
                  ruleset="five-player-pair-channel-v2" if game_name == "secret_hitler" else "short-transfer-smoke",
-                 provenance="pilot; no RL weight update")
+                 sampling_seed=seed if sampling_seed is None else sampling_seed,
+                 policy_identities=policy.identities if training else None,
+                 provenance="trainable_rlcr" if training else "pilot; no RL weight update")
     ledger.write("controller_initial_state", visibility="controller", state=game.state())
 
     def event(kind, **data):
@@ -192,7 +199,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                          reason=report_evidence_error or "action_not_legal_or_schema_invalid")
             # A deterministic safety fallback is visible, never silently substituted.
             action = "NoReport" if phase == "report" else legal[0]
-        ledger.write("decision", player=player, phase=phase, observation=observation,
+        decision_event = ledger.write("decision", player=player, phase=phase, observation=observation,
                      model_key=response.get("model_key", getattr(policy, "model_key", "scripted")),
                      legal=legal, action=action, submitted=response.get("source_action", response.get("action")),
                      interpreted_action=response.get("action"),
@@ -202,6 +209,17 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                      model_message=response.get("model_message"),
                      model_metadata=response.get("model_metadata"),
                      reasoning_kind="scripted" if isinstance(policy, ScriptedPolicy) else "model_self_report")
+        if training:
+            from .rlcr import AuthoredDecision, RLCRInputError
+            trace = response.get("training_trace")
+            if game.roles[player] == "Liberal":
+                if not trace:
+                    raise RLCRInputError("Liberal decision has no authored-token trace")
+                authored = AuthoredDecision(sequence=decision_event["sequence"], **trace)
+                ledger.write("training_token_decision", decision_sequence=authored.sequence,
+                             trace=authored.model_dump(mode="json"))
+            elif trace:
+                raise RLCRInputError("opponents cannot enter the training ledger")
         if phase in ("whisper", "channel_offer"):
             return {"target": action, "text": str(response.get("message", ""))}
         if phase == "report":
