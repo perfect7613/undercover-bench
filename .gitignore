@@ -1,4 +1,5 @@
 .venv/
+.firecrawl/
 __pycache__/
 *.pyc
 runs/superseded/

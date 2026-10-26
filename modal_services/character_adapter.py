@@ -14,7 +14,12 @@ REVISION = "f3269ef96aee8c9ec8a3a89a14025e33641827e3"
 image = (modal.Image.debian_slim(python_version="3.12").apt_install("git")
     .pip_install("numpy>=2,<3", "huggingface-hub>=1,<2", "safetensors>=0.6")
     .run_commands("git clone https://github.com/ggml-org/llama.cpp.git /opt/llama.cpp",
-                  f"cd /opt/llama.cpp && git checkout {REVISION}"))
+                  f"cd /opt/llama.cpp && git checkout {REVISION}")
+    .env({"MODEL_KEY": "glm_flash"})
+    .add_local_file(str(Path(__file__).resolve().parents[1] / "configs/models.proposed.json"),
+                    "/opt/undercover-model-config.json")
+    .add_local_file(str(Path(__file__).resolve().parents[1] / "training/character/patch_glm_lora_graph.py"),
+                    "/root/training/character/patch_glm_lora_graph.py"))
 for name in ("convert_glm_character_adapter.py", "convert_glm_character_gguf.py",
              "inspect_adapter_compatibility.py", "validate_glm_character_gguf.py"):
     image = image.add_local_file(str(Path(__file__).resolve().parents[1] / "training/character" / name),
