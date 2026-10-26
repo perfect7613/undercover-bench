@@ -2,6 +2,8 @@
 
 **Author 1** (Affiliation TBC) · **Prasad Mahadik** (Affiliation TBC) · **Sanchayan Ghosh** (Affiliation TBC) · **Amey Muke** (Affiliation TBC)
 
+*AI Safety Researchers*
+
 *With Apart Research*
 
 **Tag: AI-assisted.** Drafted with an LLM assistant (Claude); see the LLM Usage Statement.
