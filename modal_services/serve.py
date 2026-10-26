@@ -78,7 +78,8 @@ def _server_log_tail():
               timeout=1800, min_containers=0, max_containers=1, scaledown_window=300,
               memory=245760 if KEY == "deepseek_flash" else 32768)
 def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = None,
-             temperature: float = 0.2, seed: int | None = None, use_character: bool = False):
+             temperature: float = 0.2, seed: int | None = None, use_character: bool = False,
+             capture_logprobs: bool = False):
     global _server, _server_log, _server_character
     if use_character and KEY != "glm_flash":
         raise ValueError("The GLM character adapter cannot be applied to a different model family")
@@ -144,6 +145,8 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
         payload["lora"] = [{"id": 0, "scale": 1.0 if use_character else 0.0}]
     if seed is not None:
         payload["seed"] = seed
+    if capture_logprobs:
+        payload.update(logprobs=True, top_logprobs=5)
     if response_schema is not None:
         payload["response_format"] = {"type": "json_schema", "schema": response_schema}
     request = Request("http://127.0.0.1:8080/v1/chat/completions",
@@ -156,4 +159,5 @@ def generate(prompt: str, max_tokens: int = 120, response_schema: dict | None = 
             "model_message": msg, "finish_reason": choice.get("finish_reason"),
             "model": MODEL["repo_id"], "revision": MODEL["revision"], "usage": result.get("usage"),
             "character_adapter_applied": use_character,
+            "logprobs": choice.get("logprobs"),
             "character_manifest": _server_character if use_character else None}

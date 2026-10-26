@@ -53,6 +53,19 @@ class GgufRoundtripTests(unittest.TestCase):
             self.assertTrue(report['precision_changed']);self.assertGreater(report['factor_cast_max_abs_error'],0)
             self.assertEqual(len(report['source_weights_sha256']),64)
             self.assertFalse(report['compatibility_verified'])
+    def test_mixed_preserves_tiny_B_that_f16_loses(self):
+        from safetensors.numpy import save_file
+        from training.character.validate_glm_character_gguf import validate
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);src,t,cfg,index=self.fixture(root)
+            for name,array in t.items():array.fill(0.25 if '.lora_A.' in name else 1e-10)
+            save_file(t,str(src/'adapter_model.safetensors'))
+            convert(src,root/'half.gguf',cfg,index,SOURCE,outtype='f16')
+            mixed=convert(src,root/'mixed.gguf',cfg,index,SOURCE,outtype='mixed')
+            self.assertFalse(validate(src,root/'half.gguf',SOURCE,cfg)['passed'])
+            self.assertTrue(validate(src,root/'mixed.gguf',SOURCE,cfg)['passed'])
+            self.assertEqual(mixed['factor_dtypes'],{'a':'float16','b':'float32'})
+            self.assertTrue(all(error==0 for name,error in mixed['factor_cast_errors'].items() if name.endswith('.lora_b')))
     def test_f16_overflow_never_publishes_output(self):
         from safetensors.numpy import save_file
         with tempfile.TemporaryDirectory() as tmp:

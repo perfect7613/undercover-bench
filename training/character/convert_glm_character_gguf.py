@@ -1,4 +1,7 @@
-"""Stream exact F32 raw Tinker GLM LoRA into GGUF for patched llama.cpp.
+"""Stream raw Tinker GLM LoRA into GGUF for patched llama.cpp.
+
+F32 is exact; mixed preserves every B factor in F32 and casts A to F16.
+Every precision-changing candidate requires separate numerical validation.
 
 Only header metadata and one projection pair are held at once. No base weights,
 network, GPU, or temporary copy of the whole output. All trained targets must map.
@@ -98,19 +101,23 @@ def factors(reader,op,hp):
     return a,b
 
 
+def factor_dtype(outtype,side):
+    return np.dtype('float32' if outtype=='f32' or (outtype=='mixed' and side=='b') else 'float16')
+
+
 def convert(source,output,hf_config,hf_index,llama_source,*,dry_run=False,outtype="f32",base_revision="61d609da1b5fef8f25c754534a0fba313aba1caf"):
-    if outtype not in ("f32","f16"):raise ConversionError("Unsupported output dtype")
+    if outtype not in ("f32","f16","mixed"):raise ConversionError("Unsupported output dtype")
     if not re.fullmatch("[0-9a-f]{40}",base_revision):raise ConversionError("Immutable base revision required")
-    dtype=np.dtype("float32" if outtype=="f32" else "float16")
     gguf=load_gguf(llama_source)
     config,hp,operations,count=plan(source,hf_config,hf_index,gguf)
     report={'schema_version':1,'raw_projection_pairs':count,'mapped_projection_pairs':len(operations),
             'source_pairs_preserved':len({op['source'] for op in operations}),
-            'payload_bytes':sum(math.prod(s)*dtype.itemsize for op in operations for s in op['shapes']),
+            'payload_bytes':sum(math.prod(shape)*factor_dtype(outtype,side).itemsize for op in operations for side,shape in zip(('a','b'),op['shapes'])),
             'llama_revision':PINNED_LLAMA_REVISION,'base_weight_revision':base_revision,'dtype':outtype.upper(),
             'conversion_source_sha256':{str(p):hashlib.sha256((Path(llama_source)/p).read_bytes()).hexdigest() for p in ['conversion/glm.py','gguf-py/gguf/tensor_mapping.py','gguf-py/gguf/gguf_writer.py']},
             'precision_changed':outtype!='f32','factor_cast_max_abs_error':None,'factor_cast_errors':{},'all_factors_finite':False,
             'base_weight_revision_verified':False,
+            'factor_dtypes':{side:factor_dtype(outtype,side).name for side in ('a','b')},
             'compatibility_verified':False,'graph_patch_required':True,
             'full_model_numerical_validation_required':True,'operations':operations}
     if dry_run:return report
@@ -131,6 +138,7 @@ def convert(source,output,hf_config,hf_index,llama_source,*,dry_run=False,outtyp
     writer.add_float32(gguf.Keys.Adapter.LORA_ALPHA,float(config['lora_alpha']))
     for op in operations:
         for side,shape in zip(('a','b'),op['shapes']):
+            dtype=factor_dtype(outtype,side)
             writer.add_tensor_info(op['target']+'.lora_'+side,shape,dtype,math.prod(shape)*dtype.itemsize)
     reader=RawReader(Path(source)/'adapter_model.safetensors')
     try:
@@ -140,10 +148,11 @@ def convert(source,output,hf_config,hf_index,llama_source,*,dry_run=False,outtyp
             for side,array,shape in zip(('a','b'),arrays,op['shapes']):
                 if list(array.shape)!=shape:raise ConversionError('Internal shape mismatch')
                 if not np.isfinite(array).all():raise ConversionError('Non-finite source factor')
+                dtype=factor_dtype(outtype,side)
                 with np.errstate(over='ignore'):
                     cast=np.ascontiguousarray(array,dtype=dtype)
                 if not np.isfinite(cast).all():raise ConversionError('Output dtype overflows source factor')
-                error=float(np.max(np.abs(array-cast.astype(np.float32)))) if outtype!='f32' else 0.0
+                error=float(np.max(np.abs(array-cast.astype(np.float32)))) if dtype==np.dtype('float16') else 0.0
                 report['factor_cast_max_abs_error']=max(report['factor_cast_max_abs_error'] or 0.0,error)
                 report['factor_cast_errors'][op['target']+'.lora_'+side]=error
                 writer.write_tensor_data(cast)
@@ -162,8 +171,8 @@ def convert(source,output,hf_config,hf_index,llama_source,*,dry_run=False,outtyp
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for option in ['source','output','hf-config','hf-index','llama-source']:p.add_argument('--'+option,type=Path,required=True)
-    p.add_argument('--dry-run',action='store_true');p.add_argument('--outtype',choices=['f32','f16'],default='f32');p.add_argument('--base-revision',default='61d609da1b5fef8f25c754534a0fba313aba1caf');a=p.parse_args()
+    p.add_argument('--dry-run',action='store_true');p.add_argument('--outtype',choices=['f32','f16','mixed'],default='f32');p.add_argument('--base-revision',default='61d609da1b5fef8f25c754534a0fba313aba1caf');a=p.parse_args()
     r=convert(a.source,a.output,json.loads(a.hf_config.read_text()),json.loads(a.hf_index.read_text()),a.llama_source,dry_run=a.dry_run,outtype=a.outtype,base_revision=a.base_revision)
-    print(json.dumps({k:v for k,v in r.items() if k!='operations'},indent=2))
+    print(json.dumps({k:v for k,v in r.items() if k not in ('operations','factor_cast_errors')},indent=2))
 
 if __name__=='__main__':main()

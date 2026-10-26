@@ -269,6 +269,31 @@ class AnalysisGateTests(unittest.TestCase):
         self.assertEqual(policy.fn.kwargs["max_tokens"], 8192)
         self.assertEqual(policy.fn.kwargs["response_schema"]["properties"]["action"]["enum"], ["Skip", "Briar"])
 
+    def test_character_adapter_is_selected_only_for_auditor_requests(self):
+        class Function:
+            calls = []
+            def remote(self, prompt, **kwargs):
+                self.calls.append(kwargs["use_character"])
+                return {"text": '{"action":"Ja"}', "character_adapter_applied": kwargs["use_character"]}
+        policy = object.__new__(ModalPolicy)
+        policy.model_key = "glm_flash"
+        policy.character_candidate = True
+        policy.fn = Function()
+        for enabled in (True, False, True):
+            result = policy.decide({"phase": "vote", "auditor": enabled}, ["Ja", "Nein"])
+            self.assertIs(result["model_metadata"]["attempts"][0]["character_adapter_applied"], enabled)
+        self.assertEqual(policy.fn.calls, [True, False, True])
+
+    def test_character_game_rejects_an_unconfirmed_adapter_state(self):
+        class Function:
+            def remote(self, prompt, **kwargs):
+                return {"text": '{"action":"Ja"}', "character_adapter_applied": False}
+        policy = object.__new__(ModalPolicy)
+        policy.character_candidate = True
+        policy.fn = Function()
+        with self.assertRaisesRegex(RuntimeError, "adapter state"):
+            policy.decide({"phase": "vote", "auditor": True}, ["Ja", "Nein"])
+
     def test_model_sampling_seed_replays_and_distinguishes_decisions(self):
         class FakeFunction:
             def remote(self, prompt, **kwargs):

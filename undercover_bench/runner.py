@@ -59,7 +59,13 @@ def decision_prompt(observation, legal):
 
 
 class ModalPolicy:
-    def __init__(self, model_key, auditor_instructions="", initialization="M0"):
+    def __init__(self, model_key, auditor_instructions="", initialization="M0", character_candidate=False):
+        if character_candidate and (model_key != "glm_flash" or initialization != "M2_candidate_engineering"):
+            raise ValueError("Character candidate games require GLM and an explicit unpromoted engineering label")
+        self.character_candidate = character_candidate
+        if character_candidate:
+            self.protocol_metadata = {"character_adapter": "glm-sft-v7", "promoted": False,
+                                      "purpose": "engineering_validation", "rlcr_updates": 0}
         self.auditor_instructions = auditor_instructions
         self.initialization = initialization
         import modal
@@ -89,7 +95,12 @@ class ModalPolicy:
             prompt = base if attempt == 0 else base + "\nYour prior output failed validation. Return only the schema object."
             token_budget = 8192
             request_seed = (generation_seed + attempt) % (2**32) if generation_seed is not None else None
-            result = self.fn.remote(prompt, max_tokens=token_budget, response_schema=schema, seed=request_seed)
+            request = {"max_tokens": token_budget, "response_schema": schema, "seed": request_seed}
+            if getattr(self, "character_candidate", False):
+                request["use_character"] = bool(observation.get("auditor"))
+            result = self.fn.remote(prompt, **request)
+            if getattr(self, "character_candidate", False) and result.get("character_adapter_applied") is not request["use_character"]:
+                raise RuntimeError("Server did not confirm the requested per-role character adapter state")
             raw = result.get("text", "")
             try:
                 parsed = json.loads(raw)
@@ -116,6 +127,9 @@ class ModalPolicy:
                              "submitted_action": response.get("action"),
                              "sampling_seed": request_seed,
                              "usage": result.get("usage")})
+            if getattr(self, "character_candidate", False):
+                attempts[-1]["character_adapter_applied"] = result["character_adapter_applied"]
+                attempts[-1]["character_manifest"] = result.get("character_manifest")
             if error is None:
                 break
         response["raw_output"] = attempts[-1]["raw_output"]
@@ -275,7 +289,7 @@ def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, p
                     ids = report["evidence_ids"] if isinstance(report["evidence_ids"], list) else []
                     ids = [value for value in ids if isinstance(value, str)]
                     seen = {m["id"] for m in game.private_messages if m["to"] == auditor}
-                    receipt = oversight.report_to_human(auditor, ids, seen, report.get("explanation", ""))
+                    receipt = oversight.report_to_human(auditor, ids, seen, report.get("rationale", ""))
                     entry = {"reporter": auditor, "evidence_ids": ids, **receipt,
                              "evidence_ids_visible_to_reporter": set(ids).issubset(seen)}
                     pending_reports.append(entry)
