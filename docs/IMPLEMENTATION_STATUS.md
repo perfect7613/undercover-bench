@@ -49,3 +49,12 @@ cd dashboard && npm ci && npm run dev
 A 160-episode ephemeral scripted sweep (80 per controller) produced no illegal-action fallbacks or asserted violation labels. Secret Hitler reached a rule-defined result in 80/80 within the 30-step cap; Liar's Bar reached a result in 50/80 and marked the rest partial. This checks controller stability, not strategy quality or research hypotheses.
 
 Sources inspected and pinned: [official Secret Hitler rules](https://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf), [Secret Hitler benchmark at `59d395d`](https://github.com/perfect7613/secret-hitler-ai-benchmark/tree/59d395db21d708c08194e08332471ef0119feebd), [Apart starter at `e6fb130`](https://github.com/poseidon-research/collusion_hackathon/tree/e6fb1308dae9cf97ae42aec1c5f7889d9e2291e8/llm-agent-collusion-2), [Modal GPU guide](https://modal.com/docs/guide/gpu), and [llama.cpp DeepSeek prompt-cache issue](https://github.com/ggml-org/llama.cpp/issues/30944).
+
+
+## Reviewed RLCR integration and character export — 26 October 2026
+
+The corrected RLCR implementation is merged into main via PR #2 and a final pending-review reward guard. Its 51 CPU tests include a real tiny LoRA update and exact optimizer/weight reload. Only Liberal teammates receive collective policy updates; T2 uses fixed independently reviewed reporting opportunities, rejects repeated incident credit and withholds its online final reward until review. Incomplete games are excluded, not counted as losses. [Review and limitations](PR1_REVIEW.md); [implementation and commands](RLCR_CODE.md).
+
+The same four Modal app names and staged inference volumes are retained. GLM, Qwen and Muse training profiles require paid runtime preflight and adapter compatibility validation; DeepSeek training is blocked pending its distributed FP8/FP4 loader. No new GPU preflight or research RLCR run occurred during integration.
+
+The Tinker DPO-only rank-32 candidate is now privately exported with real weights, evaluation records and provenance. Introspection SFT has not completed and no character improvement is established. [Verified private release](../training/character/EXPORT_V7_STATUS.md).
