@@ -26,6 +26,7 @@ A **rank-32 LoRA candidate** trained on Tinker to encourage evidence-sensitive a
 | Teacher | GLM-5.3 full-model reference, constitution conditioned |
 | Preference negatives | Actual responses from the untrained GLM-5.3-Flash reference |
 | Adapter | LoRA rank 32, alpha 32, dropout 0, target modules `all-linear` |
+| Exported adapter | 9,974,349,320 bytes; 862 tensors; 2,493,554,688 tensor parameters |
 | Training data | Six retained, game-agnostic teacher/student preference pairs |
 | Optimizer updates | One completed DPO update, one epoch over those six pairs |
 | Training implementation commit | `50712ad592e5d010ddca7dd871794475ccc50288` |
