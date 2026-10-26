@@ -59,8 +59,17 @@ def stage_character_adapter():
     base_revision = "61d609da1b5fef8f25c754534a0fba313aba1caf"
     config = json.loads(Path(hf_hub_download(base, "config.json", revision=base_revision)).read_text())
     index = json.loads(Path(hf_hub_download(base, "model.safetensors.index.json", revision=base_revision)).read_text())
-    converted = convert(source, root / "adapter.gguf", config, index, Path("/opt/llama.cpp"),
-                        outtype="mixed", base_revision=base_revision)
+    if (root / "adapter.gguf").exists():
+        # A stopped CPU validation job can leave a complete conversion. Recheck
+        # its provenance and all deltas; never overwrite or trust a partial file.
+        converted = json.loads((root / "adapter.gguf.json").read_text())
+        if (converted.get("source_weights_sha256") != expected
+                or converted.get("dtype") != "MIXED"
+                or converted.get("source_pairs_preserved") != 431):
+            raise ValueError("Existing conversion does not match this complete mixed-precision adapter")
+    else:
+        converted = convert(source, root / "adapter.gguf", config, index, Path("/opt/llama.cpp"),
+                            outtype="mixed", base_revision=base_revision)
     proof = validate(source, root / "adapter.gguf", Path("/opt/llama.cpp"), config)
     (root / "delta_validation.json").write_text(json.dumps(proof, indent=2))
     if not proof["passed"] or proof["projection_pairs"] != 431:
