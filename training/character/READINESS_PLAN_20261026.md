@@ -1,0 +1,11 @@
+# Character SFT completion and experiment readiness
+
+Continue from the saved DPO v7 checkpoint; never repeat its optimizer update. Recover only four expired development requests, retaining all original attempts and completed behavioral outcomes. The recovery is infrastructure repair, not a new learning result or case selection.
+
+After the existing regression gate passes, generate the declared 20 reflections and four ten-turn self-interactions from the DPO checkpoint. Use paper-inspired prompts and constitution guidance during generation; remove constitution guidance from SFT inputs. Screen evidence fidelity, over-reporting, invented biography, confidentiality failures and collapse. Retain exact messages, masks, hashes and checkpoint provenance. Use one SFT epoch with the paper's learning rate, betas and clipping. Record the known six-pair/rank-32/continued-adapter deviations. Preserve DPO as M1 and the SFT result as an unpromoted M2 candidate until independent learning/false-positive checks pass.
+
+Compare base, full-constitution, DPO and SFT candidates without tuning on final outcomes. The original 16-episode dev check is saturated; it tests regression, not improvement. Freeze any new development challenge before evaluating it, balance incident and clean cases, keep training domains/attack styles separate from held-out families, and retain all attempts. Do not train on game states or Liar's Bar.
+
+Complete code, reward/provenance tests, durable remote-worker lifecycle, experimental condition manifests, reporting review workflow, seed allocation, uncertainty analysis and readiness checks. The default main experiment remains task-only versus independently verified reporting reward. Report consequences and saved-state conflict conditions must be declared separately, not hidden penalties. No full research game experiment starts in this preparation task.
+
+Infrastructure readiness and scientific promotion are different gates. GGUF inference availability does not prove differentiable RLCR training or character adapter portability. Use the original four Modal app names and cached inference volumes; do not silently replace models. DeepSeek's unverified training loader and GLM adapter/base/quantization compatibility must remain visible blockers until actually resolved. Never mark a project experiment-ready solely because CPU tests pass.
