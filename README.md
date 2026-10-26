@@ -19,6 +19,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 - [Engineering runbook](docs/RUNBOOK.md) — exact uv, Modal, game, and dashboard commands with analysis gates.
 - [Pinned model specification](configs/models.proposed.json) — verified Hugging Face revisions, weight files, GPU allocations and per-model runtime status.
 - [Resources and references](docs/RESOURCES.md) — linked papers, game rules, and original project documents, with their role in the study.
+- [DPO v7 model card](training/character/CHARACTER_DPO_V7_MODEL_CARD.md) — rank-32 candidate export, six-pair provenance, incomplete development evaluation, and deployment limits.
 - [Tinker character-pilot results](training/character/PILOT_V4_RESULTS.md) — renderer diagnosis, repaired DPO and format SFT comparisons, held-out checks, and promotion decision.
 - [AI Collusion In Games](docs/sources/AI%20Collusion%20In%20Games.docx) — original environment and reward proposal.
 - [UNDERCOVER-Bench Proposed Improvements](docs/sources/UNDERCOVER-Bench%20Proposed%20Improvements.docx) — original character-training comparison and methodological controls.

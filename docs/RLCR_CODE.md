@@ -40,7 +40,7 @@ uv run python -m experiments.run_live_gpu_training --stage plan \
   --model qwen_dense --run-id qwen-t1-m0c --out runs/rlcr/qwen-t1-group1
 ```
 
-After reviewing hardware and deployment gates, explicitly deploy a worker into the existing app (this can build images; subsequent remote calls allocate GPUs):
+After reviewing hardware and deployment gates, redeploy any stopped inference endpoints using their original `MODEL_KEY=<key> uv run modal deploy modal_services/serve.py` command and existing staged weight volume. Then explicitly deploy the trainable worker into the selected existing app (this can build images; subsequent remote calls allocate GPUs). Deploying `serve.py` alone again afterward would omit that worker; use the combined training entry point to preserve both functions and the worker:
 
 ```bash
 MODEL_KEY=qwen_dense RLCR_MODEL_KEY=qwen_dense uv run modal deploy modal_services/trainable_serve.py
