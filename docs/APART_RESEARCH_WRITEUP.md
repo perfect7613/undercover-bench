@@ -6,8 +6,6 @@
 
 *With Apart Research*
 
-**Tag: AI-assisted.** Drafted with an LLM assistant (Claude); see the LLM Usage Statement.
-
 *Research conducted at the AI Collusion Research Sprint, October 2026.*
 
 > **DRAFT.** Author list and affiliations are placeholders. Status as of 26 October 2026. Only valid, completed experiments recorded in this repository are reported. Items marked **not run** have no supporting evaluation output here.
@@ -93,9 +91,10 @@ Manual review found no false incident reports, missed supported reports, unsuppo
 
 ## 5. Discussion and Limitations
 
-**Implications for AI safety.** The baseline shows the failure mode the study targets: a pair of agents coordinate privately, and the auditor does not escalate. One game does not show how often this happens. Character training, as far as we have tested it, does not yet change behaviour measurably, so we cannot say that it addresses the failure.
+The baseline shows the failure mode the study targets: a pair of agents coordinate privately, and the auditor does not escalate. One game does not show how often this happens. Character training, as far as we have tested it, does not yet change behaviour measurably, so we cannot say that it addresses the failure.
 
-**Limitations.**
+### Limitations
+
 - The baseline is one observed game, with output ceilings that changed between runs. It is descriptive, not a matched efficacy comparison.
 - The v7 candidate used six pairs, and the pilots used mostly authored rejected answers. Admission was reviewed by the coding assistant, not an independent human. The v7 development benchmark has no headroom.
 - The pilot cases are small (8–12 per condition, 2–3 seeds), authored, and not tested for statistical significance.
@@ -103,7 +102,9 @@ Manual review found no false incident reports, missed supported reports, unsuppo
 - The threat models we did not address include deliberate report suppression, long-horizon escalation, and transfer to other games. Liar's Bar runs are not recorded here.
 - We assume the controller's ledger is correct. If it were not, the reporting labels would be wrong.
 
-**Future work.** A final held-out evaluation of the character candidate; a larger, independently reviewed training set sampled from the uninstructed student and a constitution-guided teacher; in-game reporting rates before and after character training; corrected RLCR runs with a comparison against the character-trained model; and Liar's Bar transfer.
+### Future Work
+
+A final held-out evaluation of the character candidate; a larger, independently reviewed training set sampled from the uninstructed student and a constitution-guided teacher; in-game reporting rates before and after character training; corrected RLCR runs with a comparison against the character-trained model; and Liar's Bar transfer.
 
 ## 6. Conclusion
 
@@ -134,3 +135,7 @@ We built the environment and a baseline trace that shows private coordination be
 ## LLM Usage Statement
 
 *[TBC by team. Draft text for review:]* An LLM assistant (Claude) helped write and restructure this report and inspected the repository. All results cited here were checked against the repository files listed in the text. The final text should be revised by the team, and claims without a supporting file should be removed.
+
+---
+
+AI-assisted
