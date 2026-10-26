@@ -80,30 +80,15 @@ def apply_group_update(group: PreparedGroup, backends: dict[str, TrainablePolicy
             for decision in episode.rollout.decisions:
                 if decision.actor != actor:
                     continue
-                current = backends[decision.policy_slot].authored_logprobs(decision)
-                if current.ndim != 1 or current.numel() != len(decision.generated_token_ids):
-                    raise RLCRInputError("backend log probabilities are not aligned to authored tokens")
-                if not current.requires_grad:
-                    raise RLCRInputError("backend log probabilities must retain gradients")
-                if not torch.isfinite(current).all().item() or (current > 0).any().item():
-                    raise RLCRInputError("backend returned invalid token log probabilities")
-                old = torch.tensor(decision.behavior_logprobs, device=current.device, dtype=current.dtype)
-                log_ratio = current - old
-                if (log_ratio.detach().abs() > group.config.max_abs_log_ratio).any().item():
-                    raise RLCRInputError("policy drift exceeds the declared off-policy gate")
-                ratio = log_ratio.exp()
-                clipped = ratio.clamp(1 - group.config.clip_epsilon, 1 + group.config.clip_epsilon)
-                advantage = episode.advantage
-                decision_losses.append(-torch.minimum(ratio * advantage, clipped * advantage).mean())
+                decision_losses.append(decision)
             if not decision_losses:
                 raise RLCRInputError(f"Liberal player {actor} has no authored decisions")
-            # Backpropagate each player on its own backend/device. Ordinary and
-            # auditor adapters need not reside on the same GPU.
-            player_loss = torch.stack(decision_losses).mean() / (len(group.episodes) * 3)
-            if not torch.isfinite(player_loss).item():
-                raise RLCRInputError("non-finite collective loss")
-            player_loss.backward()
-            total_loss_value += float(player_loss.detach().cpu())
+            for decision in decision_losses:
+                current = backends[decision.policy_slot].authored_logprobs(decision)
+                loss = decision_loss(current, decision, episode.advantage, group.config)
+                loss = loss / (len(group.episodes) * 3 * len(decision_losses))
+                loss.backward()
+                total_loss_value += float(loss.detach().cpu())
     for slot, backend in backends.items():
         grad_norm = backend.trainable_grad_norm()
         if not math.isfinite(grad_norm) or grad_norm <= 0:
@@ -119,3 +104,24 @@ def apply_group_update(group: PreparedGroup, backends: dict[str, TrainablePolicy
         saved[slot] = version
     return UpdateSummary(True, "updated", total_loss_value,
                          len(group.episodes), token_count, saved)
+
+
+def decision_loss(current, decision, advantage, config):
+    """Shared exact-policy objective for local and remote weighted accumulation."""
+    import torch
+    if current.ndim != 1 or current.numel() != len(decision.generated_token_ids):
+        raise RLCRInputError("backend log probabilities are not aligned to authored tokens")
+    if not current.requires_grad:
+        raise RLCRInputError("backend log probabilities must retain gradients")
+    if not torch.isfinite(current).all().item() or (current > 0).any().item():
+        raise RLCRInputError("backend returned invalid token log probabilities")
+    old = torch.tensor(decision.behavior_logprobs, device=current.device, dtype=current.dtype)
+    log_ratio = current - old
+    if (log_ratio.detach().abs() > config.max_abs_log_ratio).any().item():
+        raise RLCRInputError("policy drift exceeds the declared off-policy gate")
+    ratio = log_ratio.exp()
+    clipped = ratio.clamp(1 - config.clip_epsilon, 1 + config.clip_epsilon)
+    loss = -torch.minimum(ratio * advantage, clipped * advantage).mean()
+    if not torch.isfinite(loss).item():
+        raise RLCRInputError("non-finite collective loss")
+    return loss

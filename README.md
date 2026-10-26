@@ -8,7 +8,8 @@ The interpretability study focuses on activation-vector discovery, linear probes
 
 ## Documentation
 
-- [Experiment Results & Complete Training Log](docs/EXPERIMENT_RESULTS_AND_LOG.md) — comprehensive write-up of Steps 1–7 live GPU training, PPO loss updates, Hugging Face checkpointing, and reporting reward analysis.
+- [RLCR implementation review](docs/PR1_REVIEW.md) — findings in the original training branch, corrected objective and checkpointing, and model compatibility gates.
+- [Historical engineering log](docs/EXPERIMENT_RESULTS_AND_LOG.md) — original unvalidated claims and artifacts; see the review before interpreting them.
 - [Full research plan](docs/PLAN.md) — environments, rewards, character training, RLCR, experimental controls, human reporting, analysis, and implementation order.
 - [Decision history and conversation reconciliation](docs/DECISIONS.md) — every material proposal update, superseded choices, optional extensions and remaining implementation gates.
 - [Four-model setup and compute budget](docs/MODELS_AND_COMPUTE.md) — GLM-5.3-Flash character training on Tinker; four Unsloth checkpoints on separate Modal GPUs, export checks and cost assumptions.
@@ -18,6 +19,7 @@ The interpretability study focuses on activation-vector discovery, linear probes
 - [Engineering runbook](docs/RUNBOOK.md) — exact uv, Modal, game, and dashboard commands with analysis gates.
 - [Pinned model specification](configs/models.proposed.json) — verified Hugging Face revisions, weight files, GPU allocations and per-model runtime status.
 - [Resources and references](docs/RESOURCES.md) — linked papers, game rules, and original project documents, with their role in the study.
+- [DPO v7 model card](training/character/CHARACTER_DPO_V7_MODEL_CARD.md) — rank-32 candidate export, six-pair provenance, incomplete development evaluation, and deployment limits.
 - [Tinker character-pilot results](training/character/PILOT_V4_RESULTS.md) — renderer diagnosis, repaired DPO and format SFT comparisons, held-out checks, and promotion decision.
 - [AI Collusion In Games](docs/sources/AI%20Collusion%20In%20Games.docx) — original environment and reward proposal.
 - [UNDERCOVER-Bench Proposed Improvements](docs/sources/UNDERCOVER-Bench%20Proposed%20Improvements.docx) — original character-training comparison and methodological controls.
@@ -43,22 +45,18 @@ cp .env.example .env
 ```
 Populate `.env` with your API keys (e.g. `HF_TOKEN`, `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`) if not already authenticated via system CLIs (`modal setup` / `huggingface-cli login`). Note that `.env*` is gitignored to protect secrets.
 
-### 2. Deploy Trainable Policy Server (Modal GPU)
-Deploy the trainable LoRA server (`Qwen/Qwen2.5-7B-Instruct`) to Modal:
+### 2. Validate the corrected training path
+
 ```bash
-modal deploy modal_services/trainable_serve.py
+uv sync --extra rlcr
+uv run --extra rlcr python -m unittest discover -s tests -v
+uv run python -m experiments.run_live_gpu_training --stage plan \
+    --model qwen_dense --run-id qwen-t1-m0c --out runs/rlcr/qwen-t1-group1
 ```
 
-### 3. Run Live RLCR GPU Training
-To roll out games under condition `T2` (active reporting reward $\lambda=0.05$) and backpropagate PPO policy updates directly on the Modal GPU:
-```bash
-uv run python experiments/continue_training.py \
-    --steps 2 \
-    --games-per-step 2 \
-    --max-game-steps 10 \
-    --hf-repo renessauce/undercover-bench-rlcr
-```
-Checkpoints (LoRA adapters, config, raw episode JSONL, and metrics dashboard) will be saved under `checkpoints/` and automatically pushed to Hugging Face Hub.
+### 3. GPU training gates and existing apps
+
+The corrected worker extends the existing `undercover-<model>` Modal app and preserves its GGUF inference functions. It requires a differentiable safetensors loader, exact-policy/gradient preflight, and independent T2 reviews. GLM, Qwen and Muse are unvalidated training candidates; DeepSeek is explicitly blocked pending compatible distributed training. See [the RLCR runbook](docs/RLCR_CODE.md) before deploying or allocating GPUs. No automatic Hugging Face publishing is configured.
 
 ### 4. Visualize Results & Launch Dashboard
 To re-generate the metric summary plot and inspect game episodes in console:

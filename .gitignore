@@ -9,3 +9,6 @@ node_modules/
 !.env.example
 runs/character/
 training/character/.venv/
+
+runs/rlcr/
+checkpoints/rlcr/

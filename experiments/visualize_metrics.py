@@ -28,6 +28,7 @@ except ImportError:
 def parse_runs_and_training(runs_dir: str | Path, training_log_path: str | Path | None = None) -> dict[str, Any]:
     runs_path = Path(runs_dir)
     episodes: list[dict[str, Any]] = []
+    excluded: list[dict[str, Any]] = []
 
     for file in sorted(runs_path.glob("*.jsonl")):
         if file.name.startswith("trainable_rollouts"):
@@ -42,6 +43,9 @@ def parse_runs_and_training(runs_dir: str | Path, training_log_path: str | Path 
         start = lines[0]
         end = lines[-1] if lines[-1].get("kind") == "episode_end" else {}
 
+        if not end.get("completed") or not end.get("valid_for_analysis") or end.get("invalid_actions"):
+            excluded.append({"file": file.name, "reason": "partial_truncated_or_invalid"})
+            continue
         reports = [r for r in lines if r.get("kind") == "human_report"]
         decisions = [r for r in lines if r.get("kind") == "decision"]
         token_decisions = [r for r in lines if r.get("kind") == "training_token_decision"]
@@ -67,8 +71,8 @@ def parse_runs_and_training(runs_dir: str | Path, training_log_path: str | Path 
             "valid_evidence_citations": valid_citations,
             "decisions_count": len(decisions),
             "trainable_tokens_count": len(token_decisions),
-            "org_return": reward_data.get("R_org") if isinstance(reward_data, dict) else reward_data,
-            "audit_score": audit_data.get("S_audit") if isinstance(audit_data, dict) else None,
+            "org_return": reward_data.get("r_org") if isinstance(reward_data, dict) else reward_data,
+            "audit_score": audit_data.get("score") if isinstance(audit_data, dict) else None,
         })
 
     training_steps: list[dict[str, Any]] = []
@@ -77,12 +81,13 @@ def parse_runs_and_training(runs_dir: str | Path, training_log_path: str | Path 
             for line in Path(training_log_path).read_text().splitlines():
                 if line.strip():
                     item = json.loads(line)
-                    if "loss" in item:
-                        training_steps.append(item)
+                    if item.get("updated") is True and item.get("checkpoint_versions") and "loss" in item:
+                        if not any(row.get("transaction") == item.get("transaction") for row in training_steps):
+                            training_steps.append(item)
         except Exception:
             pass
 
-    return {"episodes": episodes, "training_steps": training_steps}
+    return {"episodes": episodes, "excluded_episodes": excluded, "training_steps": training_steps}
 
 
 def print_console_summary(data: dict[str, Any]) -> None:
@@ -94,8 +99,9 @@ def print_console_summary(data: dict[str, Any]) -> None:
     print("=" * 80)
 
     if not episodes:
-        print("No episode ledgers found.")
-    else:
+        print("No completed, valid episode ledgers found.")
+    print(f"Excluded partial/truncated/invalid files: {len(data.get('excluded_episodes', []))}")
+    if episodes:
         print(f"\n[Episodes Summary] Total Games Processed: {len(episodes)}")
         header = f"{'Episode ID':<32} {'Cond':<6} {'Winner':<9} {'Reports':<9} {'Valid Ev':<9} {'Reward':<8}"
         print("-" * len(header))
@@ -117,7 +123,7 @@ def print_console_summary(data: dict[str, Any]) -> None:
         valid_evs = sum(ep["valid_evidence_citations"] for ep in episodes)
         print("\nAggregates:")
         print(f"  • Liberal Wins: {lib_wins} | Fascist Wins: {fas_wins} | Win Rate (Liberal): {lib_wins/len(episodes)*100:.1f}%")
-        print(f"  • Total Reports Attempted: {total_reports} (Grounded Citations: {valid_evs})")
+        print(f"  • Total Reports Attempted: {total_reports} (Visible Citations: {valid_evs})")
 
     if training_steps:
         print("\n[RLCR Policy Training Updates]")

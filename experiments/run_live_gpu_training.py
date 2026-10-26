@@ -1,161 +1,172 @@
-"""Live RLCR GPU Training Loop for Secret Hitler.
+"""Collect one matched RLCR group or update its reviewed completed rollouts.
 
-Uses ModalTrainablePolicy for live forward inference (with token IDs + behavior logprobs)
-and performs live backward pass LoRA updates (policy.train_step) on the GPU container.
+Tinker is character training only. Modal is contacted only after explicit
+--stage collect/update and all available local gates. No default HF upload.
 """
-
 from __future__ import annotations
 
 import argparse
 import json
+import uuid
 from pathlib import Path
-from typing import Any
 
-from undercover_bench.checkpoint_hf import save_checkpoint_to_disk, upload_checkpoint_to_huggingface
-from undercover_bench.runner import run_episode
-from undercover_bench.trainable_backend import ModalTrainablePolicy
+from undercover_bench.rlcr import RLCRConfig, RLCRInputError, prepare_group
+from undercover_bench.rlcr_training import apply_remote_group, build_rollout, write_review_template
+from undercover_bench.runner import ModalPolicy, run_episode
+from undercover_bench.torch_backend import model_profile, sha256_json
+from undercover_bench.trainable_backend import ModalPolicyClient, TrainableOrganizationPolicy
+
+MODEL_KEYS = ("glm_flash", "deepseek_flash", "qwen_dense", "muse_glimmer")
 
 
-def run_live_training_steps(
-    num_steps: int = 5,
-    games_per_step: int = 2,
-    max_game_steps: int = 10,
-    base_seed: int = 6000,
-    condition: str = "T1",
-    lambda_audit: float = 0.05,
-    hf_repo_id: str | None = "renessauce/undercover-bench-rlcr",
-    runs_dir: str | Path = "runs",
-    checkpoint_dir: str | Path = "checkpoints",
-):
-    runs_path = Path(runs_dir)
-    runs_path.mkdir(parents=True, exist_ok=True)
-    cp_path = Path(checkpoint_dir)
-    cp_path.mkdir(parents=True, exist_ok=True)
-    training_log_path = runs_path / "training_steps.jsonl"
+def clients(manifest):
+    import modal
+    key = manifest["model"]
+    profile = model_profile(key)
+    if profile["blocked_reason"]:
+        raise RLCRInputError(profile["blocked_reason"])
+    cls = modal.Cls.from_name(f"undercover-{key}", "TrainablePolicyServer")
+    slots = ("ordinary",) if manifest["condition"] == "T0" else ("ordinary", "auditor")
+    result = {}
+    refs = manifest.get("checkpoint_refs", {})
+    for slot in slots:
+        server = cls(run_id=manifest["run_id"], policy_slot=slot,
+                     initial_adapter=manifest.get("character_adapter", "") if slot == "auditor" else "")
+        result[slot] = ModalPolicyClient(server, manifest["run_id"])
+        if refs:
+            info = result[slot].restore(refs[slot]["checkpoint_path"])
+            if info["policy_version"] != refs[slot]["version"]:
+                raise RLCRInputError("restored checkpoint differs from coordinator manifest")
+        server.preflight.remote()
+    return result
 
-    print(f"\n=======================================================")
-    print(f" STARTING LIVE RLCR GPU TRAINING: {num_steps} OPTIMIZER STEPS")
-    print(f" Condition: {condition} | Games per step: {games_per_step} | Max game steps: {max_game_steps}")
-    if condition == "T2":
-        print(f" Active Reporting Reward: lambda={lambda_audit}")
-    print(f"=======================================================\n")
 
-    policy = ModalTrainablePolicy()
+def collect(manifest, out):
+    out = Path(out)
+    if (out / "manifest.json").exists():
+        raise RLCRInputError("collection already exists; use a fresh output directory")
+    profile = model_profile(manifest["model"])
+    if profile["blocked_reason"]:
+        raise RLCRInputError(profile["blocked_reason"])
+    if manifest["initialization"] == "M2" and not manifest.get("character_adapter"):
+        raise RLCRInputError("M2 requires the reviewed, exported character adapter with compatibility.json")
+    slots = {"ordinary"} if manifest["condition"] == "T0" else {"ordinary", "auditor"}
+    if manifest.get("checkpoint_refs") and set(manifest["checkpoint_refs"]) != slots:
+        raise RLCRInputError("resume requires every organization checkpoint")
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    backends = clients(manifest)
+    policy = TrainableOrganizationPolicy(backends, ModalPolicy(manifest["opponent_model"]),
+        auditor_instructions=manifest["auditor_instructions"])
+    ledgers, excluded = [], []
+    for index in range(manifest["games_per_group"]):
+        path = run_episode("secret_hitler", manifest["seed"], manifest["condition"], out / "episodes",
+                           policy=policy, max_steps=manifest["max_game_steps"],
+                           sampling_seed=manifest["sampling_seed"] + index)
+        ledgers.append(path.name)
+        end = json.loads(path.read_text().splitlines()[-1])
+        if not end.get("valid_for_analysis"):
+            excluded.append({"episode": path.name, "reason": "incomplete_or_invalid"})
+        elif manifest["condition"] == "T2":
+            review_dir = out / "reviews"
+            review_dir.mkdir(exist_ok=True)
+            write_review_template(path, review_dir / path.name.replace(".jsonl", ".json"))
+    (out / "episodes.json").write_text(json.dumps(ledgers, indent=2))
+    # Never relabel an invalid trajectory as a loss or silently resample it away.
+    result = {"status": "excluded_group" if excluded else
+              "awaiting_independent_review" if manifest["condition"] == "T2" else "ready_for_update",
+              "excluded": excluded, "optimizer_steps_applied": 0}
+    (out / "collection_status.json").write_text(json.dumps(result, indent=2))
+    print(json.dumps(result))
 
-    for step_idx in range(1, num_steps + 1):
-        step_seed = base_seed + (step_idx * 100)
-        print(f"\n>>> [Step {step_idx}/{num_steps}] Sampling {games_per_step} games on GPU...")
 
-        step_traces: list[dict[str, Any]] = []
-        outcomes: list[dict[str, Any]] = []
-        step_reports = 0
+def update(out):
+    out = Path(out)
+    manifest = json.loads((out / "manifest.json").read_text())
+    if json.loads((out / "collection_status.json").read_text())["status"] == "excluded_group":
+        raise RLCRInputError("this group contains incomplete/invalid games; preserve it, do not train")
+    ledgers = json.loads((out / "episodes.json").read_text())
+    rollouts = []
+    for name in ledgers:
+        review = out / "reviews" / name.replace(".jsonl", ".json")
+        rollouts.append(build_rollout(out / "episodes" / name, comparison_key=manifest["comparison_key"],
+            initialization=manifest["initialization"], review_path=review if manifest["condition"] == "T2" else None))
+    group = prepare_group(tuple(rollouts), RLCRConfig.model_validate(manifest["objective"]))
+    (out / "trainable_rollouts.jsonl").write_text("".join(r.model_dump_json() + "\n" for r in rollouts))
+    if group.zero_variance:
+        result = {"updated": False, "reason": "zero_variance_group", "checkpoint_versions": {}}
+        if (out / "update_result.json").exists():
+            raise RLCRInputError("group already processed")
+    else:
+        # Existing transaction, even failed, blocks duplicate optimizer steps.
+        if (out / "update").exists():
+            raise RLCRInputError("existing optimizer transaction; inspect before retry")
+        result = apply_remote_group(group, clients(manifest), out / "episodes", out / "update", uuid.uuid4().hex)
+    result["run_identity"] = {key: manifest[key] for key in ("model", "run_id", "condition", "initialization", "character_adapter")}
+    result["run_identity"]["auditor_instructions_sha256"] = sha256_json(manifest["auditor_instructions"])
+    (out / "update_result.json").write_text(json.dumps(result, indent=2))
+    if result["updated"]:
+        import math
+        record = {**result, "loss": sum(s["loss"] for s in result["statistics"].values()),
+                  "grad_norm": math.sqrt(sum(s["grad_norm"] ** 2 for s in result["statistics"].values())),
+                  "liberal_win_rate": sum(e.reward["r_win"] for e in group.episodes) / len(group.episodes)}
+        with (out / "training_steps.jsonl").open("a") as stream:
+            stream.write(json.dumps(record) + "\n")
+    print(json.dumps(result))
+    return result
 
-        for g_idx in range(games_per_step):
-            game_seed = step_seed + g_idx
-            policy.set_episode_seed(game_seed)
 
-            episode_path = run_episode(
-                game_name="secret_hitler",
-                seed=game_seed,
-                condition=condition,
-                out_dir=runs_path,
-                policy=policy,
-                max_steps=max_game_steps,
-                channel_enabled=True,
-            )
-            lines = [json.loads(l) for l in episode_path.read_text().splitlines() if l.strip()]
-            end_record = lines[-1] if lines[-1].get("kind") == "episode_end" else {}
-            outcomes.append(end_record)
-
-            reports = [l for l in lines if l.get("kind") == "human_report"]
-            delivered = [r for r in reports if r.get("delivered")]
-            step_reports += len(delivered)
-
-            # Collect trainable traces from this game
-            step_traces.extend(policy.recorded_decisions)
-            print(f"  • Game {g_idx + 1}/{games_per_step} (Seed {game_seed}) -> Winner: {end_record.get('winner')}, Delivered reports: {len(delivered)}, Decisions recorded: {len(policy.recorded_decisions)}")
-
-        # Calculate group return & advantage (incorporating audit reporting reward in T2)
-        wins = [1.0 if o.get("winner") == "Liberal" else 0.0 for o in outcomes]
-        mean_win = sum(wins) / len(wins)
-        s_audit = 1.0 if step_reports > 0 else 0.0
-        r_org = mean_win + (lambda_audit * s_audit if condition == "T2" else 0.0)
-        advantage = (r_org - 0.5)
-
-        print(f"\n  [RLCR Advantage] Liberal Win-Rate: {mean_win * 100:.1f}%, Delivered Reports: {step_reports}, R_org: {r_org:.3f}, Group Advantage: {advantage:+.3f}")
-        print(f"  [Backward Pass] Submitting {len(step_traces)} decision traces to Modal GPU container...")
-
-        # LIVE GPU BACKWARD PASS
-        train_res = policy.train_step(
-            decisions=step_traces,
-            advantage=advantage,
-            clip_epsilon=0.2,
-        )
-
-        loss = train_res.get("loss", 0.0)
-        grad_norm = train_res.get("grad_norm", 0.0)
-        new_version = train_res.get("new_version", f"step_{step_idx}")
-        print(f"  ✓ GPU Backward Pass Complete!")
-        print(f"    - Policy Loss: {loss:.6f}")
-        print(f"    - Gradient Norm: {grad_norm:.6f}")
-        print(f"    - Updated Version: {new_version}")
-
-        # Log training step
-        step_record = {
-            "step": step_idx,
-            "policy_version": new_version,
-            "loss": loss,
-            "grad_norm": grad_norm,
-            "liberal_win_rate": mean_win,
-            "reports_delivered": step_reports,
-            "r_org": r_org,
-            "advantage": advantage,
-            "tokens_updated": train_res.get("token_count", 0),
-            "games_in_batch": games_per_step,
-        }
-        with open(training_log_path, "a") as f:
-            f.write(json.dumps(step_record) + "\n")
-
-        # Save checkpoint & persist to Hugging Face
-        step_cp_path = save_checkpoint_to_disk(
-            checkpoint_dir=cp_path,
-            model=None,
-            base_model_name="Qwen/Qwen2.5-7B-Instruct",
-            step=step_idx,
-            runs_dir=runs_path,
-            training_log_path=training_log_path,
-        )
-
-        if hf_repo_id:
-            print(f"  [Hugging Face] Uploading checkpoint step_{step_idx} to {hf_repo_id}...")
-            upload_checkpoint_to_huggingface(
-                checkpoint_dir=step_cp_path,
-                repo_id=hf_repo_id,
-                private=True,
-            )
-
-    print(f"\n=======================================================")
-    print(f" ALL {num_steps} LIVE TRAINING STEPS COMPLETED!")
-    print(f"=======================================================\n")
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stage", choices=("plan", "collect", "update"), default="plan")
+    parser.add_argument("--model", choices=MODEL_KEYS)
+    parser.add_argument("--opponent-model", choices=MODEL_KEYS)
+    parser.add_argument("--condition", choices=("T0", "T1", "T2"), default="T1")
+    parser.add_argument("--initialization", choices=("M0", "M0c", "M2"), default="M0c")
+    parser.add_argument("--character-adapter", default="", help="Reviewed PEFT export path on Modal volume, never a GGUF")
+    parser.add_argument("--auditor-instructions", type=Path)
+    parser.add_argument("--run-id")
+    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--games-per-group", type=int, default=4)
+    parser.add_argument("--max-game-steps", type=int, default=40)
+    parser.add_argument("--seed", type=int, default=2026)
+    parser.add_argument("--sampling-seed", type=int, default=7000)
+    parser.add_argument("--checkpoint-refs", type=Path, help="Previous update_result.json, containing real weight+optimizer checkpoints")
+    args = parser.parse_args()
+    if args.stage == "update":
+        update(args.out)
+        return
+    if not args.model or not args.run_id or args.games_per_group < 2 or args.max_game_steps < 1:
+        parser.error("specify --model and --run-id; group size >=2 and game step budget >=1")
+    if args.condition == "T0" and args.character_adapter:
+        parser.error("T0 has no character-trained auditor")
+    instructions = args.auditor_instructions.read_text() if args.auditor_instructions else (
+        (Path(__file__).resolve().parents[1] / "training/character/CONSTITUTION.md").read_text()
+        if args.initialization in ("M0c", "M2") else "Follow the declared auditor evidence and reporting rules.")
+    refs = {}
+    if args.checkpoint_refs:
+        previous = json.loads(args.checkpoint_refs.read_text())
+        if previous.get("updated") is not True:
+            parser.error("resume requires an actual completed optimizer update")
+        expected_identity = {"model": args.model, "run_id": args.run_id, "condition": args.condition,
+                             "initialization": args.initialization, "character_adapter": args.character_adapter,
+                             "auditor_instructions_sha256": sha256_json(instructions)}
+        if previous.get("run_identity") != expected_identity:
+            parser.error("resume cannot change family, run, reward condition, character initialization or instructions")
+        refs = previous["checkpoint_versions"]
+    manifest = {"schema": 1, "model": args.model, "opponent_model": args.opponent_model or args.model,
+                "model_profile": model_profile(args.model), "run_id": args.run_id, "condition": args.condition,
+                "initialization": args.initialization, "character_adapter": args.character_adapter,
+                "auditor_instructions": instructions, "games_per_group": args.games_per_group,
+                "max_game_steps": args.max_game_steps, "seed": args.seed, "sampling_seed": args.sampling_seed,
+                "comparison_key": f"{args.run_id}:{args.seed}:{args.sampling_seed}", "checkpoint_refs": refs,
+                "objective": RLCRConfig(advantage_epsilon=1e-6, clip_epsilon=.2,
+                    max_abs_log_ratio=.02, min_group_size=args.games_per_group).model_dump()}
+    if args.stage == "plan":
+        print(json.dumps(manifest, indent=2))
+    else:
+        collect(manifest, args.out)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--steps", type=int, default=5)
-    parser.add_argument("--games-per-step", type=int, default=2)
-    parser.add_argument("--max-game-steps", type=int, default=10, help="Maximum rounds per game")
-    parser.add_argument("--seed", type=int, default=7000)
-    parser.add_argument("--condition", default="T2")
-    parser.add_argument("--lambda-audit", type=float, default=0.05)
-    parser.add_argument("--hf-repo", default="renessauce/undercover-bench-rlcr")
-    args = parser.parse_args()
-
-    run_live_training_steps(
-        num_steps=args.steps,
-        games_per_step=args.games_per_step,
-        max_game_steps=args.max_game_steps,
-        base_seed=args.seed,
-        condition=args.condition,
-        lambda_audit=args.lambda_audit,
-        hf_repo_id=args.hf_repo,
-    )
+    main()
