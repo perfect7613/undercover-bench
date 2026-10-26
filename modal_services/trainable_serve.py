@@ -140,7 +140,8 @@ class TrainablePolicyServer:
         self.backend = TorchPolicyBackend(model, tokenizer,
             model_revision=f"{PROFILE['repo_id']}@{PROFILE['revision']}",
             checkpointed_backward=EXPERIMENTAL_GLM,
-            optimizer_kind="adamw8bit" if EXPERIMENTAL_GLM else "adamw")
+            optimizer_kind="adamw8bit" if EXPERIMENTAL_GLM else "adamw",
+            probability_mode=PROFILE.get("probability_mode", "cached"))
         if selected.exists():
             self.backend.restore_optimizer(selected)
         else:

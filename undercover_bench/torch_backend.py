@@ -59,7 +59,8 @@ def normalize_token_ids(encoded):
 class TorchPolicyBackend:
     def __init__(self, model, tokenizer, *, model_revision, learning_rate=1e-5,
                  temperature=.7, max_new_tokens=8192, max_context_tokens=32768,
-                 prompt_config=None, version=None, checkpointed_backward=False, optimizer_kind="adamw"):
+                 prompt_config=None, version=None, checkpointed_backward=False, optimizer_kind="adamw",
+                 probability_mode="cached"):
         import torch
         self.model = model
         self.tokenizer = tokenizer
@@ -70,10 +71,18 @@ class TorchPolicyBackend:
         self.max_new_tokens = max_new_tokens
         self.max_context_tokens = max_context_tokens
         self.prompt_config = prompt_config or {}
+        if probability_mode not in ("cached", "exact_prefix"):
+            raise RLCRInputError("unknown probability mode")
+        self.probability_mode = probability_mode
         # Canonical tokenizer serialization, never Python's process-random hash().
         vocab = tokenizer.get_vocab()
         self.tokenizer_hash = sha256_json({"vocab": vocab, "special": tokenizer.special_tokens_map})
-        self.template_hash = sha256_json({"template": tokenizer.chat_template, "config": self.prompt_config})
+        template_identity = {"template": tokenizer.chat_template, "config": self.prompt_config}
+        # Preserve the historical cached fingerprint for existing checkpoints.
+        if probability_mode == "exact_prefix":
+            template_identity["probability_mode"] = probability_mode
+            template_identity["operator_path"] = "grad_full_prefix_checkpoint_nonreentrant_v1"
+        self.template_hash = sha256_json(template_identity)
         self.parameters = [p for p in model.parameters() if p.requires_grad]
         if not self.parameters:
             raise RLCRInputError("backend has no trainable parameters")
@@ -114,7 +123,7 @@ class TorchPolicyBackend:
 
     def sample(self, prompt, seed):
         import torch
-        self.model.eval()
+        self.model.train(self.checkpointed_backward if self.probability_mode == "exact_prefix" else False)
         ids = self.tokenizer.apply_chat_template(
             [{"role": "user", "content": prompt}], tokenize=True,
             add_generation_prompt=True, **self.prompt_config)
@@ -130,30 +139,72 @@ class TorchPolicyBackend:
         eos_ids = {eos} if isinstance(eos, int) else set(eos or [])
         config_eos = getattr(getattr(self.model, "generation_config", None), "eos_token_id", None)
         eos_ids.update([config_eos] if isinstance(config_eos, int) else config_eos or [])
-        with torch.no_grad():
-            past = None
+        if self.probability_mode == "exact_prefix":
             for _ in range(budget):
-                # Use the full prefix on the first call, then one token with its cache.
-                result = self.model(input_ids=current, past_key_values=past, use_cache=True)
-                logits = result.logits[:, -1, :].float() / self.temperature
-                logp = torch.log_softmax(logits, dim=-1)
+                prefix = torch.tensor([context + generated], device=self.device)
+                # Do not wrap sampling in no_grad: quantized modules can choose
+                # different kernels depending on autograd state. This is the
+                # very same grad-enabled forward used by authored_logprobs.
+                logp_graph = self._exact_prefix_logprobs(prefix)
+                logp = logp_graph.detach()
                 nxt = torch.multinomial(logp.exp(), 1, generator=generator)
-                generated.append(nxt.item())
-                logprobs.append(logp[0, nxt.item()].item())
-                if nxt.item() in eos_ids:
+                token = nxt.item()
+                generated.append(token)
+                logprobs.append(logp[0, token].item())
+                del logp_graph, logp
+                if token in eos_ids:
                     break
-                past = result.past_key_values
-                current = nxt if past is not None else torch.tensor([context + generated], device=self.device)
+        else:
+            with torch.no_grad():
+                past = None
+                for _ in range(budget):
+                    # Use the full prefix on the first call, then one token with its cache.
+                    result = self.model(input_ids=current, past_key_values=past, use_cache=True)
+                    logits = result.logits[:, -1, :].float() / self.temperature
+                    logp = torch.log_softmax(logits, dim=-1)
+                    nxt = torch.multinomial(logp.exp(), 1, generator=generator)
+                    generated.append(nxt.item())
+                    logprobs.append(logp[0, nxt.item()].item())
+                    if nxt.item() in eos_ids:
+                        break
+                    past = result.past_key_values
+                    current = nxt if past is not None else torch.tensor([context + generated], device=self.device)
         return {"text": self.tokenizer.decode(generated, skip_special_tokens=True),
                 "context_token_ids": context, "generated_token_ids": generated,
                 "behavior_logprobs": logprobs, "finish_reason": "stop" if generated[-1] in eos_ids else "length",
                 **self.identity()}
+
+    def _exact_prefix_logprobs(self, prefix):
+        """Identical full-prefix operator path in sampling and optimization.
+
+        Nonreentrant checkpointing discards intermediate activations while
+        retaining autograd, including when integer inputs do not require grad.
+        The full softmax is computed inside the checkpoint, never from a cached
+        decode or a post-hoc teacher-forced sequence.
+        """
+        import torch
+        from torch.utils.checkpoint import checkpoint
+
+        def forward(input_ids):
+            logits = self.model(input_ids=input_ids, use_cache=False).logits[:, -1, :]
+            return torch.log_softmax(logits.float() / self.temperature, dim=-1)
+
+        self.model.train(self.checkpointed_backward)
+        with torch.enable_grad():
+            return checkpoint(forward, prefix, use_reentrant=False, preserve_rng_state=True)
 
     def authored_logprobs(self, decision: AuthoredDecision):
         import torch
         self._check_decision(decision)
         # eval disables dropout but deliberately retains autograd.
         self.model.train(self.checkpointed_backward)
+        if self.probability_mode == "exact_prefix":
+            selected = []
+            for index, target in enumerate(decision.generated_token_ids):
+                prefix = torch.tensor([list(decision.context_token_ids) +
+                                       list(decision.generated_token_ids[:index])], device=self.device)
+                selected.append(self._exact_prefix_logprobs(prefix)[0, target])
+            return torch.stack(selected)
         full = torch.tensor([decision.context_token_ids + decision.generated_token_ids], device=self.device)
         result = self.model(input_ids=full, use_cache=False)
         start = len(decision.context_token_ids) - 1
@@ -189,7 +240,8 @@ class TorchPolicyBackend:
         metadata = {**self.identity(), "parent_version": parent, "updates": self.updates,
                     "prompt_config": self.prompt_config, "max_new_tokens": self.max_new_tokens,
                     "max_context_tokens": self.max_context_tokens,
-                    "checkpointed_backward": self.checkpointed_backward, "optimizer_kind": self.optimizer_kind}
+                    "checkpointed_backward": self.checkpointed_backward, "optimizer_kind": self.optimizer_kind,
+                    "probability_mode": self.probability_mode}
         self.version = seal_checkpoint(path, metadata)
         return self.version
 
@@ -199,6 +251,8 @@ class TorchPolicyBackend:
         from .checkpoint_hf import verify_checkpoint
         manifest = verify_checkpoint(path)
         meta = manifest["metadata"]
+        if meta.get("probability_mode", "cached") != self.probability_mode:
+            raise RLCRInputError("checkpoint probability mode differs")
         if (meta.get("optimizer_kind", "adamw") != self.optimizer_kind
                 or meta.get("checkpointed_backward", False) != self.checkpointed_backward):
             raise RLCRInputError("checkpoint optimizer or activation-checkpoint mode differs")

@@ -27,6 +27,7 @@
       "model_type": "qwen3_5",
       "gpu": "L40S",
       "load_in_4bit": true,
+      "probability_mode": "exact_prefix",
       "blocked_reason": null
     },
     "muse_glimmer": {
@@ -36,6 +37,7 @@
       "model_type": "muse_glimmer",
       "gpu": "L40S",
       "load_in_4bit": true,
+      "probability_mode": "exact_prefix",
       "blocked_reason": null
     }
   }
