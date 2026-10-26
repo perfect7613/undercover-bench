@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,4 +21,5 @@ class Ledger:
         with self.path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
             stream.flush()
+            os.fsync(stream.fileno())
         return record

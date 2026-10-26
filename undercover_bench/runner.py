@@ -127,7 +127,7 @@ class ModalPolicy:
                              "submitted_action": response.get("action"),
                              "sampling_seed": request_seed,
                              "usage": result.get("usage")})
-            if getattr(self, "character_candidate", False):
+            if "character_adapter_applied" in result:
                 attempts[-1]["character_adapter_applied"] = result["character_adapter_applied"]
                 attempts[-1]["character_manifest"] = result.get("character_manifest")
             if error is None:
@@ -160,6 +160,35 @@ class SeatPolicy:
     def decide(self, observation, legal):
         key = self.assignments[observation["you"]]
         return self.policies[key].decide(observation, legal)
+
+
+class AuditedSeatPolicy(SeatPolicy):
+    """Four-family game with an explicit auditor policy and ordinary access."""
+    def __init__(self, assignments, auditor, auditor_model, *, character=False):
+        if assignments.get(auditor) != auditor_model:
+            raise ValueError("auditor model does not match its assigned seat")
+        if set(assignments.values()) != {"glm_flash", "deepseek_flash", "qwen_dense", "muse_glimmer"}:
+            raise ValueError("mixed audit games require all four selected families")
+        super().__init__(assignments)
+        self.auditor = auditor
+        self.initialization = "M2_candidate_engineering" if character else "M0c"
+        constitution = (Path(__file__).resolve().parents[1] / "training/character/CONSTITUTION.md").read_text()
+        self.auditor_policy = ModalPolicy(auditor_model, constitution, self.initialization,
+                                          character_candidate=character)
+        self.protocol_metadata = {"purpose": "mixed_model_engineering_games", "auditor_model": auditor_model,
+                                  "initialization": self.initialization, "rlcr_updates": 0,
+                                  "research_intervention_promoted": False}
+
+    def set_episode_seed(self, seed):
+        super().set_episode_seed(seed)
+        self.auditor_policy.set_episode_seed(seed)
+
+    def decide(self, observation, legal):
+        if bool(observation.get("auditor")) != (observation["you"] == self.auditor):
+            raise ValueError("auditor role changed or leaked across seats")
+        if observation["you"] == self.auditor:
+            return self.auditor_policy.decide(observation, legal)
+        return super().decide(observation, legal)
 
 
 def run_episode(game_name, seed, condition, out_dir, policy=None, max_steps=8, pressure=False, offer_style=None, channel_enabled=True, sampling_seed=None):
