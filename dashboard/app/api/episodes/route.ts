@@ -69,6 +69,11 @@ export async function GET() {
       const first = rows[0], last = rows.at(-1)!;
       const ended = last.kind === 'episode_end';
       return {file, game: first.game, condition: first.condition, seed: first.seed, model: first.model,
+        seatModels: first.seat_models ?? null, auditor: first.undercover ?? null,
+        auditorModel: first.undercover ? (first.protocol_metadata?.auditor_model ?? first.seat_models?.[first.undercover] ?? first.model) : null,
+        auditorInitialization: first.auditor_initialization ?? null,
+        purpose: first.protocol_metadata?.purpose ?? null,
+        rlcrUpdates: first.protocol_metadata?.rlcr_updates ?? null,
         events: rows.length, winner: ended ? last.winner : null, completed: ended && !!last.completed,
         validForAnalysis: ended && !!last.valid_for_analysis, invalidActions: last.invalid_actions ?? 0,
         mtime: info.mtimeMs};
